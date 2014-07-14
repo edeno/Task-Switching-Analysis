@@ -10,137 +10,124 @@ inParser.parse(model_str, GLMCov, response, varargin{:});
 gam = inParser.Results;
 gam = rmfield(gam, {'GLMCov', 'response'});
 
-% Parse into additive terms
-addTerms = strtrim(regexp(model_str, '+', 'split'));
-
-% Identify the smooth terms
-parsedTerms = strtrim(regexp(addTerms, ',|=', 'split'));
-isSmooth = cellfun(@(x) ~isempty(regexp(x{1}, 's\(.*', 'match')), parsedTerms, 'UniformOutput', false);
-isSmooth = [isSmooth{:}];
-% Strip any smooth function syntax
-parsedTerms = cellfun(@(x) regexprep(x, '(s\()|(\))', ''), parsedTerms, 'UniformOutput', false);
-
-% Replace smooth terms with the normal terms
-addTerms = cellfun(@(x) x{1}, parsedTerms, 'UniformOutput', false);
-
-% Parse for interactions within additive terms
-interTerms = cellfun(@(x) strtrim(regexp(x, '*', 'split')), addTerms, 'UniformOutput', false);
+[model] = modelFormula_parse(gam.model_str);
 
 % Now create the design matrix
 
-designMatrix = [];
-cov_names = [];
-level_names = [];
+designMatrix_constant = ones(size(response));
+designMatrix_spline = [];
 
-sqrtPen = [];
-constraints = [];
-constraintLevel_names = [];
-penalty = [];
-bsplines = cell(size(addTerms));
+cov_names_constant = {'(Intercept)'};
+sqrtPen_constant = {0};
+constraints_constant = {1};
+constraintLevel_constant = {'(Intercept)'};
+penalty_constant = {0};
 
-constant_ind = [];
+cov_names_spline = [];
+sqrtPen_spline = [];
+constraints_spline = [];
+constraintLevel_spline = [];
+penalty_spline = [];
+levels_spline = [];
 
-% Each additive Term
-for curAdd = 1:length(addTerms),
+numTerms = length(model.terms);
+
+bsplines = cell(numTerms, 1);
+
+% For each term
+for curTerm = 1:numTerms,
     
-    % Figure out how many multiplicative terms exist within each additive
-    % term
-    numVar = length(interTerms{curAdd});
-    curInterTerms = interTerms{curAdd};
-    
-    data_ind = find(ismember({GLMCov.name}, curInterTerms));
-    % sort data_ind in the same order as the addTerms
-    GLMCov_name = {GLMCov(data_ind).name};
-    hash_map =  containers.Map(curInterTerms, 1:numVar);
-    sort_ind = cell2mat(values(hash_map, GLMCov_name));
-    data_ind = data_ind(sort_ind);
+    term_names = regexp(model.terms{curTerm}, ':', 'split');
+    data_ind = find(ismember({GLMCov.name}, term_names));
     
     data = {GLMCov(data_ind).data};
     levels = {GLMCov(data_ind).levels};
     
+    % Convert to indicator variables if categorical
     isCategorical = [GLMCov(data_ind).isCategorical];
-    
-    % Convert to dummy variables and append a column of ones to the data
-    data = dummyVar(data, isCategorical, 'Full');
-    levels = cellfun(@(x) [{''} x], levels, 'UniformOutput', false);
+    data = indicatorVar(data, isCategorical, levels, 'Full');
     numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
     
     % Figure out all the relevant interactions
     if length(numLevels) < 2,
-        if isempty(data)
-            data = {ones(size(response))};
-            levels = {'(Intercept)'};
-        end
         data_temp = data{:};
         levels_temp = levels{:};
     else
         [rep] = allpairs2(numLevels);
+        [~, rep_sort_ind] = sort(rep{1});
+        
+        for rep_ind = 1:length(rep),
+            rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
+        end
         data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
         levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
         
         data_temp = data{1};
         levels_temp = levels{1};
         
-        for var_ind = 2:numVar,
+        for var_ind = 2:length(data),
             data_temp = data_temp.*data{var_ind};
             levels_temp = strcat(levels_temp, ':', levels{var_ind});
         end
         
     end
     
+    designMatrix_constant = [designMatrix_constant data_temp];
+    
     numLevels = size(data_temp, 2);
     
-    cov_names_temp = repmat(addTerms(curAdd), 1, numLevels);
-    sqrtPen_temp = repmat({1}, 1, numLevels);
-    constraints_temp = repmat({1}, 1, numLevels);
-    constraintLevel_temp = levels_temp;
-    penalty_temp = repmat({1}, 1, numLevels);
-    constant_ind = [constant_ind true(1, numLevels)];
+    cov_names_constant = [cov_names_constant repmat(model.terms(curTerm), 1, numLevels)];
+    sqrtPen_constant = [sqrtPen_constant repmat({1}, 1, numLevels)];
+    constraints_constant = [constraints_constant repmat({1}, 1, numLevels)];
+    constraintLevel_constant = [constraintLevel_constant levels_temp];
+    penalty_constant = [penalty_constant repmat({1}, 1, numLevels)];
     
     % Deal with Smoothing
-    if isSmooth(curAdd),
-        smoothParams = parsedTerms{curAdd};
-        % Convert numbers from strings
-        value = str2double(smoothParams);
-        smoothParams(~isnan(value)) = {value(~isnan(value))};
+    if model.isSmooth(curTerm),
         
-        % Find smoothing factor
-        smoothingFactor.data = GLMCov(ismember({GLMCov.name}, smoothParams{2})).data;
-        smoothingFactor.name = smoothParams{2};
-        smoothParams{2} = smoothingFactor;
+        smoothParams = [];
         
-        factor.name = addTerms{curAdd};
-        factor.data = {GLMCov(data_ind).data};
-        factor.levels = {GLMCov(data_ind).levels};
-        
+        % Factor to be smoothed
+        factor.name = model.terms(curTerm);
+        factor.data = data_temp;
+        factor.levels = levels_temp;
         smoothParams{1} = factor;
         
-        [smoothMatrix, bsplines{curAdd}, smoothCov_name, smoothLevel_names, ...
+        % Find smoothing factor
+        if isempty(model.smoothingTerm{curTerm}),
+            smoothingFactor.data = [];
+            smoothingFactor.name = [];
+            smoothParams{2} = smoothingFactor;
+        else
+            smoothingFactor.data = GLMCov(ismember({GLMCov.name}, model.smoothingTerm{curTerm})).data;
+            smoothingFactor.name = model.smoothingTerm{curTerm};
+            smoothParams{2} = smoothingFactor;
+        end
+        
+        smoothParams = [smoothParams model.smoothParams_opt{curTerm}];
+        
+        [smoothMatrix, bsplines{curTerm}, smoothCov_name, smoothLevel_names, ...
             smoothSqrtPen, smoothConstraints, smoothPenalty, smoothConNames] = factorBySpline(smoothParams{:});
         
-        data_temp = [data_temp smoothMatrix];
-        levels_temp = [levels_temp smoothLevel_names];
-        cov_names = [cov_names smoothCov_name];
-        sqrtPen_temp = [sqrtPen_temp smoothSqrtPen];
-        constraints_temp = [constraints_temp smoothConstraints];
-        penalty_temp = [penalty_temp smoothPenalty];
-        constraintLevel_temp = [constraintLevel_temp smoothConNames];
-        constant_ind = [constant_ind false(1, size(smoothMatrix, 2))];
+        designMatrix_spline = [designMatrix_spline smoothMatrix];
+        levels_spline = [levels_spline smoothLevel_names];
+        cov_names_spline = [cov_names_spline smoothCov_name];
+        sqrtPen_spline = [sqrtPen_spline smoothSqrtPen];
+        constraints_spline = [constraints_spline smoothConstraints];
+        penalty_spline = [penalty_spline smoothPenalty];
+        constraintLevel_spline = [constraintLevel_spline smoothConNames];
     end
     
-    % Add To Design Matrix
-    designMatrix = [designMatrix data_temp];
-    cov_names = [cov_names cov_names_temp];
-    level_names = [level_names levels_temp];
-    sqrtPen = [sqrtPen sqrtPen_temp];
-    penalty = [penalty penalty_temp];
-    constraints = [constraints constraints_temp];
-    constraintLevel_names = [constraintLevel_names constraintLevel_temp];
 end
 
-% Fix Penalty Intercept
-sqrtPen(1) = {0};
-penalty(1) = {0};
+designMatrix = [designMatrix_constant designMatrix_spline];
+level_names = [constraintLevel_constant levels_spline];
+cov_names = [cov_names_constant cov_names_spline];
+constraintLevel_names = [constraintLevel_constant constraintLevel_spline];
+constraints = [constraints_constant constraints_spline];
+sqrtPen = [sqrtPen_constant sqrtPen_spline];
+penalty = [penalty_constant penalty_spline];
+constant_ind = [true(size(constraintLevel_constant)) false(size(levels_spline))];
 
 % Convert to matrix
 sqrtPen = blkdiag(sqrtPen{:});
@@ -150,25 +137,26 @@ constraints = blkdiag(constraints{:});
 designMatrix(isnan(designMatrix)) = 0;
 
 % Remove Duplicates
-dup_ind = findDuplicateColumns(designMatrix);
+try
+    [~, dup_ind] = unique(level_names, 'stable');
+    [~, dup_constraint_ind] = unique(constraintLevel_names, 'stable');
+catch
+    [~, dup_ind] = unique(level_names);
+    dup_ind = sort(dup_ind);
+    [~, dup_constraint_ind] = unique(constraintLevel_names);
+    dup_constraint_ind = sort(dup_constraint_ind);
+end
 
-designMatrix(:, dup_ind) = [];
-level_names(:, dup_ind) = [];
-cov_names(:, dup_ind) = [];
-sqrtPen(dup_ind, :) = [];
-sqrtPen(:, dup_ind) = [];
-penalty(dup_ind, :) = [];
-penalty(:, dup_ind) = [];
-constraints(:, dup_ind) = [];
-constant_ind(:, dup_ind) = [];
+designMatrix = designMatrix(:, dup_ind);
+level_names = level_names(:, dup_ind);
+cov_names = cov_names(:, dup_ind);
+sqrtPen = sqrtPen(dup_ind, dup_ind);
+penalty = penalty(dup_ind, dup_ind);
+constraints = constraints(:, dup_ind);
+constant_ind = constant_ind(:, dup_ind);
 
-bad_ind = sum(constraints, 2) == 0;
-constraints(bad_ind, :) = [];
-constraintLevel_names(:, bad_ind) = [];
-
-% Rename first term to intercept
-level_names{1} = '(Intercept)';
-cov_names{1} = '(Intercept)';
+constraints = constraints(dup_constraint_ind, :);
+constraintLevel_names = constraintLevel_names(:, dup_constraint_ind);
 
 level_names = regexprep(level_names, '^(:)|^(::)|(:)$|(::)$', '');
 level_names = regexprep(level_names, '::', ':');
@@ -194,28 +182,18 @@ rep = cellfun(@(x) x(:)', rep, 'UniformOutput', false);
 end
 
 %-----------------------------------------------------------------------------
-function [dummy] = dummyVar(data, isCategorical, type)
+function [dummy] = indicatorVar(data, isCategorical, levels, type)
 
 dummy = cell(size(data));
 
 switch(type)
     case 'Full' % symmetric coding, no reference level
-        dummy(isCategorical) = cellfun(@(x) dummyvar(grp2idx(x)), data(isCategorical), 'UniformOutput', false);
-        dummy = cellfun(@(x) [ones(size(x,1), 1) x], dummy, 'UniformOutput', false);
-        dummy(~isCategorical) = cellfun(@(x) [ones(size(x,1), 1) x], data(~isCategorical), 'UniformOutput', false);
+        dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
+        dummy(~isCategorical) = data(~isCategorical);
     case 'Reference' % first level is the reference
-        dummy(isCategorical) = cellfun(@(x) dummyvar(grp2idx(x)), data(isCategorical), 'UniformOutput', false);
-        dummy(isCategorical) = cellfun(@(x) [ones(size(x,1), 1) x(:, 2:end)], dummy(isCategorical), 'UniformOutput', false);
-        dummy(~isCategorical) = cellfun(@(x) [ones(size(x,1), 1) x], data(~isCategorical), 'UniformOutput', false);
+        dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
+        dummy(~isCategorical) = data(~isCategorical);
 end
-
-end
-%-----------------------------------------------------------------------------
-function [ixDupRows] = findDuplicateColumns(x)
-
-x = x';
-[~,I,~] = unique(x, 'rows', 'first');
-ixDupRows = setdiff(1:size(x,1), I);
 
 end
 %-----------------------------------------------------------------------------
@@ -236,39 +214,14 @@ inParser.parse(factor, varargin{:});
 by = inParser.Results;
 
 if isempty(factor.data)
-    factor.data = {ones(size(by.smoothingFactor.data))};
-    factor.levels = {{''}};
-end
-
-numVar = length(factor.data);
-data = dummyVar(factor.data, true(numVar, 1), 'Full');
-smoothLevels = cellfun(@(x) [{''} x], factor.levels, 'UniformOutput', false);
-numLevels = cellfun(@(x) 1:length(x), smoothLevels, 'UniformOutput', false);
-
-if length(numLevels) < 2,
-    
-    smoothData_temp = data{:};
-    smoothLevels_temp = smoothLevels{:};
+    data = {ones(size(by.smoothingFactor.data))};
+    levels = {{''}};
 else
-    
-    % Figure out all the relevant interactions
-    [rep] = allpairs2(numLevels);
-    data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
-    smoothLevels = cellfun(@(levels, rep) levels(:, rep), smoothLevels, rep, 'UniformOutput', false);
-    
-    smoothData_temp = data{1};
-    smoothLevels_temp = smoothLevels{1};
-    
-    for var_ind = 2:numVar,
-        smoothData_temp = smoothData_temp.*data{var_ind};
-        smoothLevels_temp = strcat(smoothLevels_temp, ':', smoothLevels{var_ind});
-    end
+    data = [ones(size(by.smoothingFactor.data)) by.factor.data];
+    levels = [{by.smoothingFactor.name} by.factor.levels];
 end
-smoothData_temp = smoothData_temp(:, 2:end);
-smoothLevels_temp = smoothLevels_temp(2:end);
-smoothLevels_temp = regexprep(smoothLevels_temp, '(^:)|(:$)', '');
 
-numLevels = size(smoothData_temp, 2);
+numLevels = size(data, 2);
 
 if isempty(by.bsplines)
     [bsplines] = createBSpline(by.smoothingFactor.data, 'basis_dim', by.basis_dim, ...
@@ -289,14 +242,14 @@ constraints = [{bsplines.constraint} repmat({bsplines.constraint}, [1 numLevels-
 cov_name = repmat({factor.name}, [1 numDim]);
 cov_name = cov_name(:)';
 
-covLevel_names = repmat(smoothLevels_temp, [bsplines.basis_dim-1 1]);
+covLevel_names = repmat(levels, [bsplines.basis_dim-1 1]);
 covLevel_names = covLevel_names(:)';
 covLevel_names = strcat(covLevel_names, ['.' by.smoothingFactor.name]);
 level_no = num2cell(repmat(1:bsplines.basis_dim-1, [1 numLevels]));
 level_no = cellfun(@(x) num2str(x), level_no, 'UniformOutput', false);
 covLevel_names = strcat(covLevel_names, '.', level_no);
 
-constraintLevel_names = repmat(smoothLevels_temp, [bsplines.basis_dim 1]);
+constraintLevel_names = repmat(levels, [bsplines.basis_dim 1]);
 constraintLevel_names = constraintLevel_names(:)';
 constraintLevel_names = strcat(constraintLevel_names, ['.' by.smoothingFactor.name]);
 level_no = num2cell(repmat(1:bsplines.basis_dim, [1 numLevels]));
@@ -305,7 +258,36 @@ constraintLevel_names = strcat(constraintLevel_names, '.', level_no);
 
 for level_ind = 1:numLevels,
     level_idx = (level_ind-1)*(bsplines.basis_dim-1) + [1:bsplines.basis_dim-1];
-    X(:, level_idx) = [bsxfun(@times, smoothData_temp(:, level_ind), bsplines.con_basis)];
+    X(:, level_idx) = [bsxfun(@times, data(:, level_ind), bsplines.con_basis)];
+end
+
+
+end
+%-----------------------------------------------------------------------------
+function [out] = createIndicator(data, levels)
+
+numDataLevels = 0;
+for col_ind = 1:size(data, 2),
+    numUnique = unique(data(:, col_ind));
+    numUnique(isnan(numUnique)) = [];
+    numDataLevels = numDataLevels + length(numUnique);
+end
+
+if numDataLevels == length(levels),
+    if any(data(:) == 0),
+        for k = 1:size(data, 2),
+            data(:, k) = grp2idx(data(:, k));
+        end
+        out = dummyvar(data);
+    else
+        out = dummyvar(data);
+    end
+else
+    % handle the case when there is only one level active, but there are actually several levels
+    pseudoData = repmat([1:length(levels)/size(data, 2)]', [1 size(data, 2)]);
+    data = [data; pseudoData];
+    out = dummyvar(data);
+    out((end-size(pseudoData, 1)+1):end, :) = [];
 end
 
 
