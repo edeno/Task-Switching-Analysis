@@ -11,6 +11,7 @@ filtfilthd.m
 
 # Matlab Files
 *.mat
+*.asv
 
 # Windows image file caches
 Thumbs.db
