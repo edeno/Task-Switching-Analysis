@@ -1,3 +1,12 @@
+# Matlab proprietary files
+testlink.m
+removeNaN.m
+plx*
+filtfilthd.m
+*.h
+*.ccp
+
+
 # Matlab Files
 *.mat
 
