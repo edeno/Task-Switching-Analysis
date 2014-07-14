@@ -92,20 +92,9 @@ for session_ind = 1:length(session_names),
     
     createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
     submit(gamJob{session_ind});
-    pause(5);
-    
-    %         batch(jobMan, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir}, ...
-    %             'matlabpool', 11, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', {which('saveMillerlab')});
-    
+    pause(1);  
 end
 
-% Wait for all jobs to be done before moving on
-% for session_ind = 1:length(session_names),
-%     wait(gamJob{session_ind});
-%     fprintf('\t...%s Done\n', session_names{session_ind});
-% end
-% 
-% fprintf(fileID, '\nDate: %s\n \n', datestr(now));
 fclose(fileID);
-% cleanupClusterJob(jobMan, 'edeno', 'finished');
+
 end
