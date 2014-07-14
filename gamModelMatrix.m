@@ -61,8 +61,8 @@ for curAdd = 1:length(addTerms),
     isCategorical = [GLMCov(data_ind).isCategorical];
     
     % Convert to dummy variables and append a column of ones to the data
-    data = dummyVar(data, isCategorical, 'Reference');
-    
+    data = dummyVar(data, isCategorical, 'Full');
+    levels = cellfun(@(x) [{''} x], levels, 'UniformOutput', false);
     numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
     
     % Figure out all the relevant interactions
@@ -170,6 +170,9 @@ constraintLevel_names(:, bad_ind) = [];
 level_names{1} = '(Intercept)';
 cov_names{1} = '(Intercept)';
 
+level_names = regexprep(level_names, '^(:)|^(::)|(:)$|(::)$', '');
+level_names = regexprep(level_names, '::', ':');
+
 gam.cov_names = cov_names;
 gam.level_names = level_names;
 gam.constraints = constraints;
@@ -199,6 +202,7 @@ switch(type)
     case 'Full' % symmetric coding, no reference level
         dummy(isCategorical) = cellfun(@(x) dummyvar(grp2idx(x)), data(isCategorical), 'UniformOutput', false);
         dummy = cellfun(@(x) [ones(size(x,1), 1) x], dummy, 'UniformOutput', false);
+        dummy(~isCategorical) = cellfun(@(x) [ones(size(x,1), 1) x], data(~isCategorical), 'UniformOutput', false);
     case 'Reference' % first level is the reference
         dummy(isCategorical) = cellfun(@(x) dummyvar(grp2idx(x)), data(isCategorical), 'UniformOutput', false);
         dummy(isCategorical) = cellfun(@(x) [ones(size(x,1), 1) x(:, 2:end)], dummy(isCategorical), 'UniformOutput', false);
@@ -224,7 +228,7 @@ inParser.addParamValue('bsplines', [], @isstruct);
 inParser.addParamValue('basis_dim', 30, @isnumeric);
 inParser.addParamValue('basis_degree', 3, @isnumeric);
 inParser.addParamValue('penalty_degree', 2, @isnumeric);
-inParser.addParamValue('ridgeLambda', .5, @(x) isnumeric(x) && x >= 0);
+inParser.addParamValue('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
 inParser.addParamValue('knots', [], @isvector);
 
 inParser.parse(factor, varargin{:});
