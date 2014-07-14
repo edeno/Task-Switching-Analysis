@@ -1,49 +1,47 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
+ridgeLambda = 1;
+numFolds = 1;
+isOverwrite = false;
+
+% %%
+% timePeriod = 'Rule Stimulus';
+% 
+% % model{1} = 'Rule + Switch History + Previous Error History';
+% % model{2} = 'Rule * Switch History + Rule * Previous Error History';
+% % model{3} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History';
+% model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History';
+% 
+% for model_ind = 1:length(model)
+%     
+%     GAMcluster(model{model_ind}, timePeriod, main_dir, 'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda);
+%     
+% end
+% 
+% %%
+% 
+% timePeriod = 'Stimulus Response';runrun
+% 
+% model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Test Stimulus + Normalized Prep Time';
+% model{2} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Normalized Prep Time';
+% 
+% for model_ind = 1:length(model)
+%     
+%     GAMcluster(model{model_ind}, timePeriod, main_dir, 'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda);
+%     
+% end
+
+
+%%
 timePeriod = 'Rule Response';
-% 
-% acc_model = 'Rule * Switch + Rule * Congruency + Rule * Previous Error History + Response Direction + Normalized Prep Time';
-% 
-% GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
 
-acc_model = 'Rule * Switch History + Rule * Test Stimulus + Rule * Previous Error History + Normalized Prep Time';
+% model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Test Stimulus + Normalized Prep Time';
+% model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Normalized Prep Time';
+model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
 
-GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-
-
-%%
-% timePeriod = 'Rule Stimulus';
-% 
-% acc_model = 'Rule * Switch + Rule * Previous Error History';
-% 
-% GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-
-% timePeriod = 'Rule Stimulus';
-% 
-% acc_model = 'Rule * Switch History + Rule * Previous Error History';
-% 
-% GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-
-timePeriod = 'Rule Stimulus';
-
-acc_model = 'Rule Cues * Rule Cue Switch + Rule Cues * Previous Error History';
-
-GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-%%
-% timePeriod = 'Stimulus Response';
-% 
-% % acc_model = 'Rule * Switch + Rule * Congruency + Rule * Previous Error History + Response Direction + Normalized Prep Time';
-% acc_model = 'Rule * Switch + Rule * Test Stimulus + Rule * Previous Error History + Normalized Prep Time';
-% 
-% GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-% 
-% timePeriod = 'Stimulus Response';
-% 
-% acc_model = 'Rule * Switch + Rule * Congruency + Rule * Previous Error History + Response Direction + Normalized Prep Time';
-% acc_model = 'Rule * Switch History + Rule * Test Stimulus + Rule * Previous Error History + Normalized Prep Time';
-% 
-% GAMcluster(acc_model, timePeriod, main_dir, 'numFolds', 1, 'overwrite', true, 'ridgeLambda', .5);
-
-
-
+for model_ind = 1:length(model)
+    
+    GAMcluster(model{model_ind}, timePeriod, main_dir, 'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda);
+    
+end
 
