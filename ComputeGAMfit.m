@@ -22,7 +22,7 @@ monkey_name = regexp(session_name, '(cc)|(isa)|(ch)', 'match');
 monkey_name = monkey_name{:};
 
 %% Setup Design Matrix
-[designMatrix, gam] = gamModelMatrix3(gamParams.regressionModel_str, GLMCov, spikes(:,1));
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, spikes(:,1));
 
 clear GLMCov;
 
