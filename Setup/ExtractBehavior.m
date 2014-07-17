@@ -46,7 +46,7 @@ for k = 1:max(monk)
     norm_prep(monk == k) = prep(monk == k) - nanmean(prep(monk == k));
 end
 
-norm_prep = norm_prep ./ (2*nanstd(norm_prep));
+norm_prep = norm_prep ./ (nanstd(norm_prep));
 
 for k = 1:length(behavior)
     behavior(k).Normalized_Prep_Time = norm_prep(cat(1, behavior.day) == k);

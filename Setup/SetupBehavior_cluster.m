@@ -37,25 +37,26 @@
 %           attempted - only correct and incorrect trials
 %           condition - same as trials.Condition
 %           pfc
-%               0 electrode in ACC
-%               1 electrode in PFC
+%               1 electrode in ACC
+%               2 electrode in PFC
 %           incongruent
-%               0 congruent samples
-%               1 incongruent samples
+%               1 congruent samples
+%               2 incongruent samples
 %           condition_left
-%               0 correct answer is saccade right
-%               1 correct answer is saccade left
+%               1 correct answer is saccade right
+%               2 correct answer is saccade left
 %           sample_ident - sample identities
 %               1 Vertical Blue
 %               2 Vertical Red
 %               3 Horizontal Blue
 %               4 Horizontal Red
 %           monkey_choose_left
-%               0 monkey saccade right
-%               1 monkey saccade left
+%               1 monkey saccade right
+%               2 monkey saccade left
 %           monkey
-%               0 ISA
-%               1 CC
+%               1 ISA
+%               2 CH
+%               3 CC
 %           color_cues - identity of color rule cues
 %               1 Cue4.bmp and 26 x 36 Black sq
 %               2 Only 26 x 36 black sq
@@ -332,6 +333,11 @@ for err_ind = 1:length(err)+1
     end
 end
 behavior.dist_err = dist_err;
+
+dist_err(dist_err >= 11) = 11;
+
+% non-cumulative version of error history
+behavior.Previous_Error_History_Indicator = dist_err;
 
 % Trial Time
 thirds = numtrials*(1/3);

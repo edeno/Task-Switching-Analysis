@@ -40,7 +40,7 @@ cov_info(9).levels = {'Vertical', 'Horizontal'};
 cov_info(9).isCategorical = true;
 
 cov_info(10).name = 'Normalized Prep Time';
-cov_info(10).levels = {'2 Std Dev of Prep Time'};
+cov_info(10).levels = {'1 Std Dev of Prep Time'};
 cov_info(10).isCategorical = false;
 
 cov_info(11).name = 'Response Direction';
@@ -52,22 +52,13 @@ cov_info(12).levels = {'No Previous Error', 'Previous Error'};
 cov_info(12).isCategorical = true;
 
 cov_info(13).name = 'Previous Error History';
-cov_info(13).levels = {'No Previous Error1', 'Previous Error1', ...
-    'No Previous Error2', 'Previous Error2', ...
-    'No Previous Error3', 'Previous Error3', ...
-    'No Previous Error4', 'Previous Error4', ...
-    'No Previous Error5', 'Previous Error5', ...
-    'No Previous Error6', 'Previous Error6', ...
-    'No Previous Error7', 'Previous Error7', ...
-    'No Previous Error8', 'Previous Error8', ...
-    'No Previous Error9', 'Previous Error9', ...
-    'No Previous Error10', 'Previous Error10'};
+error_hist_names = [strseq('No Previous Error', 1:10) strseq('Previous Error', 1:10)]';
+cov_info(13).levels = error_hist_names(:);
 cov_info(13).isCategorical = true;
 
 cov_info(14).name = 'Switch History';
-cov_info(14).levels = {'Repetition1', 'Repetition2', 'Repetition3', 'Repetition4', ...
-    'Repetition5', 'Repetition6', 'Repetition7', 'Repetition8', 'Repetition9', ...
-    'Repetition10', 'Repetition11+'};
+switch_hist_names = [strseq('Repetition', 1:10); 'Repetition11+']';
+cov_info(14).levels = switch_hist_names;
 cov_info(14).isCategorical = true;
 
 cov_info(15).name = 'Trial Time';
@@ -98,6 +89,11 @@ cov_info(21).name = 'Spike History';
 spike_names = [strseq('No Previous Spike', 1:125) strseq('Previous Spike', 1:125)]';
 cov_info(21).levels = spike_names(:);
 cov_info(21).isCategorical = true;
+
+cov_info(22).name = 'Previous Error History Indicator';
+error_hist_names = [strseq('Previous Error', 1:10); 'Previous Error11+']';
+cov_info(22).levels = error_hist_names;
+cov_info(22).isCategorical = true;
 
 validCov = {cov_info.name};
 

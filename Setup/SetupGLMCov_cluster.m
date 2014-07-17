@@ -69,6 +69,7 @@ incorrect = behavior.incorrect(good_ind);
 indicator_prep = behavior.Indicator_Prep_Time(good_ind);
 congruency_history = behavior.Congruency_History(good_ind, :);
 prev_congruency = behavior.Previous_Congruency(good_ind);
+error_hist_indicator = behavior.Previous_Error_History_Indicator(good_ind);
 
 %% Do some organizing
 spikes = cat(1, data{:});
@@ -153,6 +154,9 @@ GLMCov(19).data = indicator_prep(trial_id);
 
 % Previous Congruency
 GLMCov(20).data = prev_congruency(trial_id);
+
+% Error History - non-cumulative errors
+GLMCov(22).data = error_hist_indicator(trial_id);
 
 % Indicator function for when the test stimulus is on
 sample_on = trial_time >= prep;
