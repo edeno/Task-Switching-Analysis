@@ -1,4 +1,4 @@
-function [avpred] = avrPredComp_Switch2(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp_Rule(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
 
 load([main_dir, '/paramSet.mat'], 'cov_info', 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
@@ -33,6 +33,8 @@ end
 % Size of Design Matrix
 [numData, numPredictors] = size(designMatrix);
 
+other_inputs = [switch_hist prev_error_hist con_hist response_dir prep_time];
+
 % Simulate from posterior
 par_est = nan(numPredictors, numNeurons, numSim);
 
@@ -48,63 +50,58 @@ else
     numData = numSamples;
 end
 
-other_inputs = [rule prev_error_hist con_hist response_dir prep_time];
 other_inputs = other_inputs(sample_ind, :);
 
 %% Compute covariance matrix used for Mahalanobis distances:
 
 % Find weights
-isCategorical = [true(1, size(rule, 2)) true(1, size(prev_error_hist, 2)) true(1, size(con_hist, 2)) ...
-    true(1, size(response_dir, 2)) false(1, size(prep_time, 2))];
+isCategorical = [false(1, size(switch_hist, 2)) true(1, size(prev_error_hist, 2)) ...
+    true(1, size(con_hist, 2)) true(1, size(response_dir, 2))  false(1, size(prep_time, 2))];
 [summed_weights] = apc_weights(other_inputs, isCategorical);
 
-for rep_id = 1:11,
-        
-    repCov = GLMCov;
-    repCov(switch_ind).data(:) = rep_id;
-    
-    [rep_design] = gamModelMatrix3(gamParams.regressionModel_str, repCov, spikes(:,1));
-    if ~gamParams.includeIncorrect
-        rep_design = rep_design(~incorrect, :);
-    end
-    rep_design = rep_design(sample_ind, :);
-    
-    rep_est = nan(numData, numNeurons, numSim);
-    for neuron_ind = 1:numNeurons,
-        rep_est(:, neuron_ind, :) = exp(rep_design*squeeze(par_est(:, neuron_ind, :)))*1000;
-    end
-    
-    rep11Cov = GLMCov;
-    rep11Cov(switch_ind).data(:) = 11;
-    [rep11_design] = gamModelMatrix3(gamParams.regressionModel_str, rep11Cov, spikes(:,1));
-    if ~gamParams.includeIncorrect
-        rep11_design = rep11_design(~incorrect, :);
-    end
-    rep11_design = rep11_design(sample_ind, :);
-    
-    rep11_est = nan(numData, numNeurons, numSim);
-    for neuron_ind = 1:numNeurons,
-        rep11_est(:, neuron_ind, :) = exp(rep11_design*squeeze(par_est(:, neuron_ind, :)))*1000;
-    end
-    
-    rule_diff_est = rep_est - rep11_est;
-    
-    num = sum(bsxfun(@times, summed_weights, rule_diff_est));
-    abs_num = sum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
-    rms_num = sum(bsxfun(@times, summed_weights, rule_diff_est.^2));
-    
-    den = sum(summed_weights);
-    
-    apc = squeeze(num./den);
-    abs_apc = squeeze(abs_num./den);
-    rms_apc = squeeze(sqrt(rms_num)./den);
-    
-    for neuron_ind = 1:numNeurons,
-        avpred(neuron_ind).apc(rep_id,:) = apc(neuron_ind, :);
-        avpred(neuron_ind).abs_apc(rep_id,:) = abs_apc(neuron_ind, :);
-        avpred(neuron_ind).rms_apc(rep_id,:) = rms_apc(neuron_ind, :);
-        
-    end
+orientationCov = GLMCov;
+orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
+[orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
+if ~gamParams.includeIncorrect
+    orientation_design = orientation_design(~incorrect, :);
+end
+orientation_design = orientation_design(sample_ind, :);
+
+orientation_est = nan(numData, numNeurons, numSim);
+for neuron_ind = 1:numNeurons,
+    orientation_est(:, neuron_ind, :) = exp(orientation_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+end
+
+colorCov = GLMCov;
+colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
+[color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
+if ~gamParams.includeIncorrect
+    color_design = color_design(~incorrect, :);
+end
+color_design = color_design(sample_ind, :);
+
+
+color_est = nan(numData, numNeurons, numSim);
+for neuron_ind = 1:numNeurons,
+    color_est(:, neuron_ind, :) = exp(color_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+end
+
+rule_diff_est = color_est - orientation_est;
+
+num = sum(bsxfun(@times, summed_weights, rule_diff_est));
+abs_num = sum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
+rms_num = sum(bsxfun(@times, summed_weights, rule_diff_est.^2));
+
+den = sum(summed_weights);
+
+apc = squeeze(num./den);
+abs_apc = squeeze(abs_num./den);
+rms_apc = squeeze(sqrt(rms_num)./den);
+
+for neuron_ind = 1:numNeurons,
+    avpred(neuron_ind).apc = apc(neuron_ind, :);
+    avpred(neuron_ind).abs_apc = abs_apc(neuron_ind, :);
+    avpred(neuron_ind).rms_apc = rms_apc(neuron_ind, :);
     
 end
 
@@ -118,6 +115,7 @@ end
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(mean(exp(par_est(1, :, :))*1000, 3));
 [avpred.baseline_firing] = deal(baseline{:});
+
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
 saveMillerlab('edeno', save_file_name, 'avpred');

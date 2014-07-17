@@ -1,4 +1,4 @@
-function [avpred] = avrPredComp_RulePrevError(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp_RuleSwitch(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
 
 load([main_dir, '/paramSet.mat'], 'cov_info', 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
@@ -9,26 +9,24 @@ load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'designMatrix', 'numNeurons');
 rule_ind = ismember({GLMCov.name}, 'Rule');
 switch_ind = ismember({GLMCov.name}, 'Switch History');
 prev_error_ind = ismember({GLMCov.name}, 'Previous Error History');
-test_stim_ind = ismember({GLMCov.name}, 'Test Stimulus');
+cong_hist_ind = ismember({GLMCov.name}, 'Congruency History');
+response_dir_ind = ismember({GLMCov.name}, 'Response Direction');
 prep_time_ind = ismember({GLMCov.name}, 'Normalized Prep Time');
 
 switch_hist = GLMCov(switch_ind).data;
-prev_error_hist = GLMCov(prev_error_ind).data;
-test_stimulus = dummyvar(GLMCov(test_stim_ind).data);
+prev_error_hist = dummyvar(GLMCov(prev_error_ind).data);
+con_hist = dummyvar(GLMCov(cong_hist_ind).data);
+response_dir = dummyvar(GLMCov(response_dir_ind).data);
 prep_time = GLMCov(prep_time_ind).data;
 
 % If Incorrect trials were removed in the original fit, do so again
 if ~gamParams.includeIncorrect
     switch_hist = switch_hist(~incorrect, :);
     prev_error_hist = prev_error_hist(~incorrect, :);
-    test_stimulus = test_stimulus(~incorrect, :);
+    con_hist = con_hist(~incorrect, :);
+    response_dir = response_dir(~incorrect, :);
     prep_time = prep_time(~incorrect, :);
 end
-
-% Covert 'History' variables from indicator functions to indexes
-[switch_hist, ~] = find(switch_hist');
-% [prev_error_hist, ~] = find(prev_error_hist'); Can't do previous error
-% history because indicators overlap
 
 % Size of Design Matrix
 [numData, numPredictors] = size(designMatrix);
@@ -48,22 +46,21 @@ else
     numData = numSamples;
 end
 
-other_inputs = [prev_error_hist switch_hist test_stimulus prep_time];
+other_inputs = [prev_error_hist con_hist response_dir prep_time];
 other_inputs = other_inputs(sample_ind, :);
-other_inputs_name = [GLMCov(prev_error_ind).levels 'Switch Hist', GLMCov(test_stim_ind).levels GLMCov(prep_time_ind).levels];
 
 %% Compute covariance matrix used for Mahalanobis distances:
-for prev_error_id = 1:11,
-    
-    isOther = ~ismember(other_inputs_name, GLMCov(prev_error_ind).levels(prev_error_id));
-    
-    % Find weights
-    isCategorical = [false(1, size(prev_error_hist, 2)) true(1, size(switch_hist, 2)) true(1, size(test_stimulus, 2)) false(1, size(prep_time, 2))]; % (In this case, everything is categorical except the intercept)
-    [summed_weights] = apc_weights(other_inputs(:, isOther), isCategorical(isOther));
-    
+
+% Find weights
+isCategorical = [true(1, size(prev_error_hist, 2)) true(1, size(con_hist, 2)) ...
+    true(1, size(response_dir, 2)) false(1, size(prep_time, 2))];
+[summed_weights] = apc_weights(other_inputs, isCategorical);
+
+for rep_id = 1:11,
+        
     orientationCov = GLMCov;
     orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    orientationCov(prev_error_ind).data(:, prev_error_id) = 1;
+    orientationCov(switch_ind).data(:) = rep_id;
     
     [orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
     if ~gamParams.includeIncorrect
@@ -76,10 +73,9 @@ for prev_error_id = 1:11,
         orientation_est(:, neuron_ind, :) = exp(orientation_design*squeeze(par_est(:, neuron_ind, :)))*1000;
     end
     
-    
     colorCov = GLMCov;
     colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
-    colorCov(prev_error_ind).data(:, prev_error_id) = 1;
+    colorCov(switch_ind).data(:) = rep_id;
     [color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         color_design = color_design(~incorrect, :);
@@ -105,9 +101,9 @@ for prev_error_id = 1:11,
     rms_apc = squeeze(sqrt(rms_num)./den);
     
     for neuron_ind = 1:numNeurons,
-        avpred(neuron_ind).apc(prev_error_id,:) = apc(neuron_ind, :);
-        avpred(neuron_ind).abs_apc(prev_error_id,:) = abs_apc(neuron_ind, :);
-        avpred(neuron_ind).rms_apc(prev_error_id,:) = rms_apc(neuron_ind, :);
+        avpred(neuron_ind).apc(rep_id,:) = apc(neuron_ind, :);
+        avpred(neuron_ind).abs_apc(rep_id,:) = abs_apc(neuron_ind, :);
+        avpred(neuron_ind).rms_apc(rep_id,:) = rms_apc(neuron_ind, :);
         
     end
     
@@ -125,8 +121,8 @@ baseline = num2cell(mean(exp(par_est(1, :, :))*1000, 3));
 [avpred.baseline_firing] = deal(baseline{:});
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
-
 saveMillerlab('edeno', save_file_name, 'avpred');
+
 
 
 end

@@ -1,4 +1,4 @@
-function [avpred] = avrPredComp_RuleCongruency2_low(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp_RulePrevError_low(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
 
 load([main_dir, '/paramSet.mat'], 'cov_info', 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
@@ -46,21 +46,21 @@ else
     numData = numSamples;
 end
 
-other_inputs = [switch_hist prev_error_hist response_dir prep_time];
+other_inputs = [switch_hist con_hist response_dir prep_time];
 other_inputs = other_inputs(sample_ind, :);
 
 %% Compute covariance matrix used for Mahalanobis distances:
 
 % Find weights
-isCategorical = [false(1, size(switch_hist, 2)) true(1, size(prev_error_hist, 2)) ...
+isCategorical = [false(1, size(switch_hist, 2)) true(1, size(con_hist, 2)) ...
     true(1, size(response_dir, 2)) false(1, size(prep_time, 2))];
 [summed_weights] = apc_weights(other_inputs, isCategorical);
 
-for rep_id = 1:2,
+for rep_id = 1:10,
         
     orientationCov = GLMCov;
     orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    orientationCov(cong_hist_ind).data(:, rep_id) = 1;
+    orientationCov(prev_error_ind).data(:, rep_id) = 1;
     
     [orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
     if ~gamParams.includeIncorrect
@@ -75,7 +75,7 @@ for rep_id = 1:2,
     
     colorCov = GLMCov;
     colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
-    colorCov(cong_hist_ind).data(:, rep_id) = 1;
+    colorCov(prev_error_ind).data(:, rep_id) = 1;
     [color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         color_design = color_design(~incorrect, :);

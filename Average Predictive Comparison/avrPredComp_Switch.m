@@ -1,4 +1,4 @@
-function [avpred] = avrPredComp_RuleSwitch2(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp_Switch(session_name, timePeriod, model_name, numSim, numSamples, save_folder, main_dir)
 
 load([main_dir, '/paramSet.mat'], 'cov_info', 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
@@ -13,6 +13,7 @@ cong_hist_ind = ismember({GLMCov.name}, 'Congruency History');
 response_dir_ind = ismember({GLMCov.name}, 'Response Direction');
 prep_time_ind = ismember({GLMCov.name}, 'Normalized Prep Time');
 
+rule = dummyvar(GLMCov(rule_ind).data);
 switch_hist = GLMCov(switch_ind).data;
 prev_error_hist = dummyvar(GLMCov(prev_error_ind).data);
 con_hist = dummyvar(GLMCov(cong_hist_ind).data);
@@ -21,6 +22,7 @@ prep_time = GLMCov(prep_time_ind).data;
 
 % If Incorrect trials were removed in the original fit, do so again
 if ~gamParams.includeIncorrect
+    rule = rule(~incorrect, :);
     switch_hist = switch_hist(~incorrect, :);
     prev_error_hist = prev_error_hist(~incorrect, :);
     con_hist = con_hist(~incorrect, :);
@@ -46,49 +48,46 @@ else
     numData = numSamples;
 end
 
-other_inputs = [prev_error_hist con_hist response_dir prep_time];
+other_inputs = [rule prev_error_hist con_hist response_dir prep_time];
 other_inputs = other_inputs(sample_ind, :);
 
 %% Compute covariance matrix used for Mahalanobis distances:
 
 % Find weights
-isCategorical = [true(1, size(prev_error_hist, 2)) true(1, size(con_hist, 2)) ...
+isCategorical = [true(1, size(rule, 2)) true(1, size(prev_error_hist, 2)) true(1, size(con_hist, 2)) ...
     true(1, size(response_dir, 2)) false(1, size(prep_time, 2))];
 [summed_weights] = apc_weights(other_inputs, isCategorical);
 
 for rep_id = 1:11,
         
-    orientationCov = GLMCov;
-    orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    orientationCov(switch_ind).data(:) = rep_id;
+    repCov = GLMCov;
+    repCov(switch_ind).data(:) = rep_id;
     
-    [orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
+    [rep_design] = gamModelMatrix3(gamParams.regressionModel_str, repCov, spikes(:,1));
     if ~gamParams.includeIncorrect
-        orientation_design = orientation_design(~incorrect, :);
+        rep_design = rep_design(~incorrect, :);
     end
-    orientation_design = orientation_design(sample_ind, :);
+    rep_design = rep_design(sample_ind, :);
     
-    orientation_est = nan(numData, numNeurons, numSim);
+    rep_est = nan(numData, numNeurons, numSim);
     for neuron_ind = 1:numNeurons,
-        orientation_est(:, neuron_ind, :) = exp(orientation_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+        rep_est(:, neuron_ind, :) = exp(rep_design*squeeze(par_est(:, neuron_ind, :)))*1000;
     end
     
-    colorCov = GLMCov;
-    colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
-    colorCov(switch_ind).data(:) = rep_id;
-    [color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
+    rep11Cov = GLMCov;
+    rep11Cov(switch_ind).data(:) = 11;
+    [rep11_design] = gamModelMatrix3(gamParams.regressionModel_str, rep11Cov, spikes(:,1));
     if ~gamParams.includeIncorrect
-        color_design = color_design(~incorrect, :);
+        rep11_design = rep11_design(~incorrect, :);
     end
-    color_design = color_design(sample_ind, :);
+    rep11_design = rep11_design(sample_ind, :);
     
-    
-    color_est = nan(numData, numNeurons, numSim);
+    rep11_est = nan(numData, numNeurons, numSim);
     for neuron_ind = 1:numNeurons,
-        color_est(:, neuron_ind, :) = exp(color_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+        rep11_est(:, neuron_ind, :) = exp(rep11_design*squeeze(par_est(:, neuron_ind, :)))*1000;
     end
     
-    rule_diff_est = color_est - orientation_est;
+    rule_diff_est = rep_est - rep11_est;
     
     num = sum(bsxfun(@times, summed_weights, rule_diff_est));
     abs_num = sum(bsxfun(@times, summed_weights, abs(rule_diff_est)));

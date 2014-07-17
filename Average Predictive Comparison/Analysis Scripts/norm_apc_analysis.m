@@ -8,7 +8,7 @@ saveFigs = true;
 firing_limit = 0.5;
 
 %% Switch History
-covariate_type = 'Switch2';
+covariate_type = 'Switch';
 
 xticklabel_names = {'1', '2', '3', '4' '5', '6', '7', '8', '9', '10', '11+'};
 xticks = 1:11;
@@ -23,7 +23,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
     'overwrite', overwrite);
 
 %% Error History
-covariate_type = 'PrevError2';
+covariate_type = 'PrevError';
 
 xticklabel_names = {'1', '2', '3', '4' '5', '6', '7', '8', '9', '10'};
 xticks = 1:10;
@@ -39,7 +39,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
 
 %% Congruency History
 
-covariate_type = 'Congruency2';
+covariate_type = 'Congruency';
 
 xticklabel_names = {'Current', 'Previous'};
 xticks = 1:2;
@@ -55,7 +55,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
 
 %% Rule
 
-covariate_type = 'Rule2';
+covariate_type = 'Rule';
 
 xticklabel_names = {'Rule'};
 xticks = 1;
@@ -71,7 +71,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
 
 %% Response Direction
 
-covariate_type = 'ResponseDir2';
+covariate_type = 'ResponseDir';
 
 xticklabel_names = {'Response Direction'};
 xticks = 1;
@@ -86,7 +86,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
     'overwrite', overwrite);
 
 %% Rule x Switch History
-covariate_type = 'RuleSwitch2';
+covariate_type = 'RuleSwitch';
 
 xticklabel_names = {'1', '2', '3', '4' '5', '6', '7', '8', '9', '10', '11+'};
 xticks = 1:11;
@@ -104,7 +104,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
     'overwrite', overwrite);
 
 %% Rule x Error History
-covariate_type = 'RulePrevError2';
+covariate_type = 'RulePrevError';
 
 xticklabel_names = {'1', '2', '3', '4' '5', '6', '7', '8', '9', '10'};
 xticks = 1:10;
@@ -121,7 +121,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
     'overwrite', overwrite);
 
 %% Rule x Error History Low
-covariate_type = 'RulePrevError2_low';
+covariate_type = 'RulePrevError_low';
 
 xticklabel_names = {'1', '2', '3', '4' '5', '6', '7', '8', '9', '10'};
 xticks = 1:10;
@@ -139,7 +139,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
 
 %% Rule x Congruency History
 
-covariate_type = 'RuleCongruency2';
+covariate_type = 'RuleCongruency';
 
 xticklabel_names = {'Current', 'Previous'};
 xticks = 1:2;
@@ -155,7 +155,7 @@ norm_apcPlot(main_dir, timePeriod, model_name, covariate_type, ...
 
 %% Rule x Congruency History Low
 
-covariate_type = 'RuleCongruency2_low';
+covariate_type = 'RuleCongruency_low';
 
 xticklabel_names = {'Current', 'Previous'};
 xticks = 1:2;

@@ -1,6 +1,6 @@
 clear all; close all; clc;
 
-regressionModel_str = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Normalized Prep Time';
+regressionModel_str = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
 timePeriod = 'Rule Response';
 main_dir = '/data/home/edeno/Task Switching Analysis';
 apc_dir = [main_dir, '/Processed Data/', timePeriod,'/Models/', regressionModel_str, '/APC/'];
