@@ -61,7 +61,7 @@ isCategorical = [true(1, size(rule, 2)) false(1, size(switch_hist, 2)) true(1, s
 
 leftCov = GLMCov;
 leftCov(response_dir_ind).data(:) = find(ismember(leftCov(response_dir_ind).levels, 'Left'));
-[left_design] = gamModelMatrix3(gamParams.regressionModel_str, leftCov, spikes(:,1));
+[left_design] = gamModelMatrix(gamParams.regressionModel_str, leftCov, spikes(:,1));
 if ~gamParams.includeIncorrect
     left_design = left_design(~incorrect, :);
 end
@@ -74,7 +74,7 @@ end
 
 rightCov = GLMCov;
 rightCov(response_dir_ind).data(:) = find(ismember(leftCov(response_dir_ind).levels, 'Right'));
-[right_design] = gamModelMatrix3(gamParams.regressionModel_str, rightCov, spikes(:,1));
+[right_design] = gamModelMatrix(gamParams.regressionModel_str, rightCov, spikes(:,1));
 if ~gamParams.includeIncorrect
     right_design = right_design(~incorrect, :);
 end

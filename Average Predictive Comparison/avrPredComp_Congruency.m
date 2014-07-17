@@ -63,7 +63,7 @@ for rep_id = 1:2,
     inconCov = GLMCov;
     inconCov(cong_hist_ind).data(:, rep_id) = 2;
     
-    [incon_design] = gamModelMatrix3(gamParams.regressionModel_str, inconCov, spikes(:,1));
+    [incon_design] = gamModelMatrix(gamParams.regressionModel_str, inconCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         incon_design = incon_design(~incorrect, :);
     end
@@ -76,7 +76,7 @@ for rep_id = 1:2,
     
     conCov = GLMCov;
     conCov(cong_hist_ind).data(:, rep_id) = 1;
-    [con_design] = gamModelMatrix3(gamParams.regressionModel_str, conCov, spikes(:,1));
+    [con_design] = gamModelMatrix(gamParams.regressionModel_str, conCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         con_design = con_design(~incorrect, :);
     end

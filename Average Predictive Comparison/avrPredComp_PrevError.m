@@ -63,7 +63,7 @@ for rep_id = 1:10,
     errorCov = GLMCov;
     errorCov(prev_error_ind).data(:, rep_id) = 2;
     
-    [error_design] = gamModelMatrix3(gamParams.regressionModel_str, errorCov, spikes(:,1));
+    [error_design] = gamModelMatrix(gamParams.regressionModel_str, errorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         error_design = error_design(~incorrect, :);
     end
@@ -76,7 +76,7 @@ for rep_id = 1:10,
     
     noErrorCov = GLMCov;
     noErrorCov(prev_error_ind).data(:, rep_id) = 1;
-    [noError_design] = gamModelMatrix3(gamParams.regressionModel_str, noErrorCov, spikes(:,1));
+    [noError_design] = gamModelMatrix(gamParams.regressionModel_str, noErrorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         noError_design = noError_design(~incorrect, :);
     end

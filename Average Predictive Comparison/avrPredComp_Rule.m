@@ -61,7 +61,7 @@ isCategorical = [false(1, size(switch_hist, 2)) true(1, size(prev_error_hist, 2)
 
 orientationCov = GLMCov;
 orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-[orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
+[orientation_design] = gamModelMatrix(gamParams.regressionModel_str, orientationCov, spikes(:,1));
 if ~gamParams.includeIncorrect
     orientation_design = orientation_design(~incorrect, :);
 end
@@ -74,7 +74,7 @@ end
 
 colorCov = GLMCov;
 colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
-[color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
+[color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
 if ~gamParams.includeIncorrect
     color_design = color_design(~incorrect, :);
 end

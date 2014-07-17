@@ -62,7 +62,7 @@ for rep_id = 1:10,
     orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
     orientationCov(prev_error_ind).data(:, rep_id) = 1;
     
-    [orientation_design] = gamModelMatrix3(gamParams.regressionModel_str, orientationCov, spikes(:,1));
+    [orientation_design] = gamModelMatrix(gamParams.regressionModel_str, orientationCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         orientation_design = orientation_design(~incorrect, :);
     end
@@ -76,7 +76,7 @@ for rep_id = 1:10,
     colorCov = GLMCov;
     colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
     colorCov(prev_error_ind).data(:, rep_id) = 1;
-    [color_design] = gamModelMatrix3(gamParams.regressionModel_str, colorCov, spikes(:,1));
+    [color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         color_design = color_design(~incorrect, :);
     end

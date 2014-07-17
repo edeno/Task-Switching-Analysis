@@ -63,7 +63,7 @@ for rep_id = 1:11,
     repCov = GLMCov;
     repCov(switch_ind).data(:) = rep_id;
     
-    [rep_design] = gamModelMatrix3(gamParams.regressionModel_str, repCov, spikes(:,1));
+    [rep_design] = gamModelMatrix(gamParams.regressionModel_str, repCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         rep_design = rep_design(~incorrect, :);
     end
@@ -76,7 +76,7 @@ for rep_id = 1:11,
     
     rep11Cov = GLMCov;
     rep11Cov(switch_ind).data(:) = 11;
-    [rep11_design] = gamModelMatrix3(gamParams.regressionModel_str, rep11Cov, spikes(:,1));
+    [rep11_design] = gamModelMatrix(gamParams.regressionModel_str, rep11Cov, spikes(:,1));
     if ~gamParams.includeIncorrect
         rep11_design = rep11_design(~incorrect, :);
     end
