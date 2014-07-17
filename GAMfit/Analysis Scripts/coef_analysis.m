@@ -63,6 +63,7 @@ cov_names = gam.cov_names;
 par_sim = [neurons.par_sim];
 par_sim = reshape(par_sim, [numSim, numLevels, numNeurons]);
 
+% Reorder covariates for interpretability
 prevError_ind = ~cellfun(@isempty, regexp(level_names, 'Previous Error', 'match'));
 
 prevError_level_names = level_names(prevError_ind);
@@ -91,24 +92,141 @@ noPrevError_par_sim = par_sim(:, noPrevError_ind, :);
 par_sim(:, noPrevError_ind, :) = [];
 par_sim = cat(2, par_sim, noPrevError_par_sim);
 
+%
+nonInteraction_cov_names = cov_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
+nonInteraction_level_names = level_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
+unique_cov_names = unique(nonInteraction_cov_names(~ismember(nonInteraction_cov_names, {'(Intercept)', 'Response Direction'})));
+
 stat = {mult_change(par_sim), mult_change(abs(par_sim)), pct_change(mult_change(par_sim)), pct_change(mult_change(abs(par_sim)))};
 stat_names = {'Multiplicative Change', 'Abs. Mult. Change', 'Percent Change', 'Abs. Percent Change'};
 ref_line = [1, 1, 0, 0];
 xlims = {[.93 1.07], [.9 1.25], [-7 7], [-0.1 25]};
 
-cov_rule_ind = find(ismember(cov_names, 'Rule'));
-rule_names = level_names(cov_rule_ind);
-cov_name_id = grp2idx(regexprep(cov_names, 'Rule:', ''));
-numCovId = unique(cov_name_id);
+for stat_ind = 1:length(stat),
+    for cov_ind = 1:length(unique_cov_names),
+        cur_cov_level_names = nonInteraction_level_names(ismember(nonInteraction_cov_names, unique_cov_names(cov_ind)));
+        pat = sprintf('(%s:)|(:%s)', unique_cov_names{cov_ind},  unique_cov_names{cov_ind});
+        cov_name_id = grp2idx(regexprep(cov_names, pat, ''));
+        numCovId = unique(cov_name_id);
+        figure;
+        plot_ind = numSubplots(length(cur_cov_level_names));
+        
+        for level_ind = 1:length(cur_cov_level_names),
+            subplot(plot_ind(1), plot_ind(2), level_ind);
+            
+            levels_ind = find(~cellfun(@isempty, regexp(level_names, cur_cov_level_names{level_ind}, 'match')));
+            cur_numLevels = length(levels_ind);
+            
+            % dlPFC
+            pfc_ind = pfc;
+            
+            pfc_data_mean = mean_pop(stat{stat_ind}, pfc_ind)';
+            pfc_data_ci = ci_pop(stat{stat_ind}, pfc_ind)';
+            
+            pfc_data_ci = convert_bounds(pfc_data_mean, pfc_data_ci);
+            
+            h1 = herrorbar(pfc_data_mean(levels_ind), 1:cur_numLevels, pfc_data_ci(levels_ind,1), pfc_data_ci(levels_ind,2), 'bo');
+            set(h1, 'MarkerSize', 6, ...
+                'LineWidth', 3 ...
+                );
+            
+            hold all;
+            
+            for connect_ind = 1:max(cov_name_id),
+                cur_connect_ind = levels_ind(ismember(cov_name_id(levels_ind), connect_ind));
+                plot(pfc_data_mean(cur_connect_ind), find(ismember(cov_name_id(levels_ind), connect_ind)), 'b')
+            end
+            
+            % ACC
+            acc_ind = ~pfc;
+            
+            acc_data_mean = mean_pop(stat{stat_ind}, acc_ind)';
+            acc_data_ci = ci_pop(stat{stat_ind}, acc_ind)';
+            
+            acc_data_ci = convert_bounds(acc_data_mean, acc_data_ci);
+            
+            h2 = herrorbar(acc_data_mean(levels_ind), 1:cur_numLevels, acc_data_ci(levels_ind,1), acc_data_ci(levels_ind,2), 'go');
+            set(h2, 'MarkerSize', 6, ...
+                'LineWidth', 3 ...
+                );
+            
+            for connect_ind = 1:max(cov_name_id),
+                cur_connect_ind = levels_ind(ismember(cov_name_id(levels_ind), connect_ind));
+                plot(acc_data_mean(cur_connect_ind), find(ismember(cov_name_id(levels_ind), connect_ind)), 'g')
+            end
+            
+            
+            box off;
+            set(gca, 'XAxisLocation', 'top')
+            set(gca, 'YTick', 1:length(levels_ind));
+            set(gca, 'YTickLabel', level_names(levels_ind));
+            xlabel([stat_names{stat_ind}, ' in Firing Rate']);
+            xlim(xlims{stat_ind});
+            ylim([0.5 cur_numLevels+0.5]);
+            hline(find(diff(cov_name_id(levels_ind)))+0.5, 'k');
+            vline(ref_line(stat_ind), 'r:', 'Baseline');
+            
+        end
+    end
+end
+
+%% Rule Ratios2
+
+level_names = gam.level_names;
+cov_names = gam.cov_names;
+par_sim = [neurons.par_sim];
+par_sim = reshape(par_sim, [numSim, numLevels, numNeurons]);
+
+% Reorder covariates for interpretability
+prevError_ind = ~cellfun(@isempty, regexp(level_names, 'Previous Error', 'match'));
+
+prevError_level_names = level_names(prevError_ind);
+level_names(prevError_ind) = [];
+level_names = [level_names prevError_level_names];
+
+prevError_cov_names = cov_names(prevError_ind);
+cov_names(prevError_ind) = [];
+cov_names = [cov_names prevError_cov_names];
+
+prevError_par_sim = par_sim(:, prevError_ind, :);
+par_sim(:, prevError_ind, :) = [];
+par_sim = cat(2, par_sim, prevError_par_sim);
+
+noPrevError_ind = ~cellfun(@isempty, regexp(level_names, 'No', 'match'));
+
+noPrevError_level_names = level_names(noPrevError_ind);
+level_names(noPrevError_ind) = [];
+level_names = [level_names noPrevError_level_names];
+
+noPrevError_cov_names = cov_names(noPrevError_ind);
+cov_names(noPrevError_ind) = [];
+cov_names = [cov_names noPrevError_cov_names];
+
+noPrevError_par_sim = par_sim(:, noPrevError_ind, :);
+par_sim(:, noPrevError_ind, :) = [];
+par_sim = cat(2, par_sim, noPrevError_par_sim);
+
+%
+nonInteraction_cov_names = cov_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
+nonInteraction_level_names = level_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
+unique_cov_names = unique(nonInteraction_cov_names(~ismember(nonInteraction_cov_names, {'(Intercept)'})));
+
+stat = {mult_change(par_sim), mult_change(abs(par_sim)), pct_change(mult_change(par_sim)), pct_change(mult_change(abs(par_sim)))};
+stat_names = {'Multiplicative Change', 'Abs. Mult. Change', 'Percent Change', 'Abs. Percent Change'};
+ref_line = [1, 1, 0, 0];
+xlims = {[.93 1.07], [.9 1.25], [-7 7], [-0.1 25]};
 
 for stat_ind = 1:length(stat),
-    
     figure;
-    
-    for rule_ind = 1:length(rule_names),
-        subplot(1,2,rule_ind);
+    plot_ind = numSubplots(length(unique_cov_names));
+    for cov_ind = 1:length(unique_cov_names),
+        subplot(plot_ind(1), plot_ind(2), cov_ind);
+        cur_cov_level_names = nonInteraction_level_names(ismember(nonInteraction_cov_names, unique_cov_names(cov_ind)));
+        cov_name_id = grp2idx(regexprep(cov_names, [unique_cov_names{cov_ind}, ':'], ''));
+        numCovId = unique(cov_name_id);
+         
         
-        levels_ind = find(~cellfun(@isempty, regexp(level_names, rule_names{rule_ind}, 'match')));
+        levels_ind = find(ismember(level_names, cur_cov_level_names));
         cur_numLevels = length(levels_ind);
         
         % dlPFC
@@ -149,19 +267,23 @@ for stat_ind = 1:length(stat),
             plot(acc_data_mean(cur_connect_ind), find(ismember(cov_name_id(levels_ind), connect_ind)), 'g')
         end
         
-        
         box off;
         set(gca, 'XAxisLocation', 'top')
         set(gca, 'YTick', 1:length(levels_ind));
         set(gca, 'YTickLabel', level_names(levels_ind));
-        xlabel([stat_names{stat_ind}, ' in Firing Rate']);
+        xlabel(unique_cov_names{cov_ind});
         xlim(xlims{stat_ind});
         ylim([0.5 cur_numLevels+0.5]);
-        hline(find(diff(cov_name_id(levels_ind)))+0.5, 'k');
+        try
+            hline(find(diff(cov_name_id(levels_ind)))+0.5, 'k');
+        end
         vline(ref_line(stat_ind), 'r:', 'Baseline');
         
+        
     end
+    suptitle(stat_names{stat_ind});
 end
+
 
 %% Ratio of Rule Ratios
 
@@ -210,7 +332,7 @@ for cov_ind = 1:length(unique_cov_names),
     stat = {mult_ratio(cur_orient_inter_names, cur_color_inter_names), abs_mult_ratio(cur_orient_inter_names, cur_color_inter_names)};
     stat_names = {'Mult. Ratio', 'Abs. Mult. Ratio'};
     
-    cur_numLevels = length(cur_cov_level_names);   
+    cur_numLevels = length(cur_cov_level_names);
     
     for stat_ind = 1:length(stat),
         
