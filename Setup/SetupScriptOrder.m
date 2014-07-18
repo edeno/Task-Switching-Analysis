@@ -9,7 +9,6 @@ SetupCovariates; % Sets up covariate names
 
 %% Extract Behavior
 ExtractBehavior; % Extracts behavior
-BehaviorAnalaysis_timing; % Extracts behavior timing
 
 %% Extract Spikes
 ExtractSpikes;
