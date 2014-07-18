@@ -53,7 +53,7 @@ cov_info(12).isCategorical = true;
 
 cov_info(13).name = 'Previous Error History';
 error_hist_names = [strseq('No Previous Error', 1:10) strseq('Previous Error', 1:10)]';
-cov_info(13).levels = error_hist_names(:);
+cov_info(13).levels = error_hist_names(:)';
 cov_info(13).isCategorical = true;
 
 cov_info(14).name = 'Switch History';
@@ -87,7 +87,7 @@ cov_info(20).isCategorical = true;
 
 cov_info(21).name = 'Spike History';
 spike_names = [strseq('No Previous Spike', 1:125) strseq('Previous Spike', 1:125)]';
-cov_info(21).levels = spike_names(:);
+cov_info(21).levels = spike_names(:)';
 cov_info(21).isCategorical = true;
 
 cov_info(22).name = 'Previous Error History Indicator';
