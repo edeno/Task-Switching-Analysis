@@ -8,10 +8,10 @@ filtfilthd.m
 *.h
 *.ccp
 
-
 # Matlab Files
 *.mat
 *.asv
+*.m~
 
 # Windows image file caches
 Thumbs.db
