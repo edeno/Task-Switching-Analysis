@@ -11,3 +11,6 @@ for job_ind =  1:numJobs,
        error_message{job_ind} = finishedJobs(job_ind).Tasks(1).ErrorMessage;
    end
 end
+
+display(find(isError));
+error_message{isError}
