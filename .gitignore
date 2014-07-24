@@ -1,10 +1,4 @@
 # Matlab proprietary files
-glmfit_fast.m
-insertNaN.m
-testlink.m
-removeNaN.m
-plx*
-filtfilthd.m
 *.h
 *.ccp
 
