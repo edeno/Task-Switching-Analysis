@@ -61,7 +61,7 @@ function h = biplot_groups(coefs,varargin)
 %   References:
 %     [1] Seber, G.A.F. (1984) Multivariate Observations, Wiley.
 
-%   Copyright 1993-2010 The MathWorks, Inc. 
+%   Copyright 1993-2010 The MathWorks, Inc.
 
 
 % Choose whether the datatip can attach to Axes or Variable lines.
@@ -79,11 +79,17 @@ elseif isempty(coefs)
 end
 in3D = (d == 3);
 
+isGrouped = false;
 % If a grouping vector is provided, extract it from varargin.
-grp_arg_ind = find(ismember(varargin, 'groups'));
-if ~isempty(grp_arg_ind),
-   grp_args = varargin(grp_arg_ind + 1);
-   varargin(grp_arg_ind:grp_arg_ind+1) = [];
+if ~isempty(varargin),
+    arg_name_ind = 1:2:length(varargin);
+    grp_arg_num = ismember(varargin(arg_name_ind), 'groups');
+    grp_arg_ind = arg_name_ind(grp_arg_num);
+    if ~isempty(grp_arg_ind),
+        isGrouped = true;
+        grp_arg = grp2idx(varargin{grp_arg_ind + 1});
+        varargin(grp_arg_ind:grp_arg_ind+1) = [];
+    end
 end
 
 
@@ -92,7 +98,7 @@ end
 pnames = {'scores' 'varlabels' 'obslabels' 'positive'};
 dflts =  {     []          []          []         [] };
 [scores,varlabs,obslabs,positive,~,plotArgs] = ...
-                    internal.stats.parseArgs(pnames, dflts, varargin{:});
+    internal.stats.parseArgs(pnames, dflts, varargin{:});
 
 if ~isempty(scores)
     [n,d2] = size(scores);
@@ -138,10 +144,10 @@ ary = [zeroes coefs(:,2) nans]';
 if in3D
     arz = [zeroes coefs(:,3) nans]';
     varHndl = [line(arx(1:2,:),ary(1:2,:),arz(1:2,:), 'Color','b', 'LineStyle','-', plotArgs{:}, 'Marker','none'); ...
-               line(arx(2:3,:),ary(2:3,:),arz(2:3,:), 'Color','b', 'Marker','.', plotArgs{:}, 'LineStyle','none')];
+        line(arx(2:3,:),ary(2:3,:),arz(2:3,:), 'Color','b', 'Marker','.', plotArgs{:}, 'LineStyle','none')];
 else
     varHndl = [line(arx(1:2,:),ary(1:2,:), 'Color','b', 'LineStyle','-', plotArgs{:}, 'Marker','none'); ...
-               line(arx(2:3,:),ary(2:3,:), 'Color','b', 'Marker','.', plotArgs{:}, 'LineStyle','none')];
+        line(arx(2:3,:),ary(2:3,:), 'Color','b', 'Marker','.', plotArgs{:}, 'LineStyle','none')];
 end
 set(varHndl(1:p),'Tag','varline');
 set(varHndl((p+1):(2*p)),'Tag','varmarker');
@@ -155,17 +161,17 @@ end
 
 if ~isempty(varlabs)
     if ~(ischar(varlabs) && (size(varlabs,1) == p)) && ...
-                           ~(iscellstr(varlabs) && (numel(varlabs) == p))
+            ~(iscellstr(varlabs) && (numel(varlabs) == p))
         error(message('stats:biplot:InvalidVarLabels'));
     end
-
+    
     % Take a stab at keeping the labels off the markers.
     delx = .01*diff(get(cax,'XLim'));
     dely = .01*diff(get(cax,'YLim'));
     if in3D
         delz = .01*diff(get(cax,'ZLim'));
     end
-
+    
     if in3D
         varTxtHndl = text(coefs(:,1)+delx,coefs(:,2)+dely,coefs(:,3)+delz,varlabs);
     else
@@ -190,7 +196,7 @@ if ~ishold
     else
         hgaddbehavior(axisHndl,disabledDataCursorBehaviorObj);
     end
-
+    
     xlabel(getString(message('stats:biplot:LabelComponent1')));
     ylabel(getString(message('stats:biplot:LabelComponent2')));
     if in3D
@@ -213,13 +219,24 @@ if ~isempty(scores)
     % Plot a point for each observation, and label them.
     if in3D
         ptz = [scores(:,3) nans]';
-        obsHndl = line(ptx,pty,ptz, 'Color','r', 'Marker','.', plotArgs{:}, 'LineStyle','none');
+        obsHndl = line(ptx,pty,ptz, 'Color', 'r', 'Marker','.', plotArgs{:}, 'LineStyle','none');
     else
-        obsHndl = line(ptx,pty, 'Color','r', 'Marker','.', plotArgs{:}, 'LineStyle','none');
+        obsHndl = line(ptx,pty, 'Color', 'r', 'Marker','.', plotArgs{:}, 'LineStyle','none');
     end
+    
+    % Label each group by color
+    if isGrouped,
+        color_order = get(0,  'DefaultAxesColorOrder');
+        color_order = color_order(2:end, :);
+        group_colors = color_order(grp2idx(grp_arg), :);
+        for obs_ind = 1:length(obsHndl),
+            set(obsHndl(obs_ind), 'Color', group_colors(obs_ind, :))
+        end
+    end
+    
     if ~isempty(obslabs)
         if ~(ischar(obslabs) && (size(obslabs,1) == n)) && ...
-                           ~(iscellstr(obslabs) && (numel(obslabs) == n))
+                ~(iscellstr(obslabs) && (numel(obslabs) == n))
             error(message('stats:biplot:InvalidObsLabels'));
         end
     end
@@ -238,58 +255,58 @@ if nargout > 0
     h = [varHndl; varTxtHndl; obsHndl; axisHndl];
 end
 
-    % -----------------------------------------
-    % Generate text for custom datatip.
+% -----------------------------------------
+% Generate text for custom datatip.
     function dataCursorText = biplotDatatipCallback(~,eventObj)
-    clickPos = get(eventObj,'Position');
-    clickTgt = get(eventObj,'Target');
-    clickNum = get(clickTgt,'UserData');
-    ind = get(eventObj,'DataIndex');
-    switch get(clickTgt,'Tag')
-    case 'obsmarker'
-        dataCursorText = {getString(message('stats:biplot:CursorScores')) ...
-            getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
-            getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2)))) };
-        if in3D
-            dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
+        clickPos = get(eventObj,'Position');
+        clickTgt = get(eventObj,'Target');
+        clickNum = get(clickTgt,'UserData');
+        ind = get(eventObj,'DataIndex');
+        switch get(clickTgt,'Tag')
+            case 'obsmarker'
+                dataCursorText = {getString(message('stats:biplot:CursorScores')) ...
+                    getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
+                    getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2)))) };
+                if in3D
+                    dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
+                end
+                if isempty(obslabs)
+                    clickLabel =  num2str(clickNum);
+                elseif ischar(obslabs)
+                    clickLabel = obslabs(clickNum,:);
+                elseif iscellstr(obslabs)
+                    clickLabel = obslabs{clickNum};
+                end
+                dataCursorText{end+1} = '';
+                dataCursorText{end+1} = getString(message('stats:biplot:CursorObservation',clickLabel));
+            case {'varmarker' 'varline'}
+                dataCursorText = {getString(message('stats:biplot:CursorLoadings')) ...
+                    getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
+                    getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2)))) };
+                if in3D
+                    dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
+                end
+                if isempty(varlabs)
+                    clickLabel = num2str(clickNum);
+                elseif ischar(varlabs)
+                    clickLabel = varlabs(clickNum,:);
+                elseif iscellstr(varlabs)
+                    clickLabel = varlabs{clickNum};
+                end
+                dataCursorText{end+1} = '';
+                dataCursorText{end+1} = getString(message('stats:biplot:CursorVariable',clickLabel));
+            case 'axisline'
+                comp = ceil(ind/3);
+                dataCursorText = getString(message('stats:biplot:CursorComponent',num2str(comp)));
+            otherwise
+                dataCursorText = {...
+                    getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
+                    getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2))))};
+                if in3D
+                    dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
+                end
         end
-        if isempty(obslabs)
-            clickLabel =  num2str(clickNum);
-        elseif ischar(obslabs)
-            clickLabel = obslabs(clickNum,:);
-        elseif iscellstr(obslabs)
-            clickLabel = obslabs{clickNum};
-        end
-        dataCursorText{end+1} = '';
-        dataCursorText{end+1} = getString(message('stats:biplot:CursorObservation',clickLabel));
-    case {'varmarker' 'varline'}
-        dataCursorText = {getString(message('stats:biplot:CursorLoadings')) ...
-            getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
-            getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2)))) };
-        if in3D
-            dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
-        end
-        if isempty(varlabs)
-            clickLabel = num2str(clickNum);
-        elseif ischar(varlabs)
-            clickLabel = varlabs(clickNum,:);
-        elseif iscellstr(varlabs)
-            clickLabel = varlabs{clickNum};
-        end
-        dataCursorText{end+1} = '';
-        dataCursorText{end+1} = getString(message('stats:biplot:CursorVariable',clickLabel));
-    case 'axisline'
-        comp = ceil(ind/3);
-        dataCursorText = getString(message('stats:biplot:CursorComponent',num2str(comp)));
-    otherwise
-        dataCursorText = {...
-            getString(message('stats:biplot:CursorComponent1',num2str(clickPos(1)))) ...
-            getString(message('stats:biplot:CursorComponent2',num2str(clickPos(2))))};
-        if in3D
-            dataCursorText{end+1} = getString(message('stats:biplot:CursorComponent3',num2str(clickPos(3))));
-        end
-    end
-
+        
     end % biplotDatatipCallback
 
 end % biplot
