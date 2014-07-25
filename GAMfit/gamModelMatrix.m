@@ -134,8 +134,6 @@ sqrtPen = blkdiag(sqrtPen{:});
 penalty = blkdiag(penalty{:});
 constraints = blkdiag(constraints{:});
 
-designMatrix(isnan(designMatrix)) = 0;
-
 % Remove Duplicates
 try
     [~, dup_ind] = unique(level_names, 'stable');
