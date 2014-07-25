@@ -1,4 +1,4 @@
-function [factor, trial_id, trial_time, incorrect] = simSession(numTrials)
+function [GLMCov, trial_id, trial_time, incorrect] = simSession(numTrials)
 % Trial Time, ID
 prepTime = round(100 + 200.*rand(numTrials, 1))';
 trialTime = 160 + prepTime;
@@ -9,12 +9,19 @@ trial_time = cellfun(@(time) 1:time, num2cell(trialTime), 'UniformOutput', false
 trial_time = cat(2, trial_time{:})';
 
 %% Preparation Time
-factor.Prep_Time = convertFactor(prepTime, trialTime);
-factor.Normalized_Prep_Time = convertFactor(zscore(prepTime), trialTime);
+GLMCov(1).name = 'Prep Time';
+GLMCov(1).levels = {'1 ms of prep time'};
+GLMCov(1).isCategorical = false;
+GLMCov(1).data = convertFactor(prepTime, trialTime);
+
+GLMCov(2).name = 'Normalized Prep Time';
+GLMCov(2).levels = {'1 Std Dev of Prep Time'};
+GLMCov(2).isCategorical = false;
+GLMCov(2).data = convertFactor(zscore(prepTime), trialTime);
 
 %% Rule Factor
 Rule = nan(1, numTrials);
-Rule(1) = true;
+Rule(1) = rand < 0.5;
 trialBlock_counter = 0;
 
 for trial_ind = 1:numTrials,
@@ -34,7 +41,11 @@ for trial_ind = 1:numTrials,
 end
 
 Rule = grp2idx(Rule)';
-factor.Rule = convertFactor(Rule, trialTime);
+
+GLMCov(3).name = 'Rule';
+GLMCov(3).levels = {'Orientation', 'Color'};
+GLMCov(3).isCategorical = true;
+GLMCov(3).data = convertFactor(Rule, trialTime);
 
 %% Switch History
 difference = diff(Rule);
@@ -57,34 +68,49 @@ for sw_ind = 1:length(sw)+1
 end
 dist_sw = dist_sw'+1;
 
-factor.dist_sw = convertFactor(dist_sw, trialTime);
-
 dist_sw(dist_sw >= 11) = 11;
 
-factor.Switch_History = convertFactor(dist_sw, trialTime);
+GLMCov(4).name = 'Switch History';
+switch_hist_names = [strseq('Repetition', 1:10); 'Repetition11+']';
+GLMCov(4).levels = switch_hist_names;
+GLMCov(4).isCategorical = true;
+GLMCov(4).data = convertFactor(dist_sw, trialTime);
 
 %% Congruency History
 inCon = grp2idx(rand(1, numTrials) <= .7);
 inCon = lagmatrix(inCon, 0:1)';
 
-factor.Congruency_History = [convertFactor(inCon(1, :), trialTime), convertFactor(inCon(2, :), trialTime)];
+GLMCov(5).name = 'Congruency History';
+GLMCov(5).levels = {'Congruent', 'Incongruent', 'Previous Congruent', 'Previous Incongruent'};
+GLMCov(5).isCategorical = true;
+GLMCov(5).data = [convertFactor(inCon(1, :), trialTime), convertFactor(inCon(2, :), trialTime)];
 
 %% Response Direction
 responseDir = grp2idx(rand(1, numTrials) <= .5)';
-factor.Response_Direction = convertFactor(responseDir, trialTime);
+
+GLMCov(6).name = 'Response Direction';
+GLMCov(6).levels = {'Right', 'Left'};
+GLMCov(6).isCategorical = true;
+GLMCov(6).data = convertFactor(responseDir, trialTime);
 
 %% Error History
 incorrect = rand(1, numTrials) <= .15;
 
 errorHist = lagmatrix(grp2idx(incorrect), 1:10)';
-factor.Previous_Error_History = [];
+Previous_Error_History = [];
 
 for error_ind = 1:10,
-    factor.Previous_Error_History = [
-        factor.Previous_Error_History ...
+    Previous_Error_History = [
+        Previous_Error_History ...
         convertFactor(errorHist(error_ind, :), trialTime)...
         ];
 end
+
+GLMCov(7).name = 'Previous Error History';
+error_hist_names = [strseq('No Previous Error', 1:10) strseq('Previous Error', 1:10)]';
+GLMCov(7).levels = error_hist_names(:)';
+GLMCov(7).isCategorical = true;
+GLMCov(7).data = Previous_Error_History;
 
 % Distance from Error
 dist_err = nan(size(incorrect));
@@ -100,22 +126,25 @@ for err_ind = 1:length(err)+1
         dist_err(err(err_ind-1):end) = 0:(length(dist_err) - err(err_ind-1));
     end
 end
-factor.dist_err = convertFactor(dist_err, trialTime);
 
 dist_err(dist_err == 0) = NaN;
 dist_err(dist_err >= 11) = 11;
 
 % non-cumulative version of error history
-factor.Previous_Error_History_Indicator = convertFactor(dist_err, trialTime);
+GLMCov(8).name = 'Previous Error History Indicator';
+error_hist_names = [strseq('Previous Error', 1:10); 'Previous Error11+']';
+GLMCov(8).levels = error_hist_names;
+GLMCov(8).isCategorical = true;
+GLMCov(8).data = convertFactor(dist_err, trialTime);
 
 incorrect = convertFactor(incorrect, trialTime);
 
 end
 
-function [converted] = convertFactor(factor, trialTime)
+function [converted] = convertFactor(GLMCov, trialTime)
 
-converted = cellfun(@(factor, time) repmat(factor, [1 time]), ...
-    num2cell(factor, 1), num2cell(trialTime), 'UniformOutput', false);
+converted = cellfun(@(GLMCov, time) repmat(GLMCov, [1 time]), ...
+    num2cell(GLMCov, 1), num2cell(trialTime), 'UniformOutput', false);
 
 converted = cat(2, converted{:})';
 
