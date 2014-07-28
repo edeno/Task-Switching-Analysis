@@ -14,7 +14,7 @@ pfc = pfc(good_ind);
 level_names = gam.level_names;
 level_names = level_names(2:end);
 
-numComponents = 2;
+numComponents = 3;
 if numComponents > 2,
     plot_inds = numSubplots(numComponents);
 else
