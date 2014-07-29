@@ -321,6 +321,7 @@ f(1) = figure;
 f(2) = figure;
 
 plot_ind = numSubplots(length(unique_cov_names));
+xlims = {[.85 1.15], [.9 1.60]};
 
 for cov_ind = 1:length(unique_cov_names),
     
@@ -375,6 +376,7 @@ for cov_ind = 1:length(unique_cov_names),
         set(gca, 'YTick', 1:cur_numLevels);
         set(gca, 'YTickLabel', cur_cov_level_names);
         xlabel([stat_names{stat_ind}, ' of Rules']);
+        xlim(xlims{stat_ind});
         ylim([0.5 cur_numLevels+0.5]);
         vline(1, 'r:', 'Baseline');
         
