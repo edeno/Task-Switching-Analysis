@@ -21,7 +21,7 @@ color_param = colorRate/Intercept;
 orient_param = orientRate/Intercept;
 
 model_name = 'Rule';
-[par_est, fitInfo] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 est_Intercept = exp(par_est(1))*1000;
 est_Orient = exp(par_est(2));
@@ -34,13 +34,16 @@ fprintf('\n True Color: %6.2f \t Est Color: %6.2f\n', color_param, est_Color)
 fprintf('\n True Rule Ratio: %6.2f \t Est Rule Ratio: %6.2f\n', ruleRatio, est_ruleRatio)
 fprintf('--------------------------------------------------------');
 
+figure;
+plot(exp(designMatrix * par_est)*1000, 'LineWidth', 2)
+hold all;
+plot(Rate(~incorrect), 'LineWidth', 2)
+legend('Estimated Rate', 'True Rate');
+title('Rule');
+box off;
 %% Multilevel Categorical Covariate - Switch History
 
 Rate = nan(size(trial_time));
-
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
 
 repRate = [12 6 4 3 2 1 1 1 1 1 6];
 
@@ -60,7 +63,7 @@ Intercept = geomean(repRate);
 repRate_param = repRate/Intercept;
 
 model_name = 'Switch History';
-[par_est, fitInfo] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 est_Intercept = exp(par_est(1))*1000;
 est_repRate = exp(par_est(2:end));
@@ -69,5 +72,42 @@ fprintf('\n True Intercept: %6.2f \t Est Intercept: %6.2f\n', Intercept, est_Int
 for k = 1:11,
     fprintf('\n True Repetition: %6.2f \t Est Repetition: %6.2f\n', repRate_param(k), est_repRate(k))
 end
+fprintf('--------------------------------------------------------');
 
-%% Two Covariates - Rule and Switch History
+figure;
+plot(exp(designMatrix * par_est)*1000)
+hold all;
+plot(Rate(~incorrect))
+legend('Estimated Rate', 'True Rate');
+title('Switch History');
+
+%% Two Covariates - Rule + Switch History
+    
+Rate = nan(size(trial_time));
+
+repRate = [12 6 4 3 2 1 1 1 1 1 6];
+
+Rate(level_ind('Switch History', 'Repetition1')) = repRate(1);
+Rate(level_ind('Switch History', 'Repetition2')) = repRate(2);
+Rate(level_ind('Switch History', 'Repetition3')) = repRate(3);
+Rate(level_ind('Switch History', 'Repetition4')) = repRate(4);
+Rate(level_ind('Switch History', 'Repetition5')) = repRate(5);
+Rate(level_ind('Switch History', 'Repetition6')) = repRate(6);
+Rate(level_ind('Switch History', 'Repetition7')) = repRate(7);
+Rate(level_ind('Switch History', 'Repetition8')) = repRate(8);
+Rate(level_ind('Switch History', 'Repetition9')) = repRate(9);
+Rate(level_ind('Switch History', 'Repetition10')) = repRate(10);
+Rate(level_ind('Switch History', 'Repetition11+')) = repRate(11);
+
+Rate(level_ind('Rule', 'Color')) = Rate(level_ind('Rule', 'Color')) * 0.5;
+Rate(level_ind('Rule', 'Orientation')) = Rate(level_ind('Rule', 'Orientation')) * 2;
+
+model_name = 'Rule + Switch History';
+[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+
+figure;
+plot(exp(designMatrix * par_est)*1000)
+hold all;
+plot(Rate(~incorrect))
+legend('Estimated Rate', 'True Rate');
+title('Rule + Switch History');
