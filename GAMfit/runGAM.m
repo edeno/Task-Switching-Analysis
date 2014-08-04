@@ -31,6 +31,3 @@ for time_ind = 1:length(timePeriods),
         
     end
 end
-
-
-
