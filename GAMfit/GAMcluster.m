@@ -77,7 +77,7 @@ fprintf(fileID, '\t includeIncorrect: %d\n', gamParams.includeIncorrect);
 %% Process Data
 fprintf('\nProcessing Model: %s\n', regressionModel_str);
 gamJob = cell(1, length(session_names));
-GAMfit_names = strcat(session_names, '_GAMfit2.mat');
+GAMfit_names = strcat(session_names, '_GAMfit.mat');
 
 % Loop through files in the data directory
 for session_ind = 1:length(session_names),

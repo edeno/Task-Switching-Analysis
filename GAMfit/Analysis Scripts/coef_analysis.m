@@ -1,13 +1,13 @@
 clear all; close all; clc;
-cd('C:\Users\edeno\Dropbox\GAM Analysis\Rule Response');
-load('neurons.mat');
+timePeriod = 'Rule Stimulus';
+drop_dir = getappdata(0, 'drop_path');
+data_dir = sprintf('%s/GAM Analysis/%s/', drop_dir, timePeriod);
+load([data_dir, 'neurons.mat']);
 
 %%
-
 pfc = logical([neurons.pfc]);
 numPFC = sum(pfc);
 numACC = sum(~pfc);
-
 
 [monkey_id, monkey_names] = grp2idx({neurons.monkey});
 monkey_id = monkey_id';
@@ -24,22 +24,22 @@ baseline_firing = exp(par_est(1, :))*1000;
 pfc_firing = baseline_firing(pfc);
 acc_firing = baseline_firing(~pfc);
 
-figure;
-nhist([{pfc_firing}; {acc_firing}], 'median', 'noerror')
-
-quantile(pfc_firing, [0 .25 .5 .75 1])
-quantile(acc_firing, [0 .25 .5 .75 1])
-
-for monkey_ind = 1:length(monkey_names),
-    pfc_firing_byMonkey{monkey_ind} = baseline_firing(pfc & monkey_id == monkey_ind);
-    acc_firing_byMonkey{monkey_ind} = baseline_firing(pfc & monkey_id == monkey_ind);
-end
-
-figure;
-subplot(1,2,1);
-nhist(pfc_firing_byMonkey, 'median', 'noerror');
-subplot(1,2,2);
-nhist(acc_firing_byMonkey, 'median', 'noerror');
+% figure;
+% nhist([{pfc_firing}; {acc_firing}], 'median', 'noerror')
+% 
+% quantile(pfc_firing, [0 .25 .5 .75 1])
+% quantile(acc_firing, [0 .25 .5 .75 1])
+% 
+% for monkey_ind = 1:length(monkey_names),
+%     pfc_firing_byMonkey{monkey_ind} = baseline_firing(pfc & monkey_id == monkey_ind);
+%     acc_firing_byMonkey{monkey_ind} = baseline_firing(pfc & monkey_id == monkey_ind);
+% end
+% 
+% figure;
+% subplot(1,2,1);
+% nhist(pfc_firing_byMonkey, 'median', 'noerror');
+% subplot(1,2,2);
+% nhist(acc_firing_byMonkey, 'median', 'noerror');
 %%
 numSim = size(neurons(1).par_sim, 1);
 numLevels = length(gam.level_names);
@@ -96,11 +96,12 @@ par_sim = cat(2, par_sim, noPrevError_par_sim);
 nonInteraction_cov_names = cov_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
 nonInteraction_level_names = level_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
 unique_cov_names = unique(nonInteraction_cov_names(~ismember(nonInteraction_cov_names, {'(Intercept)', 'Response Direction'})));
+unique_cov_names = {'Rule'};
 
 stat = {mult_change(par_sim), mult_change(abs(par_sim)), pct_change(mult_change(par_sim)), pct_change(mult_change(abs(par_sim)))};
 stat_names = {'Multiplicative Change', 'Abs. Mult. Change', 'Percent Change', 'Abs. Percent Change'};
 ref_line = [1, 1, 0, 0];
-xlims = {[.93 1.07], [.9 1.25], [-7 7], [-0.1 25]};
+xlims = {[.93 1.07], [.9 1.40], [-7 7], [-0.1 40]};
 
 for stat_ind = 1:length(stat),
     for cov_ind = 1:length(unique_cov_names),
@@ -210,11 +211,12 @@ par_sim = cat(2, par_sim, noPrevError_par_sim);
 nonInteraction_cov_names = cov_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
 nonInteraction_level_names = level_names(cellfun(@isempty, regexp(cov_names, ':', 'match')));
 unique_cov_names = unique(nonInteraction_cov_names(~ismember(nonInteraction_cov_names, {'(Intercept)'})));
+unique_cov_names = {'Rule'};
 
 stat = {mult_change(par_sim), mult_change(abs(par_sim)), pct_change(mult_change(par_sim)), pct_change(mult_change(abs(par_sim)))};
 stat_names = {'Multiplicative Change', 'Abs. Mult. Change', 'Percent Change', 'Abs. Percent Change'};
 ref_line = [1, 1, 0, 0];
-xlims = {[.93 1.07], [.9 1.25], [-7 7], [-0.1 25]};
+xlims = {[.93 1.07], [.9 1.40], [-7 7], [-0.1 40]};
 
 for stat_ind = 1:length(stat),
     figure;
@@ -321,7 +323,7 @@ f(1) = figure;
 f(2) = figure;
 
 plot_ind = numSubplots(length(unique_cov_names));
-xlims = {[.85 1.15], [.9 1.60]};
+xlims = {[.85 1.15], [.9 2.00]};
 
 for cov_ind = 1:length(unique_cov_names),
     
