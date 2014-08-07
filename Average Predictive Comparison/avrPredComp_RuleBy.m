@@ -40,14 +40,14 @@ rule_ind = ismember({GLMCov.name}, 'Rule');
 by_ind = ismember({GLMCov.name}, by_name);
 other_ind = ismember({GLMCov.name}, unique_cov_names) & (~rule_ind | ~by_ind);
 
-by_data = GLMCov(by_ind).data;
+by_data = GLMCov(by_ind).data;  
 other_data = {GLMCov(other_ind).data};
 
 isCategorical = [GLMCov(other_ind).isCategorical] & ~ismember({GLMCov(other_ind).name}, {'Switch History', 'Previous Error History Indicator'});
 
 other_data(isCategorical) = cellfun(@(x) dummyvar(x), other_data(isCategorical), 'UniformOutput', false);
 
-isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data,2)]), isCategorical, other_data, 'UniformOutput', false);
+isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data,2)]), num2cell(isCategorical), other_data, 'UniformOutput', false);
 
 % If Incorrect trials were removed in the original fit, do so again
 if ~gamParams.includeIncorrect
@@ -55,38 +55,50 @@ if ~gamParams.includeIncorrect
     other_data = cellfun(@(x) x(~incorrect, :), other_data, 'UniformOutput', false);
 end
 
-by_levels = GLMCov(by_ind).levels;
+
 by_isCategorical = GLMCov(by_ind).isCategorical;
-no_ind = cellfun(@(x) ~isempty(x), regexp(by_levels, 'No', 'match')); % Finds levels that correspond to no previous error
+if by_isCategorical,
+    by_levels = GLMCov(by_ind).levels;
+    by_data = dummyvar(by_data);
+else
+    by_levels = [strcat('-',GLMCov(by_ind).levels), GLMCov(by_ind).levels];
+    by_levels_id = [-1 1];
+end
 
 % Loop over each level of the by variable
 for by_id = 1:length(by_levels),
     
     %% Figure out the matrix of other inputs
-    if strcmp(by_name, 'Previous Error History'),
-        if no_ind(by_id),
-            prev_error_hist = by_data(:, ~ismember(1:length(by_levels), [by_ind by_ind+1]));
+    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),        
+        if mod(by_id, 2) == 1,
+            hist = by_data(:, ~ismember(1:length(by_levels), by_id:by_id+1));
         else
-            prev_error_hist = by_data(:, ~ismember(1:length(by_levels), [by_ind by_ind-1]));
+            hist = by_data(:, ~ismember(1:length(by_levels), by_id-1:by_id));
         end
     else
-        prev_error_hist = [];
+        hist = [];
     end
     
-    other_inputs = [other_data{:} prev_error_hist];
+    other_inputs = [other_data{:} hist];
     other_inputs = other_inputs(sample_ind, :);
     
     %% Compute covariance matrix used for Mahalanobis distances:
     
     % Find weights
-    other_isCategorical = [isCategorical true(1, size(prev_error_hist ,2))];
+    other_isCategorical = [isCategorical{:} true(1, size(hist ,2))];
     [summed_weights] = apc_weights(other_inputs, other_isCategorical);
     
     %% Compute the difference between the two rules
     
     orientationCov = GLMCov;
     orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    orientationCov(cong_hist_ind).data(:, by_id) = 2;
+    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
+        orientationCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
+    elseif by_isCategorical
+        orientationCov(by_ind).data(:) = by_id;
+    else
+        orientationCov(by_ind).data = by_levels_id(by_id);
+    end
     
     [orientation_design] = gamModelMatrix(gamParams.regressionModel_str, orientationCov, spikes(:,1));
     if ~gamParams.includeIncorrect
@@ -100,8 +112,14 @@ for by_id = 1:length(by_levels),
     end
     
     colorCov = GLMCov;
-    colorCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Color'));
-    colorCov(cong_hist_ind).data(:, by_id) = 2;
+    colorCov(rule_ind).data(:) = find(ismember(colorCov(rule_ind).levels, 'Color'));
+    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
+        colorCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
+    elseif by_isCategorical
+        colorCov(by_ind).data(:) = by_id;
+    else
+        colorCov(by_ind).data = by_levels_id(by_id);
+    end
     [color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         color_design = color_design(~incorrect, :);
@@ -144,9 +162,9 @@ end
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(mean(exp(par_est(1, :, :))*1000, 3));
 [avpred.baseline_firing] = deal(baseline{:});
+[avpred.by_levels] = deal(by_levels);
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
 saveMillerlab('edeno', save_file_name, 'avpred');
-
 
 end
