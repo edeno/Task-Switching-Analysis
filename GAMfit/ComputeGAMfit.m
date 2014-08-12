@@ -35,6 +35,17 @@ if ~gamParams.includeIncorrect
     percent_trials(incorrect) = [];
 end
 
+if ~gamParams.includeBeforeTimeZero,
+    isBeforeZero = trial_time < 0;
+    designMatrix(isBeforeZero, :) = [];
+    spikes(isBeforeZero, :) = [];
+    trial_time(isBeforeZero) = [];
+    trial_id(isBeforeZero) = [];
+    sample_on(isBeforeZero) = [];
+    percent_trials(isBeforeZero) = [];
+    
+end
+
 numTrials = length(unique(trial_id));
 numPFC = sum(pfc);
 numACC = sum(~pfc);

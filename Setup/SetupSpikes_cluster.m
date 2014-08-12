@@ -10,8 +10,8 @@ fprintf('\tLoading data...\n');
 
 load('-mat', session_file, 'cells', 'trials');
 
-wire_number = NaN*ones(length(cells), 1);
-unit_number = NaN*ones(length(cells), 1);
+wire_number = nan(length(cells), 1);
+unit_number = nan(length(cells), 1);
 file_str = cell(length(cells), 1);
 animal = cell(length(cells), 1);
 
