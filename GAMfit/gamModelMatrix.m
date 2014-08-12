@@ -50,18 +50,27 @@ for curTerm = 1:numTerms,
     
     % Figure out all the relevant interactions
     if length(numLevels) < 2,
+        % If no interactions, then just let the factor be added to the
+        % design matrix
         data_temp = data{:};
         levels_temp = levels{:};
     else
+        % Find all combinations of levels of each factor  
         [rep] = allpairs2(numLevels);
-        [~, rep_sort_ind] = sort(rep{1});
         
+        % Sort so that the interactions start with the first level of the
+        % first factor, then the second, and so on.
+        [~, rep_sort_ind] = sort(rep{1});
         for rep_ind = 1:length(rep),
             rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
         end
+        
+        % Replicate each factor level the number of times needed for all
+        % possible combintations
         data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
         levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
         
+        % Multiply the factors together for the interactions
         data_temp = data{1};
         levels_temp = levels{1};
         
@@ -139,6 +148,7 @@ try
     [~, dup_ind] = unique(level_names, 'stable');
     [~, dup_constraint_ind] = unique(constraintLevel_names, 'stable');
 catch
+    % Matlab versions < 2014a
     [~, dup_ind] = unique(level_names);
     dup_ind = sort(dup_ind);
     [~, dup_constraint_ind] = unique(constraintLevel_names);
