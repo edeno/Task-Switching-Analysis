@@ -65,7 +65,7 @@ for add_ind = 1:length(addTerms),
             
             smoothParams_opt_add = {parsedTerms_add{numSmoothParams_add > 1}};
             if ~isempty(smoothParams_opt_add)
-                if mod(length(smoothParams_opt_add{:}), 2) ~= 0,
+                if mod(length([smoothParams_opt_add{:}]), 2) ~= 0,
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
                 smoothParams_opt_add{1}(2:2:end) = cellfun(@(x) str2double(x{2:2:end}), smoothParams_opt_add, 'UniformOutput', false);
