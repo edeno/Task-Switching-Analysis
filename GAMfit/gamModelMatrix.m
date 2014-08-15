@@ -104,7 +104,7 @@ for curTerm = 1:numTerms,
             smoothParams{2} = smoothingFactor;
         end
         
-        smoothParams = [smoothParams model.smoothParams_opt{curTerm}];
+        smoothParams = [smoothParams [model.smoothParams_opt{curTerm, :}]];
         
         [smoothMatrix, bsplines{curTerm}, smoothCov_name, smoothLevel_names, ...
             smoothSqrtPen, smoothConstraints, smoothPenalty, smoothConNames] = factorBySpline(smoothParams{:});

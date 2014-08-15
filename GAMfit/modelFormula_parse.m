@@ -68,7 +68,9 @@ for add_ind = 1:length(addTerms),
                 if mod(length([smoothParams_opt_add{:}]), 2) ~= 0,
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
-                smoothParams_opt_add{1}(2:2:end) = cellfun(@(x) str2double(x{2:2:end}), smoothParams_opt_add, 'UniformOutput', false);
+                for add_opts_ind = 1:length(smoothParams_opt_add),
+                    smoothParams_opt_add{add_opts_ind}{2} = str2double(smoothParams_opt_add{add_opts_ind}{2});
+                end
             end
             if any(numSmoothParams_add == 1),
                 smoothingTerm = [smoothingTerm; repmat(parsedTerms_add{numSmoothParams_add == 1}, size(interTerms))];
@@ -130,7 +132,7 @@ isSmooth = logical(isSmooth);
 [~, sort_ind] = sort(modelOrder);
 modelTerms = modelTerms(sort_ind);
 isSmooth = isSmooth(sort_ind);
-smoothParams_opt = smoothParams_opt(sort_ind);
+smoothParams_opt = smoothParams_opt(sort_ind, :);
 smoothingTerm = smoothingTerm(sort_ind);
 try % 'stable' is only works for matlab 2012a and beyond
     [model.terms, unique_ind] = unique(modelTerms, 'stable');
@@ -139,7 +141,7 @@ catch
     model.terms = modelTerms(sort(unique_ind));
 end
 model.isSmooth = isSmooth(unique_ind);
-model.smoothParams_opt = smoothParams_opt(unique_ind);
+model.smoothParams_opt = smoothParams_opt(unique_ind, :);
 model.smoothingTerm = smoothingTerm(unique_ind);
 model.isInteraction = cellfun(@(x) ~isempty(x), strfind(model.terms, ':'));
 
