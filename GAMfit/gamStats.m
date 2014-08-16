@@ -64,9 +64,15 @@ if strcmp(distr, 'poisson')
     U = expcdf(Z, 1); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
     G = norminv(U, 0, 1); % Convert to normal distribution
     numSpikes = length(U); % Number of Spikes
-%     autoCorr = xcorr(G, 'coef');
     
-    [~, p, ks_stat] = kstest(U, [U unifcdf(U, 0, 1)]);
+    if numSpikes > 0
+        %     autoCorr = xcorr(G, 'coef');
+        [~, p, ks_stat] = kstest(U, [U unifcdf(U, 0, 1)]);
+    else
+        p = [];
+        ks_stat = [];
+        % autoCorr = [];
+    end
     
     stats.timeRescale.p = p;
     stats.timeRescale.ks_stat = ks_stat;
@@ -74,7 +80,7 @@ if strcmp(distr, 'poisson')
     stats.timeRescale.Z = Z;
     stats.timeRescale.U = U;
     stats.timeRescale.G = G;
-%     stats.autoCorr = autoCorr;
+    %     stats.autoCorr = autoCorr;
 end
 
 % Deviance
@@ -84,8 +90,13 @@ dev = sum(prior_weights .* di);
 di_const = devFun(mu_const, y, N);
 dev_const = sum(prior_weights .* di_const);
 stats.dev = dev;
-
-[stats.fp, stats.tp, ~, stats.AUC] = perfcurve(y, mu, 1);
+if numSpikes > 0
+    [stats.fp, stats.tp, ~, stats.AUC] = perfcurve(y, mu, 1);
+else
+    stats.fp = [];
+    stats.tp = [];
+    stats.AUC = [];
+end
 
 stats.AUC_rescaled = 2 * abs(stats.AUC - .5);
 

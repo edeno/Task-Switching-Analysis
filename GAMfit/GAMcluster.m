@@ -92,8 +92,7 @@ for session_ind = 1:length(session_names),
         {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
     
     createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
-    submit(gamJob{session_ind});
-    pause(1);  
+    submit(gamJob{session_ind}); 
 end
 
 fclose(fileID);
