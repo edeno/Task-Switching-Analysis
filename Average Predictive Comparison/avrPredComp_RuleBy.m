@@ -97,7 +97,7 @@ for by_id = 1:length(by_levels),
     elseif by_isCategorical
         orientationCov(by_ind).data(:) = by_id;
     else
-        orientationCov(by_ind).data = by_levels_id(by_id);
+        orientationCov(by_ind).data(:) = by_levels_id(by_id);
     end
     
     [orientation_design] = gamModelMatrix(gamParams.regressionModel_str, orientationCov, spikes(:,1));
@@ -118,7 +118,7 @@ for by_id = 1:length(by_levels),
     elseif by_isCategorical
         colorCov(by_ind).data(:) = by_id;
     else
-        colorCov(by_ind).data = by_levels_id(by_id);
+        colorCov(by_ind).data(:) = by_levels_id(by_id);
     end
     [color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
     if ~gamParams.includeIncorrect
