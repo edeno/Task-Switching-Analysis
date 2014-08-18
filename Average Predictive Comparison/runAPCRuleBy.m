@@ -3,7 +3,7 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
 numSim = 1000;
-numSamples = 50000;
+numSamples = 20000;
 overwrite = true;
 
 %%
