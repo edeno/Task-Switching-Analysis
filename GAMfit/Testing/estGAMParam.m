@@ -1,4 +1,4 @@
-function [par_est, fitInfo, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect)
+function [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect)
 
 dt = 1E-3;
 spikes = simPoisson(Rate, dt);

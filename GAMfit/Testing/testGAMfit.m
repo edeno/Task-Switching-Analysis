@@ -1,8 +1,7 @@
-%% Binary Categorical Covariate - Rule
 clear all; close all; clc;
 numTrials = 2000;
 [GLMCov, trial_id, trial_time, incorrect] = simSession(numTrials);
-
+%% Binary Categorical Covariate - Rule
 Rate = nan(size(trial_time));
 
 cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
@@ -21,7 +20,7 @@ color_param = colorRate/Intercept;
 orient_param = orientRate/Intercept;
 
 model_name = 'Rule';
-[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+[par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 est_Intercept = exp(par_est(1))*1000;
 est_Orient = exp(par_est(2));
@@ -71,7 +70,7 @@ Rate = exp(designMatrix * trueParams)*1000;
 % repRate_param = repRate/Intercept;
 
 
-[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+[par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 % est_Intercept = exp(par_est(1))*1000;
 % est_repRate = exp(par_est(2:end));
@@ -103,7 +102,7 @@ trueParams = log([(trueInterceptRate*1E-3) trueRule trueSwitch])';
 designMatrix = gamModelMatrix(model_name, GLMCov, Rate);
 Rate = exp(designMatrix * trueParams)*1000;
 
-[par_est, ~, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+[par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 figure;
 plot(Rate(~incorrect), 'LineWidth', 2)
@@ -113,3 +112,50 @@ legend('Estimated Rate', 'True Rate');
 title('Rule + Switch History');
 
 exp([trueParams par_est])
+
+%% Interactions
+
+model_name = 'Rule * Response Direction';
+Rate = nan(size(trial_time));
+
+rule_ind = ismember({GLMCov.name}, 'Rule');
+response_ind = ismember({GLMCov.name}, 'Response Direction');
+
+% Try to use rates (as opposed to defining coefficients)
+% Orientation - Right
+Rate((GLMCov(rule_ind).data == 1) & (GLMCov(response_ind).data == 1)) = 20;
+% Orientation - Left
+Rate((GLMCov(rule_ind).data == 1) & (GLMCov(response_ind).data == 2)) = 40;
+% Color - Right
+Rate((GLMCov(rule_ind).data == 2) & (GLMCov(response_ind).data == 1)) = 60;
+% Color - Left
+Rate((GLMCov(rule_ind).data == 2) & (GLMCov(response_ind).data == 2)) = 180;
+
+[par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+
+abs_pct_change = @(x) exp(abs(diff(x)));
+
+[par_est exp(par_est)]
+
+cr = sum(par_est(ismember(gam.level_names, {'Color', 'Right', 'Color:Right'})));
+or = sum(par_est(ismember(gam.level_names, {'Orientation', 'Right', 'Orientation:Right'})));
+cl = sum(par_est(ismember(gam.level_names, {'Color', 'Left', 'Color:Left'})));
+ol = sum(par_est(ismember(gam.level_names, {'Orientation', 'Left', 'Orientation:Left'})));
+
+
+% Intercept
+fprintf('\nestimated grand mean: %.2f \t true grand mean: %.2f\n', exp(par_est(1))*1000, geomean([20 40 60 180]))
+% Rule - Right
+fprintf('\nestimated rule-right: %.2f \t true rule-right: %.2f\n', abs_pct_change([cr or]), abs_pct_change(log([60 20])))
+% Rule - Left
+fprintf('\nrule-left: %.2f \t true rule-left: %.2f\n', abs_pct_change([cl ol]), abs_pct_change(log([180 40])))
+
+% Try to define coefficients
+% 
+% trueParams = log([(20/1000) 3 (1/3) 2 (1/2) 1.3 1 1 (1.3)])';
+% designMatrix = gamModelMatrix(model_name, GLMCov, Rate);
+% Rate = exp(designMatrix * trueParams)*1000;
+% 
+% [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+
+%% Two Interactions
