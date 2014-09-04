@@ -159,3 +159,47 @@ fprintf('\nrule-left: %.2f \t true rule-left: %.2f\n', abs_pct_change([cl ol]), 
 % [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 %% Two Interactions
+
+model_name = 'Rule * Response Direction + Rule * Switch History';
+Rate = nan(size(trial_time));
+
+rule_ind = ismember({GLMCov.name}, 'Rule');
+response_ind = ismember({GLMCov.name}, 'Response Direction');
+switch_ind = ismember({GLMCov.name}, 'Switch History');
+
+orient_ind = (GLMCov(rule_ind).data == 1);
+color_ind = (GLMCov(rule_ind).data == 2);
+right_ind = (GLMCov(response_ind).data == 1);
+left_ind = (GLMCov(response_ind).data == 2);
+
+Rate(:) = 2;
+Rate(color_ind) = Rate(color_ind) * 3;
+Rate(left_ind) = Rate(left_ind) * 2;
+
+Rate(color_ind & left_ind) = Rate(color_ind & left_ind) * 1.5;
+switch_effect = linspace(1.5, 0.5, 11);
+for n = 1:11,
+   Rate(GLMCov(switch_ind).data == n) =  Rate(GLMCov(switch_ind).data == n) * switch_effect(n);
+end
+
+Rate(GLMCov(switch_ind).data == 1) = Rate(GLMCov(switch_ind).data == 1) * 1.5;
+
+[par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
+
+cr = sum(par_est(ismember(gam.level_names, {'Color', 'Right', 'Color:Right'})));
+or = sum(par_est(ismember(gam.level_names, {'Orientation', 'Right', 'Orientation:Right'})));
+cl = sum(par_est(ismember(gam.level_names, {'Color', 'Left', 'Color:Left'})));
+ol = sum(par_est(ismember(gam.level_names, {'Orientation', 'Left', 'Orientation:Left'})));
+
+% Intercept
+fprintf('\nestimated grand mean: %.2f \t true grand mean: %.2f\n', exp(par_est(1))*1000, geomean(unique(Rate)))
+% Rule - Right
+fprintf('\nestimated rule-right: %.2f \t true rule-right: %.2f\n', abs_pct_change([cr or]), abs_pct_change(log([6 2])))
+% Rule - Left
+fprintf('\nrule-left: %.2f \t true rule-left: %.2f\n', abs_pct_change([cl ol]), abs_pct_change(log([18 4])))
+% Rule - Switch History
+for n = 1:10,
+    sw_color = sum(par_est(ismember(gam.level_names, {'Color', ['Repetition',  num2str(n)], ['Color:Repetition',  num2str(n)]})));
+    sw_orient = sum(par_est(ismember(gam.level_names, {'Orientation', ['Repetition',  num2str(n)], ['Orientation:Repetition',  num2str(n)]})));
+    fprintf('\nestimated rule-switch: %.2f \t true rule-switch: %.2f\n', abs_pct_change([sw_color sw_orient]), 1)
+end
