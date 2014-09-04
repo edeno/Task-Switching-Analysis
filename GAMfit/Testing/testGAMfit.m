@@ -44,7 +44,7 @@ box off;
 
 Rate = nan(size(trial_time));
 trueInterceptRate = 4;
-trueSwitch = [2.0 2.0 2.0 2.0 2.0 1.0 0.5 0.5 0.5 0.5 0.5]; 
+trueSwitch = [2.0 2.0 2.0 2.0 2.0 1.0 0.5 0.5 0.5 0.5 0.5];
 trueParams = log([(trueInterceptRate*1E-3) trueSwitch])';
 
 model_name = 'Switch History';
@@ -53,7 +53,7 @@ designMatrix = gamModelMatrix(model_name, GLMCov, Rate);
 Rate = exp(designMatrix * trueParams)*1000;
 
 % repRate = [12 6 4 3 2 1 1 1 1 1 6];
-% 
+%
 % Rate(level_ind('Switch History', 'Repetition1')) = repRate(1);
 % Rate(level_ind('Switch History', 'Repetition2')) = repRate(2);
 % Rate(level_ind('Switch History', 'Repetition3')) = repRate(3);
@@ -65,7 +65,7 @@ Rate = exp(designMatrix * trueParams)*1000;
 % Rate(level_ind('Switch History', 'Repetition9')) = repRate(9);
 % Rate(level_ind('Switch History', 'Repetition10')) = repRate(10);
 % Rate(level_ind('Switch History', 'Repetition11+')) = repRate(11);
-% 
+%
 % Intercept = geomean(repRate);
 % repRate_param = repRate/Intercept;
 
@@ -74,7 +74,7 @@ Rate = exp(designMatrix * trueParams)*1000;
 
 % est_Intercept = exp(par_est(1))*1000;
 % est_repRate = exp(par_est(2:end));
-% 
+%
 % fprintf('\n True Intercept: %6.2f \t Est Intercept: %6.2f\n', Intercept, est_Intercept)
 % for k = 1:11,
 %     fprintf('\n True Repetition: %6.2f \t Est Repetition: %6.2f\n', repRate_param(k), est_repRate(k))
@@ -96,7 +96,7 @@ Rate = nan(size(trial_time));
 
 trueInterceptRate = 4;
 trueRule = [0.5 (0.5)^(-1)];
-trueSwitch = [3.0 2.5 1.0 0.5 0.25 0.25 0.25 0.25 0.25 0.25 2.5]; 
+trueSwitch = [3.0 2.5 1.0 0.5 0.25 0.25 0.25 0.25 0.25 0.25 2.5];
 trueParams = log([(trueInterceptRate*1E-3) trueRule trueSwitch])';
 
 designMatrix = gamModelMatrix(model_name, GLMCov, Rate);
@@ -151,11 +151,11 @@ fprintf('\nestimated rule-right: %.2f \t true rule-right: %.2f\n', abs_pct_chang
 fprintf('\nrule-left: %.2f \t true rule-left: %.2f\n', abs_pct_change([cl ol]), abs_pct_change(log([180 40])))
 
 % Try to define coefficients
-% 
+%
 % trueParams = log([(20/1000) 3 (1/3) 2 (1/2) 1.3 1 1 (1.3)])';
 % designMatrix = gamModelMatrix(model_name, GLMCov, Rate);
 % Rate = exp(designMatrix * trueParams)*1000;
-% 
+%
 % [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
 
 %% Two Interactions
@@ -179,7 +179,7 @@ Rate(left_ind) = Rate(left_ind) * 2;
 Rate(color_ind & left_ind) = Rate(color_ind & left_ind) * 1.5;
 switch_effect = linspace(1.5, 0.5, 11);
 for n = 1:11,
-   Rate(GLMCov(switch_ind).data == n) =  Rate(GLMCov(switch_ind).data == n) * switch_effect(n);
+    Rate(GLMCov(switch_ind).data == n) =  Rate(GLMCov(switch_ind).data == n) * switch_effect(n);
 end
 
 Rate(GLMCov(switch_ind).data == 1) = Rate(GLMCov(switch_ind).data == 1) * 1.5;
@@ -203,3 +203,8 @@ for n = 1:10,
     sw_orient = sum(par_est(ismember(gam.level_names, {'Orientation', ['Repetition',  num2str(n)], ['Orientation:Repetition',  num2str(n)]})));
     fprintf('\nestimated rule-switch: %.2f \t true rule-switch: %.2f\n', abs_pct_change([sw_color sw_orient]), 1)
 end
+
+sw_color = sum(par_est(ismember(gam.level_names, {'Color', 'Repetition11+', 'Color:Repetition11+'})));
+sw_orient = sum(par_est(ismember(gam.level_names, {'Orientation', 'Repetition11+', 'Orientation:Repetition11+'})));
+fprintf('\nestimated rule-switch: %.2f \t true rule-switch: %.2f\n', abs_pct_change([sw_color sw_orient]), 1)
+
