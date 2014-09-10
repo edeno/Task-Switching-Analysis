@@ -173,15 +173,19 @@ right_ind = (GLMCov(response_ind).data == 1);
 left_ind = (GLMCov(response_ind).data == 2);
 
 Rate(:) = 2;
+% Rule Effect
 Rate(color_ind) = Rate(color_ind) * 3;
+% Response Effect
 Rate(left_ind) = Rate(left_ind) * 2;
-
+% Response Rule Interaction
 Rate(color_ind & left_ind) = Rate(color_ind & left_ind) * 1.5;
+
+% Switch Effect
 switch_effect = linspace(1.5, 0.5, 11);
 for n = 1:11,
     Rate(GLMCov(switch_ind).data == n) =  Rate(GLMCov(switch_ind).data == n) * switch_effect(n);
 end
-
+% Switch Rule Interaction
 Rate(GLMCov(switch_ind).data == 1) = Rate(GLMCov(switch_ind).data == 1) * 1.5;
 
 [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect);
