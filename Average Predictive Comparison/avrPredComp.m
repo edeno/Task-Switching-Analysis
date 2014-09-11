@@ -95,7 +95,7 @@ for factor_id = 1:numFactors,
     
     % Compute the firing rate holding thne last level constant (only need to do this once)
     lastLevelCov = GLMCov;
-    lastLevelCov(factor_ind).data(:) = level_data(end);
+    lastLevelCov(factor_ind).data(:, factor_id) = level_data(end);
     [lastLevel_design] = gamModelMatrix(gamParams.regressionModel_str, lastLevelCov, spikes(:,1));
     if ~gamParams.includeIncorrect
         lastLevel_design = lastLevel_design(~incorrect, :);
@@ -108,7 +108,7 @@ for factor_id = 1:numFactors,
 
     for level_id = 1:numLevels,
         curLevelCov = GLMCov;
-        curLevelCov(factor_ind).data(:) = level_data(level_id);
+        curLevelCov(factor_ind).data(:, factor_id) = level_data(level_id);
         [curLevel_design] = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, spikes(:,1));
         if ~gamParams.includeIncorrect
             curLevel_design = curLevel_design(~incorrect, :);
