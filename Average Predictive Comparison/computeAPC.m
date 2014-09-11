@@ -21,7 +21,7 @@ apcParams = inParser.Results;
 
 apcJob = cell(1, length(session_names));
 
-save_dir = sprintf('%s/%s/Models/%s/APC/RuleBy_%s/', data_info.processed_dir, timePeriod, regressionModel_str, type);
+save_dir = sprintf('%s/%s/Models/%s/APC/%s/', data_info.processed_dir, timePeriod, regressionModel_str, type);
 if ~exist(save_dir, 'dir'),
    mkdir(save_dir);
 end
