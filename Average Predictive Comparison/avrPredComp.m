@@ -71,7 +71,7 @@ for factor_id = 1:numFactors,
     
     %% Figure out the matrix of other inputs
     if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
-        hist = factor_data(:, ~ismember(factor_id, 1:numFactors));
+        hist = factor_data(:, ~ismember(1:numFactors, factor_id));
         hist = dummyvar(hist);
     else
         hist = [];
