@@ -71,7 +71,7 @@ for factor_id = 1:numFactors,
     
     %% Figure out the matrix of other inputs
     if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
-        hist = factor_data(:, ~ismember(1:numFactors, factor_id));
+        hist = factor_data(:, find(~ismember(1:numFactors, factor_id)));
         hist = dummyvar(hist);
     else
         hist = [];
@@ -84,7 +84,7 @@ for factor_id = 1:numFactors,
     other_isCategorical = [isCategorical{:} true(1, size(hist ,2))];
     [summed_weights] = apc_weights(other_inputs, other_isCategorical);
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
-    if ~GLMCov(factor_ind).isCategorical,
+    if GLMCov(factor_ind).isCategorical,
         level_data = unique(factor_data(:, ismember(factor_id, 1:numFactors)));
     else
         level_data = [-1 1];
