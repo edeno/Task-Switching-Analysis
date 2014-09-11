@@ -67,17 +67,17 @@ for factor_id = 1:numFactors,
     
     %% Figure out the matrix of other inputs
     if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
-        hist = factor_data(:, find(~ismember(1:numFactors, factor_id)));
-        hist = dummyvar(hist);
+        history = factor_data(:, find(~ismember(1:numFactors, factor_id)));
+        history = dummyvar(history);
     else
-        hist = [];
+        history = [];
     end
     
-    other_inputs = [other_data{:} hist];
+    other_inputs = [other_data{:} history];
     other_inputs = other_inputs(sample_ind, :);
     %% Compute covariance matrix used for Mahalanobis distances:
     % Find weights
-    other_isCategorical = [isCategorical{:} true(1, size(hist ,2))];
+    other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
     [summed_weights] = apc_weights(other_inputs, other_isCategorical);
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
     if GLMCov(factor_ind).isCategorical,
