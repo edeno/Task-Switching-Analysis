@@ -54,11 +54,7 @@ if ~gamParams.includeIncorrect
     other_data = cellfun(@(x) x(~incorrect, :), other_data, 'UniformOutput', false);
 end
 
-if GLMCov(factor_ind).isCategorical,
-    numFactors = size(factor_data, 2);
-else
-    numFactors = 1;
-end
+numFactors = size(factor_data, 2);
 
 % If the factor is a history variable, then we need to loop over each
 % history variable. If the factor is an ordered categorical variable with
