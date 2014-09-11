@@ -18,7 +18,7 @@ for time_ind = 1:length(timePeriods),
         parsedModelstr = strtrim(regexp(regexp(model{model_ind}, '+', 'split'), '*', 'split'));
         isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
         parsedModelstr = parsedModelstr(isRuleInteraction);
-        type = cellfun(@(x) x{~ismember(x, 'Rule')}, parsedModelstr, 'UniformOutput', false);
+        type = unique([parsedModelstr{:}]);
         % Compute average predicitve comparson of rule at each level of the
         % interactions
         for type_ind = 1:length(type),
@@ -39,7 +39,7 @@ for time_ind = 1:length(timePeriods),
         parsedModelstr = strtrim(regexp(regexp(model{model_ind}, '+', 'split'), '*', 'split'));
         isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
         parsedModelstr = parsedModelstr(isRuleInteraction);
-        type = cellfun(@(x) x{~ismember(x, 'Rule')}, parsedModelstr, 'UniformOutput', false);
+        type = unique([parsedModelstr{:}]);
         % Compute average predicitve comparson of rule at each level of the
         % interactions
         for type_ind = 1:length(type),
