@@ -132,7 +132,7 @@ for by_id = 1:length(by_levels),
         color_est(:, neuron_ind, :) = exp(color_design*squeeze(par_est(:, neuron_ind, :)))*1000;
     end
     
-    rule_diff_est = color_est - orientation_est;
+    rule_diff_est = orientation_est - color_est;
     
     num = sum(bsxfun(@times, summed_weights, rule_diff_est));
     abs_num = sum(bsxfun(@times, summed_weights, abs(rule_diff_est)));

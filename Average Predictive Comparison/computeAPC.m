@@ -1,3 +1,6 @@
+% This function queues up the code for computing the average predictive
+% comparison between rules (at a specificied level of another covariate) on
+% the cluster
 function computeAPC(regressionModel_str, timePeriod, main_dir, type, varargin)
 
 % Load Common Parameters
@@ -18,7 +21,7 @@ apcParams = inParser.Results;
 
 apcJob = cell(1, length(session_names));
 
-save_dir = sprintf('%s/%s/Models/%s/APC/%s/', data_info.processed_dir, timePeriod, regressionModel_str, type);
+save_dir = sprintf('%s/%s/Models/%s/APC/RuleBy_%s/', data_info.processed_dir, timePeriod, regressionModel_str, type);
 if ~exist(save_dir, 'dir'),
    mkdir(save_dir);
 end
@@ -39,8 +42,8 @@ for session_ind = 1:length(session_names),
     apcJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
         {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
     
-    createTask(apcJob{session_ind}, str2func(sprintf('avrPredComp_%s', type)), 0, {session_names{session_ind}, ...
-        timePeriod, regressionModel_str, apcParams.numSim, apcParams.numSamples, save_dir, main_dir});
+    createTask(apcJob{session_ind}, @avrPredComp, 0, {session_names{session_ind}, ...
+        timePeriod, regressionModel_str, type, apcParams.numSim, apcParams.numSamples, save_dir, main_dir});
     submit(apcJob{session_ind});
     
 end
