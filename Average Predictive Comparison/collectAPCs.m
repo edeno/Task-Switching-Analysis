@@ -45,8 +45,7 @@ for session_ind = 1:length(apc_names),
 end
 fprintf('\n Saving... \n');
 if ~isempty(avpred),
-    saveMillerlab('edeno', save_file_name, 'avpred');
+    saveMillerlab('edeno', save_file_name, 'avpred', '-v7.3');
 end
-
 
 end
