@@ -82,6 +82,7 @@ for factor_id = 1:numFactors,
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
     if GLMCov(factor_ind).isCategorical,
         level_data = unique(factor_data(:, ismember(factor_id, 1:numFactors)));
+        level_data(isnan(level_data)) = [];
     else
         level_data = [-1 1];
     end
