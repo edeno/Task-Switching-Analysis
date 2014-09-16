@@ -10,7 +10,7 @@ overwrite = true;
 timePeriods = {'Rule Response', 'Stimulus Response'};
 
 model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
+% model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
@@ -31,7 +31,7 @@ end
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Saccade', 'Reward'};
 
 model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Previous Congruency';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
+% model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
