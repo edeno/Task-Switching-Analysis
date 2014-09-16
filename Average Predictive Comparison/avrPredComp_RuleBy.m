@@ -134,11 +134,11 @@ for by_id = 1:length(by_levels),
     
     rule_diff_est = orientation_est - color_est;
     
-    num = sum(bsxfun(@times, summed_weights, rule_diff_est));
-    abs_num = sum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
-    rms_num = sum(bsxfun(@times, summed_weights, rule_diff_est.^2));
+    num = nansum(bsxfun(@times, summed_weights, rule_diff_est));
+    abs_num = nansum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
+    rms_num = nansum(bsxfun(@times, summed_weights, rule_diff_est.^2));
     
-    den = sum(summed_weights);
+    den = nansum(summed_weights);
     
     apc = squeeze(num./den);
     abs_apc = squeeze(abs_num./den);

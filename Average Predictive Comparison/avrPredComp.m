@@ -118,11 +118,11 @@ for factor_id = 1:numFactors,
         
         diff_est = curLevel_est - lastLevel_est;
         
-        num = sum(bsxfun(@times, summed_weights, diff_est));
-        abs_num = sum(bsxfun(@times, summed_weights, abs(diff_est)));
-        rms_num = sum(bsxfun(@times, summed_weights, diff_est.^2));
+        num = nansum(bsxfun(@times, summed_weights, diff_est));
+        abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
+        rms_num = nansum(bsxfun(@times, summed_weights, diff_est.^2));
         
-        den = sum(summed_weights);
+        den = nansum(summed_weights);
         
         apc = squeeze(num./den);
         abs_apc = squeeze(abs_num./den);
