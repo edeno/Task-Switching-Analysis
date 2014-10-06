@@ -75,26 +75,26 @@ for brain_ind = 1:2,
                 'Color', colororder(brain_ind, :));
             
             
-            %             % No Error
-            %
-            %             error_ind = 1:2:20;
-            %
-            %             mean_prev_error = [mean_ruleByAPC{curTimePeriod_ind, prev_error_ind, brain_ind, rule_ind}];
-            %             mean_prev_error = mean_prev_error(error_ind);
-            %
-            %              ci_prev_error = [ci_ruleByAPC{curTimePeriod_ind, prev_error_ind, brain_ind, rule_ind, :}];
-            %             ci_prev_error = ci_prev_error(error_ind, :)';
-            %
-            %             plot(mean_prev_error(10:-1:1), offset(brain_ind) +  [1:10], ...
-            %                 '-s', ...
-            %                 'LineWidth', 3, ...
-            %                 'MarkerFaceColor', colororder(brain_ind, :), ...
-            %                 'MarkerSize', markSize, ...
-            %                 'Color', colororder(brain_ind, :));
-            %             hold all;
-            %             line(ci_prev_error(:, 10:-1:1),  offset(brain_ind) + [1:10; 1:10], ...
-            %                 'LineWidth', 2, ...
-            %                 'Color', colororder(brain_ind, :));
+            % No Error
+            
+            error_ind = 1:2:20;
+            
+            mean_prev_error = [mean_ruleByAPC{curTimePeriod_ind, prev_error_ind, brain_ind, rule_ind}];
+            mean_prev_error = mean_prev_error(error_ind);
+            
+            ci_prev_error = [ci_ruleByAPC{curTimePeriod_ind, prev_error_ind, brain_ind, rule_ind, :}];
+            ci_prev_error = ci_prev_error(error_ind, :)';
+            
+            plot(mean_prev_error(10:-1:1), offset(brain_ind) +  [1:10], ...
+                '-s', ...
+                'LineWidth', 3, ...
+                'MarkerFaceColor', colororder(brain_ind, :), ...
+                'MarkerSize', markSize, ...
+                'Color', colororder(brain_ind, :));
+            hold all;
+            line(ci_prev_error(:, 10:-1:1),  offset(brain_ind) + [1:10; 1:10], ...
+                'LineWidth', 2, ...
+                'Color', colororder(brain_ind, :));
             
             set(gca,'YTick',1:10);
             if ismember(subplot_ind, [1 13]),
