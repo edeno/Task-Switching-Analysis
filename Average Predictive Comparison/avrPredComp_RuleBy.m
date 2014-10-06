@@ -160,7 +160,7 @@ end
 [avpred.unit_number] = deal(neurons.unit_number);
 [avpred.pfc] = deal(neurons.pfc);
 [avpred.monkey] = deal(neurons.monkey);
-baseline = num2cell(mean(exp(par_est(1, :, :))*1000, 3));
+baseline = num2cell(exp(par_est(1, :, :))*1000);
 [avpred.baseline_firing] = deal(baseline{:});
 [avpred.by_levels] = deal(by_levels);
 
