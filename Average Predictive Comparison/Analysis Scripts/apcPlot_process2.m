@@ -67,7 +67,7 @@ for brain_area_ind = 1:2,
             ismember(monkey_names_ind, monkey);
         
         % Filter those neurons out
-        ruleAPC = cat(3, ruleAPC_file.avpred.(apc_type));
+        ruleAPC = cat(3, ruleAPC_file.avpred.apc);
         ruleAPC = ruleAPC(:,:, filter_ind);
         baseline_firing = baseline_firing(:, :, filter_ind);
         if isNormalized,
