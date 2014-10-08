@@ -2,15 +2,15 @@
 % another covariate for each time period and model run.
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
-numSim = 1000;
+numSim = 10000;
 numSamples = 1000;
 overwrite = true;
 
 %%
-timePeriods = {'Rule Response', 'Stimulus Response'};
+timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Saccade', 'Reward'};
 
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
-% model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
+model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Previous Congruency';
+model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
@@ -27,11 +27,12 @@ for time_ind = 1:length(timePeriods),
         end        
     end
 end
-%%
-timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Saccade', 'Reward'};
 
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Previous Congruency';
-% model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
+%%
+timePeriods = {'Stimulus Response'};
+
+model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
+model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
