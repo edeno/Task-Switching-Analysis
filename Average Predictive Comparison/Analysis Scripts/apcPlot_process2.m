@@ -31,7 +31,7 @@ mean_ruleByAPC = cell(numTimePeriods, numCov, 2, 3);
 ci_ruleByAPC = cell(numTimePeriods, numCov, 2, 3, 2);
 
 norm_apc = @(apc, baseline_firing)  ...
-    apc ./ shiftdim(repmat(baseline_firing', [1, size(apc, 1), size(apc, 2)]), 1);
+    apc ./ repmat(baseline_firing, [size(apc, 1) 1 1]);
 
 %% Collect Data
 fprintf('Processing....');
@@ -57,20 +57,21 @@ for brain_area_ind = 1:2,
         % Some things to sort or filter by
         pfc = logical([ruleAPC_file.avpred.pfc]);
         monkey_names_ind = upper({ruleAPC_file.avpred.monkey});
-        baseline_firing = [ruleAPC_file.avpred.baseline_firing];
+        baseline_firing = squeeze([ruleAPC_file.avpred.baseline_firing])';
+        baseline_firing = reshape(baseline_firing, [1 size(baseline_firing, 1) size(baseline_firing, 2)]);
+        
         brain_area = brain_area_ind-1;
         
         % Figure out which neurons to ignore
         filter_ind = (pfc == brain_area) & ...
-            ismember(monkey_names_ind, monkey) & ...
-            (baseline_firing > baseline_bounds(1)) & ...
-            (baseline_firing < baseline_bounds(2));
+            ismember(monkey_names_ind, monkey);
         
         % Filter those neurons out
         ruleAPC = cat(3, ruleAPC_file.avpred.(apc_type));
         ruleAPC = ruleAPC(:,:, filter_ind);
+        baseline_firing = baseline_firing(:, :, filter_ind);
         if isNormalized,
-            ruleAPC = norm_apc(ruleAPC, baseline_firing(filter_ind));
+            ruleAPC = norm_apc(ruleAPC, baseline_firing);
         end
         
         rule_quant_bounds = squeeze(quantile(ruleAPC, [0 1/3 2/3 1], 3));
@@ -85,7 +86,7 @@ for brain_area_ind = 1:2,
             fprintf('\t Covariate: %s\n', valid_covariates{cov_ind});
             
             [mean_covAPC_temp, ci_covAPC_temp, mean_ruleByAPC_temp, ci_ruleByAPC_temp] = ...
-                populationChange(apc_dir, valid_covariates{cov_ind}, apc_type, brain_area, monkey, baseline_bounds, isNormalized, rule_quant_id);
+                populationChange(apc_dir, valid_covariates{cov_ind}, apc_type, brain_area, monkey, baseline_firing, baseline_bounds, isNormalized, rule_quant_id);
             
             [mean_covAPC{time_ind, cov_ind, brain_area_ind, :}] = deal(mean_covAPC_temp{:});
             [ci_covAPC{time_ind, cov_ind, brain_area_ind, :, :}] = deal(ci_covAPC_temp{:});
@@ -169,7 +170,7 @@ end
 
 
 %% ------------------------------------------------------------------------
-function [mean_covAPC, ci_covAPC, mean_ruleByAPC, ci_ruleByAPC] = populationChange(apc_dir, curCov, apc_type, brain_area, monkey, baseline_bounds, isNormalized, rule_quant_id)
+function [mean_covAPC, ci_covAPC, mean_ruleByAPC, ci_ruleByAPC] = populationChange(apc_dir, curCov, apc_type, brain_area, monkey, baseline_firing, baseline_bounds, isNormalized, rule_quant_id)
 
 % Statistical helper functions
 mean_apc = @(apc) nanmean(nanmean(apc, 3), 2);
@@ -186,6 +187,8 @@ ci_lower_norm_apc = @(apc, baseline_firing) ...
 ci_upper_norm_apc = @(apc, baseline_firing) ...
     ci_upper_apc(norm_apc(apc, baseline_firing));
 
+baseline_ind = squeeze((baseline_firing < baseline_bounds(1)) | (baseline_firing > baseline_bounds(1)));
+
 %% Load Files
 covAPC_file = load(sprintf('%s/%s/Collected/apc_collected.mat', apc_dir, curCov));
 % Load RuleBy files if they exists
@@ -198,19 +201,10 @@ end
 % Some things to sort or filter by
 pfc = logical([covAPC_file.avpred.pfc]);
 monkey_names_ind = upper({covAPC_file.avpred.monkey});
-baseline_firing = [covAPC_file.avpred.baseline_firing];
-
-numSamples = covAPC_file.avpred(1).numSamples;
-numSim = covAPC_file.avpred(1).numSim;
-
-rule_filter = @(x, id) reshape(x(:, rule_quant_id == id), size(x, 1), numSim, []);
-rule_filter2 = @(x, id) reshape(reshape(x(rule_quant_id == id), numSim, []), 1, numSim, []);
 
 % Figure out which neurons to ignore
 filter_ind = (pfc == brain_area) & ...
-    ismember(monkey_names_ind, monkey) & ...
-    (baseline_firing > baseline_bounds(1)) & ...
-    (baseline_firing < baseline_bounds(2));
+    ismember(monkey_names_ind, monkey);
 
 % Filter those neurons out
 covAPC = cat(3, covAPC_file.avpred.(apc_type));
@@ -222,10 +216,7 @@ else
 end
 
 covAPC = covAPC(:,:, filter_ind);
-baseline_firing = baseline_firing(filter_ind);
 ruleByAPC = ruleByAPC(:,:, filter_ind);
-
-baseline_firing = baseline_firing(ones(numSim, 1), :);
 
 mean_covAPC = cell(3, 1);
 mean_ruleByAPC = cell(3, 1);
@@ -233,27 +224,40 @@ ci_covAPC = cell(3, 2);
 ci_ruleByAPC  = cell(3, 2);
 
 % Calculate Statistics
-for rule_ind = 1:3,
+for rule_id = 1:3,
+    filtered_covAPC = rule_filter(covAPC, rule_id, baseline_ind, rule_quant_id);
+    filtered_ruleByAPC = rule_filter(ruleByAPC, rule_id, baseline_ind, rule_quant_id);
+    
     if isNormalized,
-        filtered_baseline = rule_filter2(baseline_firing, rule_ind);
-        mean_covAPC{rule_ind} = mean_norm_apc(rule_filter(covAPC, rule_ind), filtered_baseline);
-        mean_ruleByAPC{rule_ind} = mean_norm_apc(rule_filter(ruleByAPC, rule_ind), filtered_baseline);
+        mean_covAPC{rule_id} = mean_norm_apc(filtered_covAPC, baseline_firing);
+        mean_ruleByAPC{rule_id} = mean_norm_apc(filtered_ruleByAPC, baseline_firing);
         
-        ci_covAPC{rule_ind, 1} = ci_lower_norm_apc(rule_filter(covAPC, rule_ind), filtered_baseline);
-        ci_ruleByAPC{rule_ind, 1} = ci_lower_norm_apc(rule_filter(ruleByAPC, rule_ind), filtered_baseline);
+        ci_covAPC{rule_id, 1} = ci_lower_norm_apc(filtered_covAPC, baseline_firing);
+        ci_ruleByAPC{rule_id, 1} = ci_lower_norm_apc(filtered_ruleByAPC, baseline_firing);
         
-        ci_covAPC{rule_ind, 2} = ci_upper_norm_apc(rule_filter(covAPC, rule_ind), filtered_baseline);
-        ci_ruleByAPC{rule_ind, 2} = ci_upper_norm_apc(rule_filter(ruleByAPC, rule_ind), filtered_baseline);
+        ci_covAPC{rule_id, 2} = ci_upper_norm_apc(filtered_covAPC, baseline_firing);
+        ci_ruleByAPC{rule_id, 2} = ci_upper_norm_apc(filtered_ruleByAPC, baseline_firing);
     else
-        mean_covAPC{rule_ind} = mean_apc(rule_filter(covAPC, rule_ind));
-        mean_ruleByAPC{rule_ind} = mean_apc(rule_filter(ruleByAPC, rule_ind));
+        mean_covAPC{rule_id} = mean_apc(filtered_covAPC);
+        mean_ruleByAPC{rule_id} = mean_apc(filtered_ruleByAPC);
         
-        ci_covAPC{rule_ind, 1} = ci_lower_apc(rule_filter(covAPC, rule_ind));
-        ci_ruleByAPC{rule_ind, 1} = ci_lower_apc(rule_filter(ruleByAPC, rule_ind));
+        ci_covAPC{rule_id, 1} = ci_lower_apc(filtered_covAPC);
+        ci_ruleByAPC{rule_id, 1} = ci_lower_apc(filtered_ruleByAPC);
         
-        ci_covAPC{rule_ind, 2} = ci_upper_apc(rule_filter(covAPC, rule_ind));
-        ci_ruleByAPC{rule_ind, 2} = ci_upper_apc(rule_filter(ruleByAPC, rule_ind));
+        ci_covAPC{rule_id, 2} = ci_upper_apc(filtered_covAPC);
+        ci_ruleByAPC{rule_id, 2} = ci_upper_apc(filtered_ruleByAPC);
     end
 end
+
+end
+
+function [apc] = rule_filter(apc, id, baseline_ind, rule_quant_id)
+
+filter_ind = double((baseline_ind) & (rule_quant_id == id));
+filter_ind(filter_ind == 0) = NaN;
+filter_ind = reshape(filter_ind, [1, size(filter_ind, 1), size(filter_ind, 2)]);
+filter_ind = repmat(filter_ind, [size(apc, 1), 1, 1]);
+
+apc = filter_ind .* apc;
 
 end
