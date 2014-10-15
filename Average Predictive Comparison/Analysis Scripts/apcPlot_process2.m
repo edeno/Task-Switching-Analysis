@@ -74,7 +74,13 @@ for brain_area_ind = 1:2,
             ruleAPC = norm_apc(ruleAPC, baseline_firing);
         end
         
-        rule_quant_bounds = squeeze(quantile(ruleAPC, [0 1/3 2/3 1], 3));
+        baseline_ind = double(squeeze((baseline_firing > baseline_bounds(1)) & (baseline_firing < baseline_bounds(2))));
+        baseline_ind(baseline_ind == 0) = NaN;
+        baseline_ind = reshape(baseline_ind, [1, size(baseline_ind, 1), size(baseline_ind, 2)]);
+        
+        ruleAPC = ruleAPC .* baseline_ind;
+        
+        rule_quant_bounds = squeeze(quantile(ruleAPC, 0:(1/3):1, 3));
         rule_quant_id = bsxfun(@le, squeeze(ruleAPC), rule_quant_bounds(:, 2)) + 3*bsxfun(@gt, squeeze(ruleAPC), rule_quant_bounds(:, 3));
         rule_quant_id(rule_quant_id == 0) = 2;
         
@@ -187,7 +193,7 @@ ci_lower_norm_apc = @(apc, baseline_firing) ...
 ci_upper_norm_apc = @(apc, baseline_firing) ...
     ci_upper_apc(norm_apc(apc, baseline_firing));
 
-baseline_ind = squeeze((baseline_firing < baseline_bounds(1)) | (baseline_firing > baseline_bounds(1)));
+baseline_ind = squeeze((baseline_firing > baseline_bounds(1)) & (baseline_firing < baseline_bounds(2)));
 
 %% Load Files
 covAPC_file = load(sprintf('%s/%s/Collected/apc_collected.mat', apc_dir, curCov));

@@ -150,10 +150,14 @@ catch
     ruleByAPC_file = [];
 end
 
+% Temporary 
+b = load(sprintf('%s/%s/Collected/apc_collected.mat', apc_dir, 'Rule'));
+
 % Some things to sort or filter by
 pfc = logical([covAPC_file.avpred.pfc]);
 monkey_names_ind = upper({covAPC_file.avpred.monkey});
-baseline_firing = [covAPC_file.avpred.baseline_firing];
+baseline_firing = squeeze([b.avpred.baseline_firing])';
+baseline_firing = reshape(baseline_firing, [1 size(baseline_firing, 1) size(baseline_firing, 2)]);
 
 numSamples = covAPC_file.avpred(1).numSamples;
 numSim = covAPC_file.avpred(1).numSim;
@@ -164,7 +168,7 @@ ci_lower_apc = @(apc) quantile(nanmean(apc, 3), .025, 2);
 ci_upper_apc = @(apc) quantile(nanmean(apc, 3), .975, 2);
 
 norm_apc = @(apc, baseline_firing)  ...
-    apc ./ repmat(baseline_firing, [size(apc, 1), numSim, 1]);
+    apc ./ repmat(baseline_firing, [size(apc, 1), 1, 1]);
 
 mean_norm_apc = @(apc, baseline_firing) ...
     mean_apc(norm_apc(apc, baseline_firing));
@@ -175,9 +179,7 @@ ci_upper_norm_apc = @(apc, baseline_firing) ...
 
 % Figure out which neurons to ignore
 filter_ind = (pfc == brain_area) & ...
-    ismember(monkey_names_ind, monkey) & ...
-    (baseline_firing > baseline_bounds(1)) & ...
-    (baseline_firing < baseline_bounds(2));
+    ismember(monkey_names_ind, monkey);
 
 % Filter those neurons out
 covAPC = cat(3, covAPC_file.avpred.(apc_type));
@@ -189,9 +191,16 @@ else
 end
 
 covAPC = covAPC(:,:, filter_ind);
-baseline_firing = baseline_firing(filter_ind);
-baseline_firing = reshape(baseline_firing, [1 1 size(baseline_firing, 2)]);
 ruleByAPC = ruleByAPC(:,:, filter_ind);
+baseline_firing = baseline_firing(:, :, filter_ind);
+
+baseline_ind = (baseline_firing > baseline_bounds(1)) & ...
+    (baseline_firing < baseline_bounds(2));
+baseline_ind = double(baseline_ind);
+baseline_ind(baseline_ind == 0) = NaN;
+
+covAPC = covAPC .* repmat(baseline_ind, [size(covAPC, 1), 1, 1]);
+ruleByAPC = ruleByAPC .* repmat(baseline_ind, [size(ruleByAPC, 1), 1, 1]);
 
 % Calculate Statistics
 if isNormalized,
