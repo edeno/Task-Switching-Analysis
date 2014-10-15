@@ -1,6 +1,6 @@
 function [summed_weights] = apc_weights(other_inputs, isCategorical)
 
-covx = cov(other_inputs);
+covx = nancov(other_inputs);
 
 % Set categorical covariance to zero, variance to one
 covx(isCategorical, :) = 0;
@@ -19,8 +19,8 @@ parfor cur_data = 1:numData, % Loop through all data points (i)
     x_diff = zeros(numOtherPredictors, numData);
     x_diff(~isCategorical, :) = bsxfun(@minus, other_inputs(cur_data, ~isCategorical), other_inputs(:, ~isCategorical))';
     x_diff(isCategorical, :) = double(bsxfun(@ne, other_inputs(cur_data, isCategorical), other_inputs(:, isCategorical))');
-    weights = 1./(1+sum(x_diff.*(covx\x_diff)));
-    summed_weights(cur_data) = sum(weights);
+    weights = 1./(1+nansum(x_diff.*(covx\x_diff)));
+    summed_weights(cur_data) = nansum(weights);
     
 end
 

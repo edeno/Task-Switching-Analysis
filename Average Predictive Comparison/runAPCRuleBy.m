@@ -2,7 +2,7 @@
 % another covariate for each time period and model run.
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
-numSim = 10000;
+numSim = 5000;
 numSamples = 1000;
 overwrite = true;
 
