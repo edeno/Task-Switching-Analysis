@@ -335,6 +335,7 @@ end
 behavior.dist_err = dist_err;
 
 dist_err(isnan(dist_err)) = 11;
+dist_err(dist_err == 0) = NaN;
 dist_err(dist_err >= 11) = 11;
 
 % non-cumulative version of error history
