@@ -24,6 +24,7 @@ level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov
 
 colorRate = 3;
 orientRate = 12;
+diffRate = orientRate - colorRate;
 
 Rate(level_ind('Rule', 'Color')) = colorRate;
 Rate(level_ind('Rule', 'Orientation')) = orientRate;

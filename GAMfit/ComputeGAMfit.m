@@ -98,7 +98,7 @@ constant_ind = gam.constant_ind;
 
 if ~flag
     fprintf('\nFitting GAMs ...\n');
-    for curNeuron = 1:numNeurons,
+    parfor curNeuron = 1:numNeurons,
         
         fprintf('\nNeuron %d \n', curNeuron);
         if numFolds > 1
