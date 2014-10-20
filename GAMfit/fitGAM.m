@@ -176,8 +176,6 @@ u1 = u(1:numParam, :);
 % effective degrees of freedom edf = trace(u1*u1'); runs out of memory if computed directly
 edf = sum(u1(:).*u1(:));
 
-
-
 %% Return fitInfo for diagnostics
 fitInfo.sqrtw = sqrtw;
 fitInfo.sqrtPenMatrix = sqrtPenMatrix;

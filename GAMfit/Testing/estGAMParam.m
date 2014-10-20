@@ -1,8 +1,9 @@
-function [par_est, fitInfo, gam, designMatrix] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect)
+function [neurons, gam, designMatrix, spikes] = estGAMParam(Rate, GLMCov, model_name, trial_id, incorrect)
 
 dt = 1E-3;
 spikes = simPoisson(Rate, dt);
 [designMatrix, gam] = gamModelMatrix(model_name, GLMCov, spikes);
+spikes_temp = spikes;
 
 designMatrix(incorrect, :) = [];
 spikes(incorrect, :) = [];
@@ -39,8 +40,17 @@ end
 
 const = 'off';
 
-[par_est, fitInfo] = fitGAM(designMatrix(training_idx, :), spikes(training_idx), sqrtPen, ...
+[neurons(1).par_est, fitInfo] = fitGAM(designMatrix(training_idx, :), spikes(training_idx), sqrtPen, ...
     'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
     'constraints', constraints);
 
+[neurons(1).stats] = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
+    'Compact', false);
+
+neurons.wire_number = 1;
+neurons.unit_number = 1;
+neurons.pfc = 1;
+neurons.monkey = 'Monkey';
+
+spikes = spikes_temp;
 end

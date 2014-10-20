@@ -104,7 +104,7 @@ if ~flag
             pred_error = nan(numFolds, numLambda);
             par_est_path_temp = nan(numParam, numLambda, numFolds);
             edf_temp = nan(numLambda, numFolds);
-           
+            
             for curFold = 1:numFolds
                 
                 fprintf('\t Lambda Selection: Fold #%d\n', curFold);
@@ -191,8 +191,16 @@ if ~flag
 end
 
 %% Save to file
-saveMillerlab('edeno', save_file_name, 'neurons', 'trial_id', ...
-    'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', 'designMatrix', ...
-    '-v7.3');
+[~, hostname] = system('hostname');
+hostname = strcat(hostname);
+if strcmp(hostname, 'millerlab'),
+    saveMillerlab('edeno', save_file_name, 'neurons', 'trial_id', ...
+        'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', 'designMatrix', ...
+        '-v7.3');
+else
+    save(save_file_name, 'neurons', 'trial_id', ...
+        'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', 'designMatrix', ...
+        '-v7.3');
+end
 
 end
