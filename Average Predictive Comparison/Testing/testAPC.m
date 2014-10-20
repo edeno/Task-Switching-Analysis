@@ -15,7 +15,7 @@ gamParams.numFolds = 1;
 gamParams.ridgeLambda = 1;
 gamParams.smoothLambda = 1;
 gamParams.predType = 'Dev';
-%%
+%% Binary Categorical Covariate - Rule
 Rate = nan(size(trial_time));
 
 cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
