@@ -1,30 +1,21 @@
-%% Test APC
 clear all; close all; clc;
-% Set Parameters
+% Set Parameters for GLMCov
 numTrials = 2000;
-numSim = 5000;
-numSamples = 2000;
-gamParams.includeIncorrect = false;
-gamParams.includeBeforeTimeZero = false;
-
-% Create Folders
-timePeriod = 'timePeriod';
-session_name = 'session_name';
 main_dir = 'C:\Users\edeno\Documents\Task Switching Testing';
 
-data_info.processed_dir = [main_dir, '/Processed Data'];
-timePeriod_dir = [data_info.processed_dir, '/', timePeriod];
-models_dir = [timePeriod_dir, '/Models'];
-GLMCov_dir = [timePeriod_dir, '/GLMCov'];
+[GLMCov_name, timePeriod_dir, session_name] = create_testGLMCov(main_dir, numTrials);
+load(GLMCov_name);
 
-mkdir(data_info.processed_dir);
-mkdir(timePeriod_dir);
-mkdir(models_dir);
-mkdir(GLMCov_dir);
-save([main_dir, '/paramSet.mat'], 'data_info');
-
-[GLMCov, trial_id, trial_time, incorrect] = simSession(numTrials);
-%% Binary Categorical Covariate - Rule
+% Set Parameters for GAMfit
+gamParams.includeIncorrect = false;
+gamParams.includeBeforeTimeZero = false;
+gamParams.regressionModel_str = 'Rule';
+gamParams.overwrite = true;
+gamParams.numFolds = 1;
+gamParams.ridgeLambda = 1;
+gamParams.smoothLambda = 1;
+gamParams.predType = 'Dev';
+%%
 Rate = nan(size(trial_time));
 
 cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
@@ -37,19 +28,13 @@ orientRate = 12;
 Rate(level_ind('Rule', 'Color')) = colorRate;
 Rate(level_ind('Rule', 'Orientation')) = orientRate;
 
-gamParams.regressionModel_str = 'Rule';
-model_dir = [models_dir, '/', gamParams.regressionModel_str];
-mkdir(model_dir);
-[neurons, gam, designMatrix, spikes] = estGAMParam(Rate, GLMCov, gamParams.regressionModel_str, trial_id, incorrect);
-numNeurons = length(neurons);
-save([GLMCov_dir, '/', session_name, '_GLMCov.mat'], 'GLMCov', 'trial_id', 'trial_time', 'incorrect', 'spikes');
-save([models_dir, '/', gamParams.regressionModel_str, '/', session_name, '_GAMfit.mat'], 'gam', 'gamParams', 'neurons', 'numNeurons', 'designMatrix');
+% Estimate GAMfit
+[neurons, gam, designMatrix, spikes, model_dir] = testComputeGAMfit_wrapper(gamParams, Rate, GLMCov_name, timePeriod_dir, session_name);
 
-apc_dir = [models_dir, '/', gamParams.regressionModel_str, '/APC'];
+% Set Parameters for APC
+numSim = 5000;
+numSamples = 1000;
+timePeriod = 'timePeriod';
 factor_name = 'Rule';
-save_folder = [apc_dir, '/', factor_name, '/'];
-mkdir(save_folder);
 
-[avpred] = avrPredComp(session_name, timePeriod, gamParams.regressionModel_str, factor_name, numSim, numSamples, save_folder, main_dir);
-mean(avpred.apc)
-quantile(avpred.apc, [.025 .975])
+[avpred] = testAvrPredComp_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);

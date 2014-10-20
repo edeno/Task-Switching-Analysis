@@ -1,9 +1,12 @@
-function [] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, save_dir)
+function [neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, save_dir)
 
 %% Setup Save File
 save_file_name = sprintf('%s/%s_GAMfit.mat', save_dir, session_name);
 
 if exist(save_file_name, 'file') && ~gamParams.overwrite,
+    designMatrix = [];
+    gam = [];
+    neurons = [];
     fprintf('File %s already exists. Skipping.\n', save_file_name);
     return;
 end
@@ -95,7 +98,7 @@ constant_ind = gam.constant_ind;
 
 if ~flag
     fprintf('\nFitting GAMs ...\n');
-    parfor curNeuron = 1:numNeurons,
+    for curNeuron = 1:numNeurons,
         
         fprintf('\nNeuron %d \n', curNeuron);
         if numFolds > 1
