@@ -332,9 +332,11 @@ for err_ind = 1:length(err)+1
         dist_err(err(err_ind-1):end) = 0:(length(dist_err) - err(err_ind-1));
     end
 end
+
+dist_err(1:find(behavior.incorrect, 1)-1) = 11;
 behavior.dist_err = dist_err;
 
-dist_err(isnan(dist_err)) = 11;
+
 dist_err(dist_err == 0) = NaN;
 dist_err(dist_err >= 11) = 11;
 
