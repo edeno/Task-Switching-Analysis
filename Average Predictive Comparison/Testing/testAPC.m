@@ -1,7 +1,8 @@
 clear all; close all; clc;
 % Set Parameters for GLMCov
 numTrials = 2000;
-main_dir = 'C:\Users\edeno\Documents\Task Switching Testing';
+drop_path = getappdata(0, 'drop_path');
+main_dir = sprintf('%s/Task Switching Testing', drop_path);
 
 [GLMCov_name, timePeriod_dir, session_name] = create_testGLMCov(main_dir, numTrials);
 load(GLMCov_name);
