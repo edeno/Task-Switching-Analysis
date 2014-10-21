@@ -6,7 +6,7 @@
 function [avpred] = avrPredComp_RuleBy(session_name, timePeriod, model_name, by_name, numSim, numSamples, save_folder, main_dir)
 
 % Load covariate fit and model fit information
-load([main_dir, '/paramSet.mat'], 'cov_info', 'data_info');
+load([main_dir, '/paramSet.mat'], 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
 load(GLMCov_name, 'GLMCov', 'incorrect', 'spikes', 'trial_id', 'trial_time')
 GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
@@ -68,7 +68,7 @@ rule_ind = ismember({GLMCov.name}, 'Rule');
 by_ind = ismember({GLMCov.name}, by_name);
 other_ind = ismember({GLMCov.name}, unique_cov_names) & (~rule_ind | ~by_ind);
 
-by_data = GLMCov(by_ind).data;  
+by_data = GLMCov(by_ind).data;
 other_data = {GLMCov(other_ind).data};
 
 isCategorical = [GLMCov(other_ind).isCategorical] & ~ismember({GLMCov(other_ind).name}, {'Switch History', 'Previous Error History Indicator'});
@@ -90,7 +90,7 @@ end
 for by_id = 1:length(by_levels),
     
     %% Figure out the matrix of other inputs
-    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),        
+    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
         if mod(by_id, 2) == 1,
             history = by_data(:, ~ismember(1:length(by_levels), by_id:by_id+1));
         else
@@ -140,7 +140,7 @@ for by_id = 1:length(by_levels),
     end
     [color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
     color_design = color_design(sample_ind, :);
-
+    
     color_est = nan(numData, numNeurons, numSim);
     for neuron_ind = 1:numNeurons,
         color_est(:, neuron_ind, :) = exp(color_design*squeeze(par_est(:, neuron_ind, :)))*1000;
@@ -154,14 +154,14 @@ for by_id = 1:length(by_levels),
     
     den = nansum(summed_weights);
     
-    apc = squeeze(num./den);
-    abs_apc = squeeze(abs_num./den);
-    rms_apc = squeeze(sqrt(rms_num)./den);
+    apc = num./den;
+    abs_apc = abs_num./den;
+    rms_apc = sqrt(rms_num)./den;
     
     for neuron_ind = 1:numNeurons,
-        avpred(neuron_ind).apc(by_id,:) = apc(neuron_ind, :);
-        avpred(neuron_ind).abs_apc(by_id,:) = abs_apc(neuron_ind, :);
-        avpred(neuron_ind).rms_apc(by_id,:) = rms_apc(neuron_ind, :);
+        avpred(neuron_ind).apc(by_id,:) = squeeze(apc(:, neuron_ind, :));
+        avpred(neuron_ind).abs_apc(by_id,:) = squeeze(abs_apc(:, neuron_ind, :));
+        avpred(neuron_ind).rms_apc(by_id,:) = squeeze(rms_apc(:, neuron_ind, :));
     end
     
 end
@@ -179,6 +179,12 @@ baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.by_levels] = deal(by_levels);
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
-saveMillerlab('edeno', save_file_name, 'avpred');
+[~, hostname] = system('hostname');
+hostname = strcat(hostname);
+if strcmp(hostname, 'millerlab'),
+    saveMillerlab('edeno', save_file_name, 'avpred');
+else
+    save(save_file_name, 'avpred');
+end
 
 end
