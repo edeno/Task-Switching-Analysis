@@ -47,7 +47,7 @@ Rate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Left')) = 12;
 
 factor_name = 'Response Direction';
 [avpred] = testAvrPredComp_RuleBy_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
-mean(avpred.apc, 2)
+mean(avpred.apc, 2)'
 diffRate = [20 - 60, 40 - 120]
 %% Two Covariates - Rule + Response Direction: Mispecified Model
 gamParams.regressionModel_str = 'Rule + Response Direction';
@@ -65,7 +65,7 @@ Rate(level_ind('Rule', 'Orientation')) = orientRate;
 % Set Parameters for APC
 factor_name = 'Response Direction';
 [avpred] = testAvrPredComp_RuleBy_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
-mean(avpred.apc, 2)
+mean(avpred.apc, 2)'
 diffRate = [orientRate - colorRate, orientRate - colorRate]
 
 %% Two Covariates Interaction - Rule * Response Direction
@@ -87,7 +87,7 @@ Rate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Left')) = 18;
 % Set Parameters for APC
 factor_name = 'Response Direction';
 [avpred] = testAvrPredComp_RuleBy_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
-mean(avpred.apc, 2)
+mean(avpred.apc, 2)'
 diffRate = [2 - 6, 4 - 18]
 
 %% Two Covariates Interaction - Rule * Response Direction: Mispecified Model
@@ -109,7 +109,7 @@ Rate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Left')) = 12;
 % Set Parameters for APC
 factor_name = 'Response Direction';
 [avpred] = testAvrPredComp_RuleBy_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
-mean(avpred.apc, 2)
+mean(avpred.apc, 2)'
 diffRate = [2 - 6, 4 - 12]
 
 %% Two Covariates Interaction + Other Covariate - Rule * Response Direction + Switch History
@@ -125,13 +125,13 @@ Rate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Right')) = 6;
 % Color - Left
 Rate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Left')) = 18;
 
-trueSwitch = [3.0 2.5 1.0 0.5 0.25 0.25 0.25 0.25 0.25 0.25 2.5];
+trueSwitch = [4.0 2.0 1.0 1.0 1.0 2.0 1.0 1.0 1.0 1.0 0.0];
 for rep_ind = 1:10,
-    idx = Rate(level_ind('Switch History', ['Repetition', num2str(rep_ind)]));
-    Rate(idx) = Rate(idx) * trueSwitch(rep_ind);
+    idx = level_ind('Switch History', ['Repetition', num2str(rep_ind)]);
+    Rate(idx) = Rate(idx) + trueSwitch(rep_ind);
 end
 idx = level_ind('Switch History', 'Repetition11+');
-Rate(idx) = Rate(idx) * trueSwitch(11);
+Rate(idx) = Rate(idx) + trueSwitch(11);
 
 % Estimate GAMfit
 [neurons, gam, designMatrix, spikes, model_dir] = testComputeGAMfit_wrapper(gamParams, Rate, GLMCov_name, timePeriod_dir, session_name);
@@ -139,4 +139,9 @@ Rate(idx) = Rate(idx) * trueSwitch(11);
 % Set Parameters for APC
 factor_name = 'Response Direction';
 [avpred] = testAvrPredComp_RuleBy_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
-mean(avpred.apc, 2)
+diffRate = [2-6, 4-18]
+mean(avpred.apc, 2)'
+
+factor_name = 'Switch History';
+[avpred] = testAvrPredComp_wrapper(model_dir, gamParams, factor_name, session_name, timePeriod, numSim, numSamples, main_dir);
+mean(avpred.apc, 2)'
