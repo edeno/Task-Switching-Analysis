@@ -61,27 +61,27 @@ time = time(good_ind);
 time = time(:)';
 data = data(:)';
 
-prep = behavior.Prep_Time(good_ind);
-rule = behavior.Rule(good_ind);
-sw = behavior.Switch(good_ind);
-incongruent = behavior.Congruency(good_ind);
-sample_ident = behavior.Test_Stimulus(good_ind);
-rule_cues = behavior.Rule_Cues(good_ind);
-rule_cue_switch = behavior.Rule_Cue_Switch(good_ind);
-sample_color = behavior.Test_Stimulus_Color(good_ind);
-sample_orient = behavior.Test_Stimulus_Orientation(good_ind);
-norm_prep = behavior.Normalized_Prep_Time(good_ind);
-left_choice = behavior.Response_Direction(good_ind);
-prev_error = behavior.Previous_Error(good_ind);
-prev_error_indicator = behavior.Previous_Error_History(good_ind, :);
-switch_indicator = behavior.Switch_History(good_ind);
-switch_dist = behavior.dist_sw(good_ind);
-err_dist = behavior.dist_err(good_ind);
+Prep_Time = behavior.Prep_Time(good_ind);
+Rule = behavior.Rule(good_ind);
+Rule_Switch = behavior.Switch(good_ind);
+Congruency = behavior.Congruency(good_ind);
+Test_Stimulus = behavior.Test_Stimulus(good_ind);
+Rule_Cues = behavior.Rule_Cues(good_ind);
+Rule_Cue_Switch = behavior.Rule_Cue_Switch(good_ind);
+Test_Stimulus_Color = behavior.Test_Stimulus_Color(good_ind);
+Test_Stimulus_Orientation = behavior.Test_Stimulus_Orientation(good_ind);
+Normalized_Prep_Time = behavior.Normalized_Prep_Time(good_ind);
+Response_Direction = behavior.Response_Direction(good_ind);
+Previous_Error = behavior.Previous_Error(good_ind);
+Previous_Error_History = behavior.Previous_Error_History(good_ind, :);
+Switch_History = behavior.Switch_History(good_ind);
+dist_sw = behavior.dist_sw(good_ind);
+dist_err = behavior.dist_err(good_ind);
 incorrect = behavior.incorrect(good_ind);
-indicator_prep = behavior.Indicator_Prep_Time(good_ind);
-congruency_history = behavior.Congruency_History(good_ind, :);
-prev_congruency = behavior.Previous_Congruency(good_ind);
-error_hist_indicator = behavior.Previous_Error_History_Indicator(good_ind);
+Indicator_Prep_Time = behavior.Indicator_Prep_Time(good_ind);
+Congruency_History = behavior.Congruency_History(good_ind, :);
+Previous_Congruency = behavior.Previous_Congruency(good_ind);
+Previous_Error_History_Indicator = behavior.Previous_Error_History_Indicator(good_ind);
 
 %% Do some organizing
 spikes = cat(1, data{:});
@@ -107,71 +107,71 @@ incorrect = incorrect(trial_id)';
 GLMCov = cov_info;
 
 % Prep Time
-prep = prep(trial_id);
-GLMCov(1).data =  prep;
+Prep_Time = Prep_Time(trial_id);
+GLMCov(1).data =  Prep_Time;
 
 % Rule
-GLMCov(2).data =  rule(trial_id);
+GLMCov(2).data =  Rule(trial_id);
 
 % Switch
-GLMCov(3).data = sw(trial_id);
+GLMCov(3).data = Rule_Switch(trial_id);
 
 % Congruency
-GLMCov(4).data = incongruent(trial_id);
+GLMCov(4).data = Congruency(trial_id);
 
 % Test Stimulus
-GLMCov(5).data = sample_ident(trial_id);
+GLMCov(5).data = Test_Stimulus(trial_id);
 
 % Rule Cues
-GLMCov(6).data = rule_cues(trial_id);
+GLMCov(6).data = Rule_Cues(trial_id);
 
 % Rule Cue Switch
-GLMCov(7).data = rule_cue_switch(trial_id);
+GLMCov(7).data = Rule_Cue_Switch(trial_id);
 
 % Test Stimulus Color
-GLMCov(8).data = sample_color(trial_id);
+GLMCov(8).data = Test_Stimulus_Color(trial_id);
 
 % Test Stimulus Orientation
-GLMCov(9).data = sample_orient(trial_id);
+GLMCov(9).data = Test_Stimulus_Orientation(trial_id);
 
 % Normalized Prep Time
-GLMCov(10).data = norm_prep(trial_id);
+GLMCov(10).data = Normalized_Prep_Time(trial_id);
 
 % Response Direction
-GLMCov(11).data = left_choice(trial_id);
+GLMCov(11).data = Response_Direction(trial_id);
 
 % Previous Error
-GLMCov(12).data = prev_error(trial_id);
+GLMCov(12).data = Previous_Error(trial_id);
 
 % Previous Error Indicator
-GLMCov(13).data = prev_error_indicator(trial_id, :);
+GLMCov(13).data = Previous_Error_History(trial_id, :);
 
 % Switch History
-GLMCov(14).data = switch_indicator(trial_id, :);
+GLMCov(14).data = Switch_History(trial_id, :);
 
 % Trial Time
 GLMCov(15).data = trial_time;
 
 % Switch Distance
-GLMCov(16).data = switch_dist(trial_id);
+GLMCov(16).data = dist_sw(trial_id);
 
 % Error Distance
-GLMCov(17).data = err_dist(trial_id);
+GLMCov(17).data = dist_err(trial_id);
 
 % Congruency History
-GLMCov(18).data = congruency_history(trial_id, :);
+GLMCov(18).data = Congruency_History(trial_id, :);
 
 % Indicator Prep Time
-GLMCov(19).data = indicator_prep(trial_id);
+GLMCov(19).data = Indicator_Prep_Time(trial_id);
 
 % Previous Congruency
-GLMCov(20).data = prev_congruency(trial_id);
+GLMCov(20).data = Previous_Congruency(trial_id);
 
 % Error History - non-cumulative errors
-GLMCov(22).data = error_hist_indicator(trial_id);
+GLMCov(22).data = Previous_Error_History_Indicator(trial_id);
 
 % Indicator function for when the test stimulus is on
-sample_on = trial_time >= prep;
+sample_on = trial_time >= Prep_Time;
 
 % Compute the number of trials for each time point
 [n, bin] = histc(trial_time, min(trial_time):max(trial_time));
