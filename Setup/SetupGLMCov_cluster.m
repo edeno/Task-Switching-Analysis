@@ -36,7 +36,19 @@ load(beh_file);
 beh_ind = ismember({behavior.session_name}, session_name);
 behavior = behavior(beh_ind);
 
-
+% Since the rule hasn't been cued yet in the intertrial interval and the
+% fixation interval, we code the number of repetitions of the rule the same
+% as the previous trial
+if ismember(timePeriod, {'Intertrial Interval', 'Fixation'}),
+    behavior.Switch(behavior.Switch == 2) = 1;
+    behavior.Rule_Cue_Switch(behavior.Rule_Cue_Switch == 2) = 1;
+    behavior.Switch_History(behavior.Switch_History < 11) = behavior.Switch_History(behavior.Switch_History < 11) - 1;
+    behavior.Switch_History(behavior.Switch_History == 0) = 11;
+    behavior.Switch_History(find(behavior.Switch_History == 9)+1) = 10;
+    behavior.Switch_History(1) = NaN;
+    behavior.dist_sw(2:end) = behavior.dist_sw(1:end-1);
+    behavior.dist_sw(1) = NaN;
+end
 %% Setup Covariates
 
 %% Want only consistent attempts
@@ -62,7 +74,7 @@ norm_prep = behavior.Normalized_Prep_Time(good_ind);
 left_choice = behavior.Response_Direction(good_ind);
 prev_error = behavior.Previous_Error(good_ind);
 prev_error_indicator = behavior.Previous_Error_History(good_ind, :);
-switch_indicator = behavior.Switch_History(good_ind, :);
+switch_indicator = behavior.Switch_History(good_ind);
 switch_dist = behavior.dist_sw(good_ind);
 err_dist = behavior.dist_err(good_ind);
 incorrect = behavior.incorrect(good_ind);
