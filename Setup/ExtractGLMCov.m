@@ -16,7 +16,7 @@ load('paramSet.mat', 'session_names', 'data_info', 'numSessions', 'validFolders'
 % Overwrite?
 isOverwrite = true;
 % Set Number of History Dependent Lags
-numMaxLags = 125; % Spiking history lags
+numMaxLags = 20; % Spiking history lags
 
 %% Loop through Time Periods to Extract Spikes
 
