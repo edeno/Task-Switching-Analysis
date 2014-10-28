@@ -6,16 +6,13 @@ numSim = 5000;
 numSamples = 1000;
 overwrite = true;
 
-%%
-timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Saccade', 'Reward'};
+%% Pre-Test Stimulus
+timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
+model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Previous Congruency';
 
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Previous Congruency';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
 for model_ind = 1:length(model)
-    % Parse Model string for rule interactions
+    % Parse Model string for covariates
     parsedModelstr = strtrim(regexp(regexp(model{model_ind}, '+', 'split'), '*', 'split'));
-    isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
-    parsedModelstr = parsedModelstr(isRuleInteraction);
     type = unique([parsedModelstr{:}]);
     for time_ind = 1:length(timePeriods),
         % Compute average predicitve comparson of rule at each level of the
@@ -27,16 +24,13 @@ for model_ind = 1:length(model)
     end
 end
 
-%%
-timePeriods = {'Stimulus Response'};
+%% Post-Test Stimulus
+timePeriods = {'Stimulus Response', 'Saccade', 'Reward', 'Rule Response'};
+model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Normalized Prep Time';
 
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
 for model_ind = 1:length(model)
-    % Parse Model string for rule interactions
+    % Parse Model string for covariates
     parsedModelstr = strtrim(regexp(regexp(model{model_ind}, '+', 'split'), '*', 'split'));
-    isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
-    parsedModelstr = parsedModelstr(isRuleInteraction);
     type = unique([parsedModelstr{:}]);
     for time_ind = 1:length(timePeriods),
         % Compute average predicitve comparson of rule at each level of the

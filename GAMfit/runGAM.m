@@ -4,11 +4,9 @@ ridgeLambda = 1;
 numFolds = 1;
 isOverwrite = true;
 
-%%
-timePeriods = {'Rule Response', 'Stimulus Response'};
-
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time';
+%% Pre-Test Stimulus
+timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
+model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Previous Congruency';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
@@ -18,11 +16,9 @@ for time_ind = 1:length(timePeriods),
     end
 end
 
-%%
-timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Saccade', 'Reward'};
-
-model{1} = 'Rule * Switch History + Rule * Previous Error History + Rule * Previous Congruency';
-model{2} = 'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency';
+%% Post-Test Stimulus
+timePeriods = {'Stimulus Response', 'Saccade', 'Reward', 'Rule Response'};
+model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Normalized Prep Time';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
@@ -31,3 +27,4 @@ for time_ind = 1:length(timePeriods),
         
     end
 end
+
