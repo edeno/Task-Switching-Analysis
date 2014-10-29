@@ -1,8 +1,7 @@
 clear all; close all; clc;
-isNormalized = false;
 apc_type = 'apc';
 
-valid_models = {'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Previous Congruency', ...
-    'Rule * Switch History + Rule * Previous Error History Indicator + Rule * Congruency History + Response Direction + Rule * Normalized Prep Time'};
+valid_models = {'Rule * Switch History + Rule * Previous Error + Rule * Previous Congruency', ...
+    'Rule * Switch History + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Normalized Prep Time'};
 
-apcPlot_process3(apc_type, isNormalized, valid_models);
+apcPlot_process3(apc_type, valid_models);

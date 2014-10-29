@@ -1,4 +1,4 @@
-function apcPlot_process3(apc_type, isNormalized, valid_models)
+function apcPlot_process3(apc_type, valid_models)
 %% Set Parameters
 main_dir = '/data/home/edeno/Task Switching Analysis';
 
@@ -51,6 +51,11 @@ for time_ind = 1:numTimePeriods,
         avpred.session_name, num2cell(avpred.wire_number), num2cell(avpred.unit_number), ...
         'UniformOutput', false);
     avpred.Properties.DimensionNames = {'Neurons', 'Variable'};
+    avpred.Properties.VariableNames{'session_name'} = 'Session_Name';
+    avpred.Properties.VariableNames{'wire_number'} = 'Wire_Number';
+    avpred.Properties.VariableNames{'unit_number'} = 'Unit_Number';
+    avpred.Properties.VariableNames{'session_name'} = 'Session_Name';
+    
     % Loop over covariates
     for cov_ind = find(ismember(valid_covariates, apc_names)),
         curCov = valid_covariates{cov_ind};
