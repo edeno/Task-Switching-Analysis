@@ -54,7 +54,6 @@ for time_ind = 1:numTimePeriods,
     avpred.Properties.VariableNames{'session_name'} = 'Session_Name';
     avpred.Properties.VariableNames{'wire_number'} = 'Wire_Number';
     avpred.Properties.VariableNames{'unit_number'} = 'Unit_Number';
-    avpred.Properties.VariableNames{'session_name'} = 'Session_Name';
     
     % Loop over covariates
     for cov_ind = find(ismember(valid_covariates, apc_names)),
