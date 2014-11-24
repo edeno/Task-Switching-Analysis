@@ -147,21 +147,22 @@ for by_id = 1:length(by_levels),
     end
     
     rule_diff_est = orientation_est - color_est;
+    rule_sum_est = orientation_est + color_est;
     
     num = nansum(bsxfun(@times, summed_weights, rule_diff_est));
     abs_num = nansum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
-    rms_num = nansum(bsxfun(@times, summed_weights, rule_diff_est.^2));
+    norm_num = nansum(bsxfun(@times, summed_weights, rule_diff_est./rule_sum_est));
     
     den = nansum(summed_weights);
     
     apc = num./den;
     abs_apc = abs_num./den;
-    rms_apc = sqrt(rms_num)./den;
+    norm_apc = sqrt(norm_num)./den;
     
     for neuron_ind = 1:numNeurons,
         avpred(neuron_ind).apc(by_id,:) = squeeze(apc(:, neuron_ind, :));
         avpred(neuron_ind).abs_apc(by_id,:) = squeeze(abs_apc(:, neuron_ind, :));
-        avpred(neuron_ind).rms_apc(by_id,:) = squeeze(rms_apc(:, neuron_ind, :));
+        avpred(neuron_ind).norm_apc(by_id,:) = squeeze(norm_apc(:, neuron_ind, :));
     end
     
 end

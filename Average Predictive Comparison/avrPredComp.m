@@ -139,21 +139,22 @@ for factor_id = 1:numFactors,
         end
         
         diff_est = curLevel_est - lastLevel_est;
+        sum_est = curLevel_est + lastLevel_est;
         
         num = nansum(bsxfun(@times, summed_weights, diff_est));
         abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
-        rms_num = nansum(bsxfun(@times, summed_weights, diff_est.^2));
+        norm_num = nansum(bsxfun(@times, summed_weights, diff_est./sum_est));
         
         den = nansum(summed_weights);
         
         apc = num./den;
         abs_apc = abs_num./den;
-        rms_apc = sqrt(rms_num)./den;
+        norm_apc = sqrt(norm_num)./den;
         
         for neuron_ind = 1:numNeurons,
             avpred(neuron_ind).apc(counter_idx,:) = squeeze(apc(:, neuron_ind, :));
             avpred(neuron_ind).abs_apc(counter_idx,:) = squeeze(abs_apc(:, neuron_ind, :));
-            avpred(neuron_ind).rms_apc(counter_idx,:) = squeeze(rms_apc(:, neuron_ind, :));
+            avpred(neuron_ind).norm_apc(counter_idx,:) = squeeze(norm_apc(:, neuron_ind, :));
         end
         counter_idx = counter_idx + 1;
     end
