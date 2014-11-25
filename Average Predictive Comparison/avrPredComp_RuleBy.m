@@ -157,7 +157,7 @@ for by_id = 1:length(by_levels),
     
     apc = num./den;
     abs_apc = abs_num./den;
-    norm_apc = sqrt(norm_num)./den;
+    norm_apc = norm_num./den;
     
     for neuron_ind = 1:numNeurons,
         avpred(neuron_ind).apc(by_id,:) = squeeze(apc(:, neuron_ind, :));
