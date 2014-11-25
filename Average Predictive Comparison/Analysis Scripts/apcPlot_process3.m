@@ -50,7 +50,7 @@ for time_ind = 1:numTimePeriods,
     avpred.Properties.RowNames = cellfun(@(x,y,z) sprintf('%s_%s_%s', x, num2str(y), num2str(z)), ...
         avpred.session_name, num2cell(avpred.wire_number), num2cell(avpred.unit_number), ...
         'UniformOutput', false);
-    avpred.Properties.DimensionNames = {'Neurons', 'Variable'};
+    avpred.Properties.DimensionNames = {'Name', 'Variable'};
     avpred.Properties.VariableNames{'session_name'} = 'Session_Name';
     avpred.Properties.VariableNames{'wire_number'} = 'Wire_Number';
     avpred.Properties.VariableNames{'unit_number'} = 'Unit_Number';
