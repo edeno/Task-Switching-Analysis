@@ -50,6 +50,13 @@ Rule_Cues = ruleCue_levels(behavior.Rule_Cues);
 Rule_Cue_Repetition = ruleCueRepetition_levels(behavior.Rule_Cue_Switch);
 Incorrect = incorrect_levels(behavior.incorrect + 1);
 
+fixOn_time = behavior.ITI_Time;
+ruleOn_time = fixOn_time + behavior.fixOn_time + behavior.Fix_Time; % Fix spot on + fix spot accquired + fixation time
+stimOn_time = ruleOn_time + behavior.Prep_Time;
+react_time = stimOn_time + behavior.Reaction_Time;
+saccade_time = react_time + behavior.Saccade_Time;
+reward_time = saccade_time + behavior.Reward_Time;
+
 Rule_Repetition = behavior.Switch_History(isAttempted);
 Rule = Rule(isAttempted)';
 Response_Direction = Response_Direction(isAttempted)';
@@ -62,14 +69,26 @@ Rule_Cues = Rule_Cues(isAttempted)';
 Rule_Cue_Repetition = Rule_Cue_Repetition(isAttempted)';
 Incorrect = Incorrect(isAttempted)';
 
+fixOn_time = fixOn_time(isAttempted);
+ruleOn_time = ruleOn_time(isAttempted);
+stimOn_time = stimOn_time(isAttempted);
+react_time = react_time(isAttempted);
+saccade_time = saccade_time(isAttempted);
+reward_time = reward_time(isAttempted);
+
 for trial_ind = 1:numTrials,
     
     cur_trial = ismember(trial_id, trial_num(trial_ind));
     trials(trial_ind).trial_id = trial_num(trial_ind);
-    trials(trial_ind).start_time = min(trial_time(cur_trial));
-    trials(trial_ind).rule_onset = 0;
-    trials(trial_ind).stim_onset = Preparation_Time(trial_num(trial_ind));
-    trials(trial_ind).react_time = max(trial_time(cur_trial));
+    
+    trials(trial_ind).start_time = 0;
+    trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
+    trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
+    trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
+    trials(trial_ind).react_time = react_time(trial_num(trial_ind));
+    trials(trial_ind).saccade_time = saccade_time(trial_num(trial_ind));
+    trials(trial_ind).reward_time = reward_time(trial_num(trial_ind));
+    
     trials(trial_ind).Rule = Rule{trial_num(trial_ind)};
     trials(trial_ind).Rule_Repetition = Rule_Repetition(trial_num(trial_ind));
     trials(trial_ind).Response_Direction = Response_Direction{trial_num(trial_ind)};
@@ -80,7 +99,7 @@ for trial_ind = 1:numTrials,
     trials(trial_ind).Test_Stimulus = Test_Stimulus{trial_num(trial_ind)};
     trials(trial_ind).Rule_Cues = Rule_Cues{trial_num(trial_ind)};
     trials(trial_ind).Rule_Cue_Repetition = Rule_Cue_Repetition{trial_num(trial_ind)};
-    trials(trial_idn).Incorrect = Incorrect{trial_num(trial_ind)};
+    trials(trial_ind).Incorrect = Incorrect{trial_num(trial_ind)};
     
     for neuron_ind = 1:numNeurons,
         cur_spikes = logical(spikes(cur_trial, neuron_ind));
