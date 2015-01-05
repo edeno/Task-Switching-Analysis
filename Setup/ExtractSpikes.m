@@ -12,7 +12,6 @@ cleanupClusterJob(jobMan, 'edeno', 'finished');
 load('paramSet.mat', 'session_names', 'data_info', 'trial_info', 'numSessions');
 
 % Set parameters
-spike_opts.start_off = -175;
 spike_opts.end_off = 0;
 spike_opts.win_step = 0;
 spike_opts.smooth_param = [];
@@ -34,6 +33,12 @@ validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Re
 %% Loop through Time Periods to Extract Spikes
 
 for folder_ind = 1:length(validFolders),
+    
+    if strcmp(validFolders{folder_ind}, 'Entire Trial'),
+        spike_opts.start_off = [];
+    else
+        spike_opts.start_off = -175;
+    end
     
     encode = encode_period(folder_ind, :);
     save_dir = sprintf('%s/%s', data_info.processed_dir, validFolders{folder_ind});

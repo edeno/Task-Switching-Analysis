@@ -4,7 +4,7 @@ drop_dir = getappdata(0, 'drop_path');
 data_dir = [drop_dir, '/Generalized Additive Models/APC'];
 cd(data_dir);
 save_dir = [drop_dir, '/Visualizations/Raster'];
-load([cur_file, '_GLMCov.mat']);
+load([data_dir, '/', cur_file, '_GLMCov.mat']);
 load('behavior.mat');
 clear incorrect;
 
@@ -102,7 +102,7 @@ for trial_ind = 1:numTrials,
     trials(trial_ind).Incorrect = Incorrect{trial_num(trial_ind)};
     
     for neuron_ind = 1:numNeurons,
-        cur_spikes = logical(spikes(cur_trial, neuron_ind));
+        cur_spikes = spikes(cur_trial, neuron_ind);
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind));
         trials(trial_ind).(neuron_name) = cur_time(cur_spikes);    

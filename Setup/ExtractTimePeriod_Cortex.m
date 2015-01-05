@@ -72,7 +72,7 @@ for cur_trial = 1:num_trials,
         if isempty(end_enc_ind),
             end_ind = NaN;
         else
-            end_ind = trials(cur_trial).EncodeTimes(end_enc_ind(1));
+            end_ind = trials(cur_trial).EncodeTimes(end_enc_ind(end));
         end
     end
     
