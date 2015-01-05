@@ -174,8 +174,11 @@ GLMCov(22).data = Previous_Error_History_Indicator(trial_id);
 sample_on = trial_time >= Prep_Time;
 
 % Compute the number of trials for each time point
-[n, bin] = histc(trial_time, min(trial_time):max(trial_time));
-percent_trials = sparse(dummyvar(bin))*(n/length(Csize));
+table = tabulate(trial_time);
+percent_trials = nan(size(trial_time));
+for time_ind = 1:length(table(:,1))
+    percent_trials(trial_time == table(time_ind,1)) = table(time_ind,3);
+end
 
 %% Compute the spiking history
 
