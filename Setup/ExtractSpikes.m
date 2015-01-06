@@ -34,8 +34,8 @@ validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Re
 
 for folder_ind = 1:length(validFolders),
     
-    if strcmp(validFolders{folder_ind}, 'Entire Trial'),
-        spike_opts.start_off = [];
+    if any(ismember(validFolders{folder_ind}, {'Entire Trial', 'Intertrial Interval', 'Fixation'})),
+        spike_opts.start_off = 0;
     else
         spike_opts.start_off = -175;
     end
