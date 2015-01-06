@@ -134,10 +134,10 @@ for cur_trial = 1:numtrials,
     
     % saccade start to saccade fixation
     temp = diff(trials(cur_trial).EncodeTimes(ismember(trials(cur_trial).Encodes, [trial_info.SaccadeStart_encode trial_info.SaccadeFixation_encode])));
-    if isempty(temp)
+    if isempty(temp) || temp < 0,
         behavior.Saccade_Time(cur_trial, 1) = NaN;
     else
-        behavior.Saccade_Time(cur_trial, 1) = temp;
+        behavior.Saccade_Time(cur_trial, 1) = sum(temp);
     end
     
     % Reward to End
