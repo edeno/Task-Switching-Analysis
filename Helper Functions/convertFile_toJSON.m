@@ -103,9 +103,10 @@ for trial_ind = 1:numTrials,
     
     for neuron_ind = 1:numNeurons,
         cur_spikes = spikes(cur_trial, neuron_ind);
+        cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind));
-        trials(trial_ind).(neuron_name) = cur_time(cur_spikes);    
+        trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));    
     end
     
 end
