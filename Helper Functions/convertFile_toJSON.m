@@ -88,6 +88,7 @@ for trial_ind = 1:numTrials,
     trials(trial_ind).react_time = react_time(trial_num(trial_ind));
     trials(trial_ind).saccade_time = saccade_time(trial_num(trial_ind));
     trials(trial_ind).reward_time = reward_time(trial_num(trial_ind));
+    trials(trial_ind).end_time = max(trial_time(cur_trial));
     
     trials(trial_ind).Rule = Rule{trial_num(trial_ind)};
     trials(trial_ind).Rule_Repetition = Rule_Repetition(trial_num(trial_ind));
