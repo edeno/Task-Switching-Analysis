@@ -264,9 +264,9 @@ for cur_trial = 1:num_trials,
         eye_start_ind = eye_start_ind + (1 - neuron_start_ind);
         neuron_start_ind = 1;
     end
-    if neuron_end_ind > length(cur_data),
-        eye_end_ind = eye_end_ind + (length(cur_data) - neuron_end_ind);
-        neuron_end_ind = length(cur_data);
+    if neuron_end_ind > length(cur_eye_pos),
+        eye_end_ind = eye_end_ind + (length(cur_eye_pos) - neuron_end_ind);
+        neuron_end_ind = length(cur_eye_pos);
     end
     
     temp_cur_eye_pos(eye_start_ind:eye_end_ind, :) = cur_eye_pos(neuron_start_ind:neuron_end_ind, :);
