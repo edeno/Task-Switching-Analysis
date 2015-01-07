@@ -8,6 +8,7 @@ timePeriod = validFolders;
 numTimePeriods = length(validFolders);
 
 type_ind = 1;
+jobMan = parcluster();
 
 % Loop over different time periods in the trial
 for time_ind = 1:numTimePeriods,
