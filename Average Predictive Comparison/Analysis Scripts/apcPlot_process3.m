@@ -7,7 +7,7 @@ valid_covariates = unique([valid_covariates{:}]);
 
 % Load time period names
 load([main_dir, '/paramSet.mat'], 'validFolders', 'monkey_names');
-timePeriods = validFolders(~ismember(validFolders, 'Rule Response'));
+timePeriods = validFolders(~ismember(validFolders, {'Rule Response', 'Entire Trial'}));
 numTimePeriods = length(timePeriods);
 
 brain_area_names = {'ACC', 'dlPFC'};
