@@ -7,10 +7,12 @@ load([main_dir, '/paramSet.mat'], 'validFolders');
 timePeriod = validFolders;
 numTimePeriods = length(validFolders);
 
+type_ind = 1;
+
 % Loop over different time periods in the trial
 for time_ind = 1:numTimePeriods,
     
-    models_dir = [main_dir, '/Processed Data/', timePeriod{time_ind},'/Models/'];
+    models_dir = [main_dir, '/Processed Data/', timePeriod{time_ind}, '/Models/'];
     model = dir(models_dir);
     model = {model.name};
     model(ismember(model, {'.', '..'})) = [];
@@ -28,7 +30,14 @@ for time_ind = 1:numTimePeriods,
         % Loop over the average predictive comparison fits and collect them
         % into one file
         for cov_ind = 1:length(covariate_type),
-            collectAPCs(model{model_ind}, timePeriod{time_ind}, main_dir, covariate_type{cov_ind}, 'overwrite', overwrite)
+            apcJob{type_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
+                {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
+            
+            createTask(apcJob{type_ind}, @collectAPCs, 0, ...
+                {model{model_ind}, timePeriod{time_ind}, main_dir, covariate_type{cov_ind}, 'overwrite', overwrite});
+            submit(apcJob{type_ind});
+            
+            type_ind = type_ind + 1;
         end
     end
 end
