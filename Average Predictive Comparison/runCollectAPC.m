@@ -2,7 +2,7 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
 overwrite = true;
-load([main_dir, '/paramSet.mat'], 'validFolders');
+load([main_dir, '/paramSet.mat'], 'validFolders', 'data_info');
 
 timePeriod = validFolders;
 numTimePeriods = length(validFolders);
