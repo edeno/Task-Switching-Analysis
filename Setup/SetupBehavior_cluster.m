@@ -132,20 +132,12 @@ for cur_trial = 1:numtrials,
         behavior.Reaction_Time(cur_trial, 1) = temp;
     end
     
-    % saccade start to saccade fixation
-    temp = diff(trials(cur_trial).EncodeTimes(ismember(trials(cur_trial).Encodes, [trial_info.SaccadeStart_encode trial_info.SaccadeFixation_encode])));
+    % saccade start to reward start
+    temp = diff(trials(cur_trial).EncodeTimes(ismember(trials(cur_trial).Encodes, cell2mat([trial_info.SaccadeStart_encode trial_info.RewardStart_encode]))));
     if isempty(temp) | temp < 0,
         behavior.Saccade_Time(cur_trial, 1) = NaN;
     else
         behavior.Saccade_Time(cur_trial, 1) = sum(temp);
-    end
-    
-    % saccade fixation to reward start
-    temp = diff(trials(cur_trial).EncodeTimes(ismember(trials(cur_trial).Encodes, [trial_info.SaccadeFixation_encode trial_info.RewardStart_encode])));
-    if isempty(temp) | temp < 0,
-        behavior.FixReward_Time(cur_trial, 1) = NaN;
-    else
-        behavior.FixReward_Time(cur_trial, 1) = sum(temp);
     end
     
     % Reward to End
