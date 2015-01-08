@@ -81,7 +81,7 @@ for trial_ind = 1:numTrials,
     cur_trial = ismember(trial_id, trial_num(trial_ind));
     trials(trial_ind).trial_id = trial_num(trial_ind);
     
-    trials(trial_ind).start_time = 0;
+    trials(trial_ind).start_time = 1;
     trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
     trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
     trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
