@@ -54,8 +54,7 @@ fixOn_time = behavior.ITI_Time;
 ruleOn_time = fixOn_time + behavior.fixOn_time + behavior.Fix_Time; % Fix spot on + fix spot accquired + fixation time
 stimOn_time = ruleOn_time + behavior.Prep_Time;
 react_time = stimOn_time + behavior.Reaction_Time;
-saccade_time = react_time + behavior.Saccade_Time;
-reward_time = saccade_time + behavior.Reward_Time;
+reward_time = react_time + behavior.Saccade_Time;
 
 Rule_Repetition = behavior.Switch_History(isAttempted);
 Rule = Rule(isAttempted)';
@@ -73,7 +72,6 @@ fixOn_time = fixOn_time(isAttempted);
 ruleOn_time = ruleOn_time(isAttempted);
 stimOn_time = stimOn_time(isAttempted);
 react_time = react_time(isAttempted);
-saccade_time = saccade_time(isAttempted);
 reward_time = reward_time(isAttempted);
 
 for trial_ind = 1:numTrials,
@@ -86,7 +84,6 @@ for trial_ind = 1:numTrials,
     trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
     trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
     trials(trial_ind).react_time = react_time(trial_num(trial_ind));
-    trials(trial_ind).saccade_time = saccade_time(trial_num(trial_ind));
     trials(trial_ind).reward_time = reward_time(trial_num(trial_ind));
     trials(trial_ind).end_time = max(trial_time(cur_trial));
     
