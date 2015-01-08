@@ -34,9 +34,10 @@ trial_info.FixationAccquired_encode = 8;
 trial_info.RuleOn_encode = 29;
 trial_info.SampleOn_encode = 23;
 trial_info.SaccadeStart_encode = 44;
+trial_info.SaccadeFixation_encode = 45;
 trial_info.Reward_encode = 4;
 trial_info.noReward_encode = 5;
-trial_info.RewardStart_encode = {4,5};
+trial_info.RewardStart_encode = {trial_info.Reward_encode, trial_info.noReward_encode};
 trial_info.End_encode = 18;
 
 % Condition Parameters
