@@ -77,7 +77,8 @@ trial_id = cumsum(trial_id);
 trial_id(ismember(trial_id, find(histc(trial_id, 1:max(trial_id)) == 1))) = [];
 
 %% Label each trial time point with the appropriate covariate
-incorrect = incorrect(trial_id)';
+isAttempted = isAttempted(trial_id)';
+isCorrect = isCorrect(trial_id)';
 GLMCov = cov_info;
 
 % Prep Time
