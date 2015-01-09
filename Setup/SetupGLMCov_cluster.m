@@ -54,6 +54,28 @@ end
 isAttempted = [behavior.attempted];
 isCorrect = [behavior.correct];
 
+Prep_Time = behavior.Prep_Time;
+Rule = behavior.Rule;
+Rule_Switch = behavior.Switch;
+Congruency = behavior.Congruency;
+Test_Stimulus = behavior.Test_Stimulus;
+Rule_Cues = behavior.Rule_Cues;
+Rule_Cue_Switch = behavior.Rule_Cue_Switch;
+Test_Stimulus_Color = behavior.Test_Stimulus_Color;
+Test_Stimulus_Orientation = behavior.Test_Stimulus_Orientation;
+Normalized_Prep_Time = behavior.Normalized_Prep_Time;
+Response_Direction = behavior.Response_Direction;
+Previous_Error = behavior.Previous_Error;
+Previous_Error_History = behavior.Previous_Error_History;
+Switch_History = behavior.Switch_History;
+dist_sw = behavior.dist_sw;
+dist_err = behavior.dist_err;
+incorrect = behavior.incorrect;
+Indicator_Prep_Time = behavior.Indicator_Prep_Time;
+Congruency_History = behavior.Congruency_History;
+Previous_Congruency = behavior.Previous_Congruency;
+Previous_Error_History_Indicator = behavior.Previous_Error_History_Indicator;
+
 time = time(:)';
 data = data(:)';
 
