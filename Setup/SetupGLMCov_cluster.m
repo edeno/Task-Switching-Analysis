@@ -52,6 +52,7 @@ end
 %% Setup Covariates
 
 isAttempted = [behavior.attempted];
+isCorrect = [behavior.correct];
 
 time = time(:)';
 data = data(:)';
@@ -184,7 +185,7 @@ end
 
 saveMillerlab('edeno', save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
     'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-    'wire_number', 'unit_number', 'pfc', 'incorrect', 'isAttempted', '-v7.3');
+    'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
 
 
 end

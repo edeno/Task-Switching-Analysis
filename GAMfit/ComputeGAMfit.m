@@ -30,15 +30,15 @@ monkey_name = monkey_name{:};
 clear GLMCov;
 
 if ~gamParams.includeIncorrect
-    designMatrix(incorrect, :) = [];
-    spikes(incorrect, :) = [];
-    trial_time(incorrect) = [];
-    trial_id(incorrect) = [];
-    sample_on(incorrect) = [];
-    percent_trials(incorrect) = [];
+    designMatrix(~isCorrect, :) = [];
+    spikes(~isCorrect, :) = [];
+    trial_time(~isCorrect) = [];
+    trial_id(~isCorrect) = [];
+    sample_on(~isCorrect) = [];
+    percent_trials(~isCorrect) = [];
 end
 
-if ~gamParams.includeBeforeTimeZero,
+if ~gamParams.includeTimeBeforeZero,
     isBeforeZero = trial_time < 0;
     designMatrix(isBeforeZero, :) = [];
     spikes(isBeforeZero, :) = [];

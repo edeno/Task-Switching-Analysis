@@ -36,7 +36,7 @@ inParser.addParamValue('ridgeLambda', 10.^(-3:1:3), @isvector)
 inParser.addParamValue('overwrite', false, @islogical)
 inParser.addParamValue('includeIncorrect', false, @islogical);
 inParser.addParamValue('includeFixationBreaks', false, @islogical);
-inParser.addParamValue('includeBeforeTimeZero', false, @islogical);
+inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
