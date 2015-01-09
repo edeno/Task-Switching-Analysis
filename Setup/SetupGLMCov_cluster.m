@@ -51,37 +51,10 @@ if ismember(timePeriod, {'Intertrial Interval', 'Fixation'}),
 end
 %% Setup Covariates
 
-%% Want only consistent attempts
-good_ind = [behavior.attempted];
-% good_ind = true(size(data));
-
-data = data(good_ind);
-time = time(good_ind);
+isAttempted = [behavior.attempted];
 
 time = time(:)';
 data = data(:)';
-
-Prep_Time = behavior.Prep_Time(good_ind);
-Rule = behavior.Rule(good_ind);
-Rule_Switch = behavior.Switch(good_ind);
-Congruency = behavior.Congruency(good_ind);
-Test_Stimulus = behavior.Test_Stimulus(good_ind);
-Rule_Cues = behavior.Rule_Cues(good_ind);
-Rule_Cue_Switch = behavior.Rule_Cue_Switch(good_ind);
-Test_Stimulus_Color = behavior.Test_Stimulus_Color(good_ind);
-Test_Stimulus_Orientation = behavior.Test_Stimulus_Orientation(good_ind);
-Normalized_Prep_Time = behavior.Normalized_Prep_Time(good_ind);
-Response_Direction = behavior.Response_Direction(good_ind);
-Previous_Error = behavior.Previous_Error(good_ind);
-Previous_Error_History = behavior.Previous_Error_History(good_ind, :);
-Switch_History = behavior.Switch_History(good_ind);
-dist_sw = behavior.dist_sw(good_ind);
-dist_err = behavior.dist_err(good_ind);
-incorrect = behavior.incorrect(good_ind);
-Indicator_Prep_Time = behavior.Indicator_Prep_Time(good_ind);
-Congruency_History = behavior.Congruency_History(good_ind, :);
-Previous_Congruency = behavior.Previous_Congruency(good_ind);
-Previous_Error_History_Indicator = behavior.Previous_Error_History_Indicator(good_ind);
 
 %% Do some organizing
 spikes = cat(1, data{:});
@@ -211,7 +184,7 @@ end
 
 saveMillerlab('edeno', save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
     'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-    'wire_number', 'unit_number', 'pfc', 'incorrect', '-v7.3');
+    'wire_number', 'unit_number', 'pfc', 'incorrect', 'isAttempted', '-v7.3');
 
 
 end

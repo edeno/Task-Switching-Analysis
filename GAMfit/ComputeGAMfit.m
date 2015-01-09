@@ -46,8 +46,17 @@ if ~gamParams.includeBeforeTimeZero,
     trial_id(isBeforeZero) = [];
     sample_on(isBeforeZero) = [];
     percent_trials(isBeforeZero) = [];
-    
 end
+
+if ~gamParams.includeFixationBreaks
+    designMatrix(~isAttempted, :) = [];
+    spikes(~isAttempted, :) = [];
+    trial_time(~isAttempted) = [];
+    trial_id(~isAttempted) = [];
+    sample_on(~isAttempted) = [];
+    percent_trials(~isAttempted) = [];
+end
+
 
 numTrials = length(unique(trial_id));
 numPFC = sum(pfc);
