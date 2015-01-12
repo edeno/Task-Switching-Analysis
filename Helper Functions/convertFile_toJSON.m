@@ -5,7 +5,7 @@ data_dir = [drop_dir, '/Generalized Additive Models/APC'];
 cd(data_dir);
 save_dir = [drop_dir, '/Visualizations/Raster'];
 load([data_dir, '/', cur_file, '_GLMCov.mat']);
-load('behavior.mat');
+load([data_dir, '/', 'behavior.mat']);
 
 behavior = behavior(ismember({behavior.session_name}, cur_file));
 isAttempted = behavior.attempted;
@@ -65,13 +65,24 @@ for trial_ind = 1:numTrials,
     cur_trial = ismember(trial_id, trial_num(trial_ind));
     trials(trial_ind).trial_id = trial_num(trial_ind);
     
-    trials(trial_ind).start_time = 1;
-    trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
-    trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
-    trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
-    trials(trial_ind).react_time = react_time(trial_num(trial_ind));
-    trials(trial_ind).reward_time = reward_time(trial_num(trial_ind));
-    trials(trial_ind).end_time = max(trial_time(cur_trial));
+    if ~behavior.Fixation_Break(trial_num(trial_ind)),
+        trials(trial_ind).start_time = 1;
+        trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
+        trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
+        trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
+        trials(trial_ind).react_time = react_time(trial_num(trial_ind));
+        trials(trial_ind).reward_time = reward_time(trial_num(trial_ind));
+        trials(trial_ind).end_time = max(trial_time(cur_trial));
+    else
+        trials(trial_ind).start_time = NaN;
+        trials(trial_ind).fixation_onset = NaN;
+        trials(trial_ind).rule_onset = NaN;
+        trials(trial_ind).stim_onset = NaN;
+        trials(trial_ind).react_time = NaN;
+        trials(trial_ind).reward_time = NaN;
+        trials(trial_ind).end_time = NaN;
+    end
+    
     
     trials(trial_ind).Rule = Rule{trial_num(trial_ind)};
     trials(trial_ind).Rule_Repetition = Rule_Repetition(trial_num(trial_ind));
