@@ -60,7 +60,7 @@ stimOn_time = ruleOn_time + behavior.Prep_Time;
 react_time = stimOn_time + behavior.Reaction_Time;
 reward_time = react_time + behavior.Saccade_Time;
 
-for trial_ind = 1:numTrials,
+parfor trial_ind = 1:numTrials,
     
     cur_trial = ismember(trial_id, trial_num(trial_ind));
     trials(trial_ind).trial_id = trial_num(trial_ind);
@@ -107,7 +107,7 @@ for trial_ind = 1:numTrials,
         if ~behavior.Fixation_Break(trial_num(trial_ind)),
             trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
         else
-            trials(trial_ind).(neuron_name) = NaN;
+            trials(trial_ind).(neuron_name) = [];
         end
     end
     
