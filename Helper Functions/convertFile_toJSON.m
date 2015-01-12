@@ -52,7 +52,7 @@ Rule_Cue_Repetition = ruleCueRepetition_levels(behavior.Rule_Cue_Switch)';
 Rule_Repetition = behavior.Switch_History;
 isCorrect = isCorrect_levels(behavior.correct + 1)';
 isAttempted = isAttempted_levels(isAttempted + 1)';
-fixationBreak = fixationBreak_levels(behavior.fixationBreak + 1)';
+fixationBreak = fixationBreak_levels(behavior.Fixation_Break + 1)';
 
 fixOn_time = behavior.ITI_Time;
 ruleOn_time = fixOn_time + behavior.fixOn_time + behavior.Fix_Time; % Fix spot on + fix spot accquired + fixation time
@@ -92,7 +92,7 @@ for trial_ind = 1:numTrials,
         cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind));
-        if ~behavior.fixationBreak(trial_ind),
+        if ~behavior.Fixation_Break(trial_ind),
             trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
         else
             trials(trial_ind).(neuron_name) = NaN;

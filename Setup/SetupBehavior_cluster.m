@@ -239,7 +239,7 @@ behavior.attempted = ismember([trials.ResponseError], [trial_info.Correct trial_
     & behavior.Reaction_Time > react_bounds(1) ...
     & behavior.Reaction_Time < react_bounds(2);
 % Fixation Breaks
-behavior.fixationBreak = ~ismember([trials.ResponseError], [trial_info.Correct trial_info.Incorrect]);
+behavior.Fixation_Break = ~ismember([trials.ResponseError], [trial_info.Correct trial_info.Incorrect])';
 % Consistent Attempt
 behavior.consistent_attempt = behavior.consistent & ...
     behavior.attempted;
