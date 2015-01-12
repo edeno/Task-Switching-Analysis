@@ -86,13 +86,14 @@ for trial_ind = 1:numTrials,
     trials(trial_ind).isCorrect = isCorrect{trial_num(trial_ind)};
     trials(trial_ind).isAttempted = isAttempted{trial_num(trial_ind)};
     trials(trial_ind).Fixation_Break = fixationBreak{trial_num(trial_ind)};
+    trials(trial_ind).Reaction_Time = behavior.Reaction_Time(trial_num(trial_ind));
     
     for neuron_ind = 1:numNeurons,
         cur_spikes = spikes(cur_trial, neuron_ind);
         cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind));
-        if ~behavior.Fixation_Break(trial_ind),
+        if ~behavior.Fixation_Break(trial_num(trial_ind)),
             trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
         else
             trials(trial_ind).(neuron_name) = NaN;
