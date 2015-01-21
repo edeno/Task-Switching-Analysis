@@ -8,7 +8,7 @@ load([data_dir, '/', cur_file, '_GLMCov.mat']);
 load([data_dir, '/', 'behavior.mat']);
 
 behavior = behavior(ismember({behavior.session_name}, cur_file));
-isAttempted = behavior.attempted;
+isIncluded = behavior.attempted;
 
 area_names = {'ACC', 'dlPFC'};
 monkey_name = unique(behavior.monkey);
@@ -33,7 +33,7 @@ testStimulus_levels = GLMCov(ismember({GLMCov.name}, 'Test Stimulus')).levels;
 ruleCue_levels = GLMCov(ismember({GLMCov.name}, 'Rule Cues')).levels;
 ruleCueRepetition_levels = GLMCov(ismember({GLMCov.name}, 'Rule Cue Switch')).levels;
 isCorrect_levels = {'Incorrect', 'Correct', };
-isAttempted_levels = {'Not Attempted', 'Attempted'};
+isIncluded_levels = {'Excluded', 'Included'};
 fixationBreak_levels = {'No Fixation Break', 'Fixation Break'};
 
 behavior.Previous_Error(isnan(behavior.Previous_Error)) = 1;
@@ -51,7 +51,7 @@ Rule_Cues = ruleCue_levels(behavior.Rule_Cues)';
 Rule_Cue_Repetition = ruleCueRepetition_levels(behavior.Rule_Cue_Switch)';
 Rule_Repetition = behavior.Switch_History;
 isCorrect = isCorrect_levels(behavior.correct + 1)';
-isAttempted = isAttempted_levels(isAttempted + 1)';
+isIncluded = isIncluded_levels(isIncluded + 1)';
 fixationBreak = fixationBreak_levels(behavior.Fixation_Break + 1)';
 
 fixOn_time = behavior.ITI_Time;
@@ -95,7 +95,7 @@ parfor trial_ind = 1:numTrials,
     trials(trial_ind).Rule_Cues = Rule_Cues{trial_num(trial_ind)};
     trials(trial_ind).Rule_Cue_Repetition = Rule_Cue_Repetition{trial_num(trial_ind)};
     trials(trial_ind).isCorrect = isCorrect{trial_num(trial_ind)};
-    trials(trial_ind).isAttempted = isAttempted{trial_num(trial_ind)};
+    trials(trial_ind).isIncluded = isIncluded{trial_num(trial_ind)};
     trials(trial_ind).Fixation_Break = fixationBreak{trial_num(trial_ind)};
     trials(trial_ind).Reaction_Time = behavior.Reaction_Time(trial_num(trial_ind));
     
