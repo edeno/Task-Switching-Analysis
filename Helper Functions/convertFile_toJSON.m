@@ -1,7 +1,7 @@
 function convertFile_toJSON(session_name, save_dir)
 % Load Common Parameters
 load('paramSet.mat', 'data_info');
-load([data_info.processed_dir, '/Entire Trial/', session_name, '_GLMCov.mat']);
+load([data_info.processed_dir, '/Entire Trial/GLMCov/', session_name, '_GLMCov.mat']);
 load([data_info.behavior_dir, '/', 'behavior.mat']);
 
 behavior = behavior(ismember({behavior.session_name}, session_name));
