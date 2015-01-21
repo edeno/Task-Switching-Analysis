@@ -1,13 +1,10 @@
-clear all; close all; clc;
-cur_file = 'cc1';
-drop_dir = getappdata(0, 'drop_path');
-data_dir = [drop_dir, '/Generalized Additive Models/APC'];
-cd(data_dir);
-save_dir = [drop_dir, '/Visualizations/Raster'];
-load([data_dir, '/', cur_file, '_GLMCov.mat']);
-load([data_dir, '/', 'behavior.mat']);
+function convertFile_toJSON(session_name, save_dir)
+% Load Common Parameters
+load('paramSet.mat', 'data_info');
+load([data_info.processed_dir, '/Entire Trial/', session_name, '_GLMCov.mat']);
+load([data_info.behavior_dir, '/', 'behavior.mat']);
 
-behavior = behavior(ismember({behavior.session_name}, cur_file));
+behavior = behavior(ismember({behavior.session_name}, session_name));
 isIncluded = behavior.attempted;
 
 area_names = {'ACC', 'dlPFC'};
@@ -18,10 +15,10 @@ numTrials = length(trial_num);
 
 for neuron_ind = 1:numNeurons,
     neurons(neuron_ind)= struct(...
-        'Name', sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind)), ...
+        'Name', sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind)), ...
         'Brain_Area', area_names{pfc(neuron_ind)+1}, ...
         'Monkey', monkey_name, ...
-        'File_Name', cur_file, ...
+        'File_Name', session_name, ...
         'Number_of_Trials', numTrials);
 end
 
@@ -103,7 +100,7 @@ parfor trial_ind = 1:numTrials,
         cur_spikes = spikes(cur_trial, neuron_ind);
         cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trial_time(cur_trial);
-        neuron_name = sprintf('%s_%d_%d', cur_file, wire_number(neuron_ind), unit_number(neuron_ind));
+        neuron_name = sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind));
         if ~behavior.Fixation_Break(trial_num(trial_ind)),
             trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
         else
@@ -116,9 +113,9 @@ end
 data2json.neurons = neurons;
 data2json.trials = trials;
 
-opt.FileName = [cur_file, '.json'];
+opt.FileName = [session_name, '.json'];
 opt.NaN = 'null';
 
 cd(save_dir);
-cur_json = savejson(cur_file, data2json, opt);
-
+cur_json = savejson(session_name, data2json, opt);
+end
