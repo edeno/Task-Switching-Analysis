@@ -1,11 +1,21 @@
 function convertFile_toJSON(session_name, save_dir)
 % Load Common Parameters
-load('paramSet.mat', 'data_info');
+load('/data/home/edeno/Task Switching Analysis/paramSet.mat', 'data_info');
 load([data_info.processed_dir, '/Entire Trial/GLMCov/', session_name, '_GLMCov.mat']);
 load([data_info.behavior_dir, '/', 'behavior.mat']);
 
 behavior = behavior(ismember({behavior.session_name}, session_name));
 isIncluded = behavior.attempted;
+
+% Unsure why necessary for parfor to work
+trial_id = trial_id;
+trial_time = trial_time;
+numNeurons = numNeurons;
+spikes = spikes;
+wire_number = wire_number;
+unit_number = unit_number;
+pfc = pfc;
+GLMCov = GLMCov;
 
 area_names = {'ACC', 'dlPFC'};
 monkey_name = unique(behavior.monkey);
