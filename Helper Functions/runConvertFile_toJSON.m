@@ -32,7 +32,7 @@ for session_ind = 1:length(session_names),
     end
     
     fprintf('\t...Session: %s\n', session_names{session_ind});
-    rasterJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
+    rasterJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir, [data_info.script_dir, '/Helper Functions/jsonlab']}, 'AttachedFiles', ...
         {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
     
     createTask(rasterJob{session_ind}, @convertFile_toJSON, 0, {session_names{session_ind}, save_dir});
