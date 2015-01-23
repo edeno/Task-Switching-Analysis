@@ -224,7 +224,10 @@ behavior.monkey = repmat({curMonkey}, [numtrials 1]);
 % Consistent
 behavior.consistent = logical(behavior.consistent);
 % Rule
-behavior.Rule = grp2idx(ismember(cond, trial_info.Rule_color));
+rule = nan(numtrials, 1);
+rule(ismember(cond, trial_info.Rule_color)) = 2;
+rule(ismember(cond, trial_info.Rule_orientation)) = 1;
+behavior.Rule = rule;
 
 % Switch Trials
 difference = diff(behavior.Rule);
@@ -256,8 +259,11 @@ end
 % Number of Neurons, LFPs
 behavior.numNeurons = length(cells);
 behavior.numLFPs = length(lfps);
-% Congruent
-behavior.Congruency = grp2idx(ismember(cond, [trial_info.Stimulus_vertRed trial_info.Stimulus_horzBlue]));
+% Congruency
+congruency = nan(numtrials, 1);
+congruency(ismember(cond, [trial_info.Stimulus_vertRed trial_info.Stimulus_horzBlue])) = 2;
+congruency(ismember(cond, [trial_info.Stimulus_vertBlue trial_info.Stimulus_horzRed])) = 1;
+behavior.Congruency = congruency;
 % Test Stimulus
 sample_ident = nan(numtrials, 1);
 sample_ident(ismember(cond, trial_info.Stimulus_vertBlue)) = 1; %vert_blue
@@ -271,7 +277,10 @@ behavior.Test_Stimulus = sample_ident;
 behavior.Test_Stimulus_Orientation = grp2idx(ismember(cond, [trial_info.Stimulus_vertRed trial_info.Stimulus_vertBlue])); % vert
 behavior.Test_Stimulus_Color = grp2idx(ismember(cond, [trial_info.Stimulus_vertRed trial_info.Stimulus_horzRed])); % red
 
-behavior.condition_left = grp2idx(ismember(cond, trial_info.Saccade_left));
+condition_left = nan(numtrials, 1);
+condition_left(ismember(cond, trial_info.Saccade_left)) = 2;
+condition_left(ismember(cond, trial_info.Saccade_right)) = 1;
+behavior.condition_left = condition_left;
 
 % Monkey's saccade direction
 behavior.Response_Direction = grp2idx((ismember(cond, trial_info.Saccade_left) ...
