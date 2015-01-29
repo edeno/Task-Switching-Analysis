@@ -52,13 +52,13 @@ for k = 1:length(behavior)
     behavior(k).Normalized_Prep_Time = norm_prep(cat(1, behavior.day) == k);
 end
 
-%% Split prep period into thirds
+%% Split prep period into fifths
 prep = cat(1, behavior.Prep_Time);
 indicator_prep = nan(size(prep));
 monk = grp2idx(cat(1, behavior.monkey))';
 
 for k = 1:max(monk)
-    prep_quant_bounds = [-inf quantile(prep(monk == k), [1/3 2/3]) inf];
+    prep_quant_bounds = [-inf quantile(prep(monk == k), [1/5 2/5 3/5 4/5]) inf];
     [~, bin] = histc(prep(monk == k), prep_quant_bounds);
     bin(bin == 0) = NaN;
     indicator_prep(monk == k) = bin;
