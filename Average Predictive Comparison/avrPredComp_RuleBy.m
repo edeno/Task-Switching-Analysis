@@ -8,16 +8,16 @@ function [avpred] = avrPredComp_RuleBy(session_name, timePeriod, model_name, by_
 % Load covariate fit and model fit information
 load([main_dir, '/paramSet.mat'], 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
-load(GLMCov_name, 'GLMCov', 'incorrect', 'spikes', 'trial_id', 'trial_time')
+load(GLMCov_name, 'GLMCov', 'isCorrect', 'spikes', 'trial_id', 'trial_time')
 GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
 load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
 
-if ~gamParams.includeIncorrect
-    spikes(incorrect, :) = [];
-    trial_time(incorrect) = [];
-    trial_id(incorrect) = [];
+if ~gamParams.includeisCorrect
+    spikes(isCorrect, :) = [];
+    trial_time(isCorrect) = [];
+    trial_id(isCorrect) = [];
     for GLMCov_ind = 1:length(GLMCov),
-        GLMCov(GLMCov_ind).data(incorrect, :) = [];
+        GLMCov(GLMCov_ind).data(isCorrect, :) = [];
     end
 end
 

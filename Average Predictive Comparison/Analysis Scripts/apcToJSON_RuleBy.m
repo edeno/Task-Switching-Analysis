@@ -1,4 +1,4 @@
-function apcPlot_process3(apc_type, valid_models)
+function apcToJSON_RuleBy(apc_type, valid_models)
 %% Set Parameters
 main_dir = '/data/home/edeno/Task Switching Analysis';
 
@@ -91,7 +91,7 @@ for time_ind = 1:numTimePeriods,
         
     end
     
-    table_name = sprintf('%s/%s %s.csv', main_dir, timePeriods{time_ind}, apc_type);
+    table_name = sprintf('%s/%s %s rule interactions.csv', main_dir, timePeriods{time_ind}, apc_type);
     writetable(avpred, table_name, 'writeRowNames', true, 'Delimiter', ',');
     clear avpred temp_table;
 end

@@ -8,16 +8,16 @@ function [avpred] = avrPredComp(session_name, timePeriod, model_name, factor_nam
 % Load covariate fit and model fit information
 load([main_dir, '/paramSet.mat'], 'data_info');
 GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
-load(GLMCov_name, 'GLMCov', 'incorrect', 'spikes', 'trial_id', 'trial_time')
+load(GLMCov_name, 'GLMCov', 'isCorrect', 'spikes', 'trial_id', 'trial_time')
 GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
 load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
 
-if ~gamParams.includeIncorrect
-    spikes(incorrect, :) = [];
-    trial_time(incorrect) = [];
-    trial_id(incorrect) = [];
+if ~gamParams.includeisCorrect
+    spikes(isCorrect, :) = [];
+    trial_time(isCorrect) = [];
+    trial_id(isCorrect) = [];
     for GLMCov_ind = 1:length(GLMCov),
-        GLMCov(GLMCov_ind).data(incorrect, :) = [];
+        GLMCov(GLMCov_ind).data(isCorrect, :) = [];
     end
 end
 
@@ -66,6 +66,13 @@ end
 % constant and the other inputs
 factor_ind = ismember({GLMCov.name}, factor_name);
 other_ind = ismember({GLMCov.name}, unique_cov_names) & (~factor_ind);
+
+if GLMCov(factor_ind).isCategorical,
+    levels = GLMCov(factor_ind).levels;
+else
+    levels = [strcat('-',GLMCov(factor_ind).levels), GLMCov(factor_ind).levels];
+    levels_id = [-1 1];
+end
 
 factor_data = GLMCov(factor_ind).data;
 other_data = {GLMCov(other_ind).data};
@@ -171,6 +178,7 @@ end
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
+[avpred.levels] = deal(levels);
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
 [~, hostname] = system('hostname');
