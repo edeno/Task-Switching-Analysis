@@ -84,6 +84,7 @@ curMonkey = upper(regexprep(session_name, '\d+', ''));
 % Loop through trials and find prepatory period, reaction times and
 % define consistent attempts
 for cur_trial = 1:numtrials,
+    behavior.Trial_Number(cur_trial) = cur_trial;
     % If no trial condition, code as NaN
     if isempty(trials(cur_trial).Condition)
         trials(cur_trial).Condition = NaN;
@@ -363,7 +364,7 @@ temp(temp > 2* thirds) = 3; %late part of day
 behavior.Trial_Block = temp';
 
 % Block in Day
-behavior.block = cumsum(behavior.Switch) + 1;
+behavior.block = cumsum(behavior.Switch - 1) + 1;
 
 % Congruency History
 behavior.Congruency_History = lagmatrix(behavior.Congruency, 0:1);
