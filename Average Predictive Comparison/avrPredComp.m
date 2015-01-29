@@ -13,11 +13,11 @@ GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, 
 load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
 
 if ~gamParams.includeIncorrect
-    spikes(isCorrect, :) = [];
-    trial_time(isCorrect) = [];
-    trial_id(isCorrect) = [];
+    spikes(~isCorrect, :) = [];
+    trial_time(~isCorrect) = [];
+    trial_id(~isCorrect) = [];
     for GLMCov_ind = 1:length(GLMCov),
-        GLMCov(GLMCov_ind).data(isCorrect, :) = [];
+        GLMCov(GLMCov_ind).data(~isCorrect, :) = [];
     end
 end
 

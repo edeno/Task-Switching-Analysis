@@ -78,7 +78,7 @@ cov_info(18).levels = {'Congruent', 'Incongruent', 'Previous Congruent', 'Previo
 cov_info(18).isCategorical = true;
 
 cov_info(19).name = 'Indicator Prep Time';
-cov_info(19).levels = {'Short', 'Medium', 'Long'};
+cov_info(19).levels = {'Shortest', 'Short' 'Medium', 'Long', 'Longest'};
 cov_info(19).isCategorical = true;
 
 cov_info(20).name = 'Previous Congruency';

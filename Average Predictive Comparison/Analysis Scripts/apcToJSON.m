@@ -80,14 +80,18 @@ for time_ind = 1:numTimePeriods,
             levels{strcmp(levels, '1_Std_Dev_of_Prep_Time')} = 'plus1_Std_Dev_of_Prep_Time';
         end
         
-        for level_ind = 1:length(levels),
-            dat = cellfun(@(x) mean(x(level_ind, :), 2), temp_table.(apc_type), 'UniformOutput', false);
-            dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
-            avpred.(levels{level_ind}) = dat;
+        cov_apc = temp_table.(apc_type);
+        if ~isa(cov_apc, 'cell'),
+            cov_apc = num2cell(temp_table.(apc_type), 2);
         end
         
-        
-        
+        for level_ind = 1:length(levels)-1,
+            dat = cellfun(@(x) mean(x(level_ind, :), 2), cov_apc, 'UniformOutput', false);
+            dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
+            level_name = sprintf('%s_minus_%s', levels{level_ind}, levels{end});
+            avpred.(level_name) = dat;
+        end
+ 
     end
     
     table_name = sprintf('%s/%s %s main effects.csv', main_dir, timePeriods{time_ind}, apc_type);

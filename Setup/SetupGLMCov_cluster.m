@@ -70,7 +70,6 @@ Previous_Error_History = behavior.Previous_Error_History;
 Switch_History = behavior.Switch_History;
 dist_sw = behavior.dist_sw;
 dist_err = behavior.dist_err;
-incorrect = behavior.incorrect;
 Indicator_Prep_Time = behavior.Indicator_Prep_Time;
 Congruency_History = behavior.Congruency_History;
 Previous_Congruency = behavior.Previous_Congruency;
