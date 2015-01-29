@@ -43,20 +43,43 @@ isCorrect_levels = {'Incorrect', 'Correct', };
 isIncluded_levels = {'Excluded', 'Included'};
 fixationBreak_levels = {'No Fixation Break', 'Fixation Break'};
 
-behavior.Previous_Error(isnan(behavior.Previous_Error)) = 1;
-behavior.Congruency_History(isnan(behavior.Congruency_History)) = 1;
+% Handle NaN conditions - Set NaN to 1, then fix later
+isNaN_cond = isnan(behavior.condition);
+behavior.Rule(isNaN_cond) = 1;
+behavior.Response_Direction(isNaN_cond) = 1;
+behavior.Previous_Error(1) = 1;
+behavior.Congruency_History(isNaN_cond, 1) = 1;
+behavior.Congruency_History(find(isNaN_cond)+1, 2) = 1;
+behavior.Congruency_History(1, 2) = 1;
+behavior.Test_Stimulus(isNaN_cond) = 1;
+behavior.Rule_Cues(isNaN_cond) = 1;
+behavior.Rule_Cue_Switch(isNaN_cond) = 1;
 
 Rule = rule_levels(behavior.Rule)';
+Rule(isNaN_cond) = {NaN};
 Preparation_Time = behavior.Prep_Time;
 Response_Direction = responseDir_levels(behavior.Response_Direction)';
+Response_Direction(isNaN_cond) = {NaN};
 Previous_Error = previousError_levels(behavior.Previous_Error)';
+Previous_Error(1) = {NaN};
+Previous_Error(find(isNaN_cond)+1) = {NaN};
 Congruency_History = congruencyHistory_levels(behavior.Congruency_History);
 Current_Congruency = Congruency_History(:,1);
+Current_Congruency(isNaN_cond) = {NaN};
 Previous_Congruency = Congruency_History(:,2);
+Previous_Congruency(find(isNaN_cond)+1) = {NaN};
+Previous_Congruency(1) = {NaN};
 Test_Stimulus = testStimulus_levels(behavior.Test_Stimulus)';
+Test_Stimulus(isNaN_cond) = {NaN};
 Rule_Cues = ruleCue_levels(behavior.Rule_Cues)';
+Rule_Cues(isNaN_cond) = {NaN};
 Rule_Cue_Repetition = ruleCueRepetition_levels(behavior.Rule_Cue_Switch)';
+Rule_Cue_Repetition(isNaN_cond) = {NaN};
 Rule_Repetition = behavior.Switch_History;
+is11plus = Rule_Repetition == 11;
+Rule_Repetition = cellfun(@(x) strtrim(x), cellstr(num2str(Rule_Repetition)), 'UniformOutput', false);
+Rule_Repetition(is11plus) = {'11+'};
+Rule_Repetition(isNaN_cond) = {NaN};
 isCorrect = isCorrect_levels(behavior.correct + 1)';
 isIncluded = isIncluded_levels(isIncluded + 1)';
 fixationBreak = fixationBreak_levels(behavior.Fixation_Break + 1)';
@@ -92,7 +115,7 @@ parfor trial_ind = 1:numTrials,
     
     
     trials(trial_ind).Rule = Rule{trial_num(trial_ind)};
-    trials(trial_ind).Rule_Repetition = Rule_Repetition(trial_num(trial_ind));
+    trials(trial_ind).Rule_Repetition = Rule_Repetition{trial_num(trial_ind)};
     trials(trial_ind).Response_Direction = Response_Direction{trial_num(trial_ind)};
     trials(trial_ind).Current_Congruency = Current_Congruency{trial_num(trial_ind)};
     trials(trial_ind).Previous_Congruency = Previous_Congruency{trial_num(trial_ind)};

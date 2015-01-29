@@ -12,7 +12,7 @@ load(GLMCov_name, 'GLMCov', 'isCorrect', 'spikes', 'trial_id', 'trial_time')
 GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
 load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
 
-if ~gamParams.includeisCorrect
+if ~gamParams.includeIncorrect
     spikes(isCorrect, :) = [];
     trial_time(isCorrect) = [];
     trial_id(isCorrect) = [];

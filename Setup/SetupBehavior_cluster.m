@@ -232,7 +232,7 @@ behavior.Rule = rule;
 % Switch Trials
 difference = diff(behavior.Rule);
 switc = zeros(1,numtrials);
-switc(find(difference)+1) = 1;
+switc(find(abs(difference) > 0)+1) = 1;
 behavior.Switch = grp2idx(switc);
 % Correct and Incorrect Trials
 behavior.correct =  ismember([trials.ResponseError], trial_info.Correct)';
@@ -300,7 +300,7 @@ behavior.Rule_Cues = rule_cue;
 % Rule Cue Switch
 difference = diff(behavior.Rule_Cues) ~= 0;
 switc = zeros(1,numtrials);
-switc(find(difference)+1) = 1;
+switc(find(abs(difference) > 0)+1) = 1;
 behavior.Rule_Cue_Switch = grp2idx(switc);
 
 % Previous Error up to lag 10
