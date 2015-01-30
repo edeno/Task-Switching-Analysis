@@ -60,6 +60,7 @@ Indicator_Prep_Time = behavior.Indicator_Prep_Time;
 Congruency_History = behavior.Congruency_History;
 Previous_Congruency = behavior.Previous_Congruency;
 Previous_Error_History_Indicator = behavior.Previous_Error_History_Indicator;
+Session_Time = behavior.Trial_Block;
 
 time = time(:)';
 data = data(:)';
@@ -151,6 +152,9 @@ GLMCov(20).data = Previous_Congruency(trial_id);
 
 % Error History - non-cumulative errors
 GLMCov(22).data = Previous_Error_History_Indicator(trial_id);
+
+% Session Time
+GLMCov(23).data = Session_Time(trial_id);
 
 % Indicator function for when the test stimulus is on
 sample_on = trial_time >= Prep_Time;

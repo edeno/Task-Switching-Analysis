@@ -86,7 +86,7 @@ cov_info(20).levels = {'Previous Congruent', 'Previous Incongruent'};
 cov_info(20).isCategorical = true;
 
 cov_info(21).name = 'Spike History';
-spike_names = [strseq('No Previous Spike', 1:125) strseq('Previous Spike', 1:125)]';
+spike_names = [strseq('No Previous Spike', 1:20) strseq('Previous Spike', 1:20)]';
 cov_info(21).levels = spike_names(:)';
 cov_info(21).isCategorical = true;
 
@@ -94,6 +94,10 @@ cov_info(22).name = 'Previous Error History Indicator';
 error_hist_names = [strseq('Previous Error', 1:10); 'Previous Error11+']';
 cov_info(22).levels = error_hist_names;
 cov_info(22).isCategorical = true;
+
+cov_info(23).name = 'Session Time';
+cov_info(23).levels = {'Early', 'Middle', 'Late'};
+cov_info(23).isCategorical = true;
 
 validCov = {cov_info.name};
 
