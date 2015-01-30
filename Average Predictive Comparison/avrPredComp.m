@@ -98,8 +98,10 @@ for factor_id = 1:numFactors,
     if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
         history = factor_data(:, find(~ismember(1:numFactors, factor_id)));
         history = dummyvar(history);
+        curLevels = reshape(levels, [], 2);
     else
         history = [];
+        curLevels = levels';
     end
     
     other_inputs = [other_data{:} history];
@@ -130,6 +132,7 @@ for factor_id = 1:numFactors,
     [lastLevel_design] = gamModelMatrix(gamParams.regressionModel_str, lastLevelCov, spikes(:,1));
     lastLevel_design = lastLevel_design(sample_ind, :);
     lastLevel_est = nan(numData, numNeurons, numSim);
+    lastLevelName = curLevels{end, factor_id};
     for neuron_ind = 1:numNeurons,
         lastLevel_est(:, neuron_ind, :) = exp(lastLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
     end
@@ -139,6 +142,7 @@ for factor_id = 1:numFactors,
         curLevelCov(factor_ind).data(:, factor_id) = level_data(level_id);
         [curLevel_design] = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, spikes(:,1));
         curLevel_design = curLevel_design(sample_ind, :);
+        curLevelName = curLevels{level_id, factor_id};
         
         curLevel_est = nan(numData, numNeurons, numSim);
         for neuron_ind = 1:numNeurons,
@@ -147,6 +151,8 @@ for factor_id = 1:numFactors,
         
         diff_est = curLevel_est - lastLevel_est;
         sum_est = curLevel_est + lastLevel_est;
+        
+        comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
         
         num = nansum(bsxfun(@times, summed_weights, diff_est));
         abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
@@ -178,7 +184,7 @@ end
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
-[avpred.levels] = deal(levels);
+[avpred.levels] = deal(comparisonNames);
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
 [~, hostname] = system('hostname');
