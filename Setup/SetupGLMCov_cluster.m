@@ -35,20 +35,6 @@ load(beh_file);
 % Get behavior corresponding to this session
 beh_ind = ismember({behavior.session_name}, session_name);
 behavior = behavior(beh_ind);
-
-% Since the rule hasn't been cued yet in the intertrial interval and the
-% fixation interval, we code the number of repetitions of the rule the same
-% as the previous trial
-if ismember(timePeriod, {'Intertrial Interval', 'Fixation'}),
-    behavior.Switch(behavior.Switch == 2) = 1;
-    behavior.Rule_Cue_Switch(behavior.Rule_Cue_Switch == 2) = 1;
-    behavior.Switch_History(behavior.Switch_History < 11) = behavior.Switch_History(behavior.Switch_History < 11) - 1;
-    behavior.Switch_History(behavior.Switch_History == 0) = 11;
-    behavior.Switch_History(find(behavior.Switch_History == 9)+1) = 10;
-    behavior.Switch_History(1) = NaN;
-    behavior.dist_sw(2:end) = behavior.dist_sw(1:end-1);
-    behavior.dist_sw(1) = NaN;
-end
 %% Setup Covariates
 
 isAttempted = [behavior.attempted];
