@@ -84,7 +84,7 @@ curMonkey = upper(regexprep(session_name, '\d+', ''));
 % Loop through trials and find prepatory period, reaction times and
 % define consistent attempts
 for cur_trial = 1:numtrials,
-    behavior.Trial_Number(cur_trial) = cur_trial;
+    behavior.Trial_Number(cur_trial, 1) = cur_trial;
     % If no trial condition, code as NaN
     if isempty(trials(cur_trial).Condition)
         trials(cur_trial).Condition = NaN;
