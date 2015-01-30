@@ -53,14 +53,14 @@ Normalized_Prep_Time = behavior.Normalized_Prep_Time;
 Response_Direction = behavior.Response_Direction;
 Previous_Error = behavior.Previous_Error;
 Previous_Error_History = behavior.Previous_Error_History;
-Switch_History = behavior.Switch_History;
+Rule_Repetition = behavior.Rule_Repetition;
 dist_sw = behavior.dist_sw;
 dist_err = behavior.dist_err;
 Indicator_Prep_Time = behavior.Indicator_Prep_Time;
 Congruency_History = behavior.Congruency_History;
 Previous_Congruency = behavior.Previous_Congruency;
 Previous_Error_History_Indicator = behavior.Previous_Error_History_Indicator;
-Session_Time = behavior.Trial_Block;
+Session_Time = behavior.Session_Time;
 
 time = time(:)';
 data = data(:)';
@@ -130,7 +130,7 @@ GLMCov(12).data = Previous_Error(trial_id);
 GLMCov(13).data = Previous_Error_History(trial_id, :);
 
 % Switch History
-GLMCov(14).data = Switch_History(trial_id, :);
+GLMCov(14).data = Rule_Repetition(trial_id, :);
 
 % Trial Time
 GLMCov(15).data = trial_time;

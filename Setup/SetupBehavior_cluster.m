@@ -328,7 +328,7 @@ behavior.dist_sw = dist_sw;
 dist_sw(dist_sw >= 11) = 11;
 
 % Switch up to lag 10
-behavior.Switch_History = dist_sw;
+behavior.Rule_Repetition = dist_sw;
 
 % Distance from Error
 dist_err = nan(size(behavior.incorrect));
@@ -361,7 +361,7 @@ temp = 1:numtrials;
 temp(temp <= thirds) = 1; % early in day
 temp(temp > thirds & temp <= 2* thirds) = 2; %middle of day
 temp(temp > 2* thirds) = 3; %late part of day
-behavior.Trial_Block = temp';
+behavior.Session_Time = temp';
 
 % Block in Day
 behavior.block = cumsum(behavior.Switch - 1) + 1;
