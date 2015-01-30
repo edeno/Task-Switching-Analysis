@@ -6,7 +6,7 @@ isOverwrite = true;
 
 %% Pre-Test Stimulus
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
-model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Previous Congruency';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Previous Congruency + Session Time';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)
@@ -18,7 +18,7 @@ end
 
 %% Post-Test Stimulus
 timePeriods = {'Stimulus Response', 'Saccade', 'Reward', 'Rule Response'};
-model{1} = 'Rule * Switch History + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Normalized Prep Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Indicator Prep Time';
 
 for time_ind = 1:length(timePeriods),
     for model_ind = 1:length(model)

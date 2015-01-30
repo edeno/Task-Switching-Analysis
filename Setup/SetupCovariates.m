@@ -56,7 +56,7 @@ error_hist_names = [strseq('No Previous Error', 1:10) strseq('Previous Error', 1
 cov_info(13).levels = error_hist_names(:)';
 cov_info(13).isCategorical = true;
 
-cov_info(14).name = 'Switch History';
+cov_info(14).name = 'Rule Repetition';
 switch_hist_names = [strseq('Repetition', 1:10); 'Repetition11+']';
 cov_info(14).levels = switch_hist_names;
 cov_info(14).isCategorical = true;
