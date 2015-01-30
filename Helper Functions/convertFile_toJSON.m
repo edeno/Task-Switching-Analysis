@@ -95,7 +95,7 @@ parfor trial_ind = 1:numTrials,
     cur_trial = ismember(trial_id, trial_num(trial_ind));
     trials(trial_ind).trial_id = trial_num(trial_ind);
     
-    if ~behavior.Fixation_Break(trial_num(trial_ind)),
+    if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
         trials(trial_ind).start_time = 1;
         trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
         trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
@@ -134,7 +134,7 @@ parfor trial_ind = 1:numTrials,
         cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind));
-        if ~behavior.Fixation_Break(trial_num(trial_ind)),
+        if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
             trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
         else
             trials(trial_ind).(neuron_name) = [];
