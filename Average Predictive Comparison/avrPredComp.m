@@ -21,7 +21,7 @@ if ~gamParams.includeIncorrect
     end
 end
 
-if ~gamParams.includeBeforeTimeZero,
+if ~gamParams.includeTimeBeforeZero,
     isBeforeZero = trial_time < 0;
     spikes(isBeforeZero, :) = [];
     trial_time(isBeforeZero) = [];
