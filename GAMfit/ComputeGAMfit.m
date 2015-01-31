@@ -47,6 +47,7 @@ if ~gamParams.includeTimeBeforeZero,
     trial_id(isBeforeZero) = [];
     sample_on(isBeforeZero) = [];
     percent_trials(isBeforeZero) = [];
+    isAttempted(isBeforeZero) = [];
 end
 
 if ~gamParams.includeFixationBreaks
