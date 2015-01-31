@@ -36,6 +36,7 @@ if ~gamParams.includeIncorrect
     trial_id(~isCorrect) = [];
     sample_on(~isCorrect) = [];
     percent_trials(~isCorrect) = [];
+    isAttempted(~isCorrect) = [];
 end
 
 if ~gamParams.includeTimeBeforeZero,
