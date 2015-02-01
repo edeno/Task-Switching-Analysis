@@ -88,8 +88,7 @@ for time_ind = 1:numTimePeriods,
         for level_ind = 1:length(levels)-1,
             dat = cellfun(@(x) mean(x(level_ind, :), 2), cov_apc, 'UniformOutput', false);
             dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
-            level_name = sprintf('%s_minus_%s', levels{level_ind}, levels{end});
-            avpred.(level_name) = dat;
+            avpred.(levels{level_ind}) = dat;
         end
  
     end
