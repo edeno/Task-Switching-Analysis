@@ -41,10 +41,10 @@ for time_ind = 1:numTimePeriods,
     avpred.numSamples = [];
     avpred.Average_Firing_Rate = cellfun(@(x) sprintf('%.2f', x), num2cell(mean(avpred.baseline_firing, 3)), 'UniformOutput', false);
     avpred.baseline_firing = [];
-    avpred.Overall = cellfun(@(x) sprintf('%.2f', x), num2cell(mean(avpred.(apc_type), 2)), 'UniformOutput', false);
     avpred.norm_apc = [];
     avpred.abs_apc = [];
     avpred.apc = [];
+    avpred.levels = [];
     avpred.model_name = [];
     
     avpred.Properties.RowNames = cellfun(@(x,y,z) sprintf('%s_%s_%s', x, num2str(y), num2str(z)), ...
@@ -58,9 +58,6 @@ for time_ind = 1:numTimePeriods,
     % Loop over covariates
     for cov_ind = find(ismember(valid_covariates, apc_names)),
         curCov = valid_covariates{cov_ind};
-        if ismember(curCov, 'Rule'),
-            continue;
-        end
         fprintf('\t Covariate: %s\n', curCov);
         %% Load Files
         % Load files if they exists
@@ -76,16 +73,13 @@ for time_ind = 1:numTimePeriods,
         levels = regexprep(levels, ' ', '_');
         levels = regexprep(levels, '+', 'plus');
         levels = regexprep(levels, '-', 'minus');
-        try
-            levels{strcmp(levels, '1_Std_Dev_of_Prep_Time')} = 'plus1_Std_Dev_of_Prep_Time';
-        end
         
         cov_apc = temp_table.(apc_type);
         if ~isa(cov_apc, 'cell'),
             cov_apc = num2cell(temp_table.(apc_type), 2);
         end
         
-        for level_ind = 1:length(levels)-1,
+        for level_ind = 1:length(levels),
             dat = cellfun(@(x) mean(x(level_ind, :), 2), cov_apc, 'UniformOutput', false);
             dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
             avpred.(levels{level_ind}) = dat;
