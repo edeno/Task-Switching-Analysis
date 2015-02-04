@@ -149,10 +149,18 @@ for factor_id = 1:numFactors,
             curLevel_est(:, neuron_ind, :) = exp(curLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
         end
         
-        diff_est = curLevel_est - lastLevel_est;
+        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error'}),
+            % Flip so higher cognitive demand condition is positive
+            diff_est = lastLevel_est - curLevel_est;
+            comparisonNames{counter_idx} = sprintf('%s - %s', lastLevelName, curLevelName);
+        else
+            diff_est = curLevel_est - lastLevel_est;
+            comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
+        end
+        
         sum_est = curLevel_est + lastLevel_est;
         
-        comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
+       
         
         num = nansum(bsxfun(@times, summed_weights, diff_est));
         abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
