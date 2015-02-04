@@ -75,7 +75,7 @@ Rule_Cues = ruleCue_levels(behavior.Rule_Cues)';
 Rule_Cues(isNaN_cond) = {NaN};
 Rule_Cue_Repetition = ruleCueRepetition_levels(behavior.Rule_Cue_Switch)';
 Rule_Cue_Repetition(isNaN_cond) = {NaN};
-Rule_Repetition = behavior.Switch_History;
+Rule_Repetition = behavior.Rule_Repetition;
 is11plus = Rule_Repetition == 11;
 Rule_Repetition = cellfun(@(x) strtrim(x), cellstr(num2str(Rule_Repetition)), 'UniformOutput', false);
 Rule_Repetition(is11plus) = {'11+'};
@@ -96,7 +96,7 @@ parfor trial_ind = 1:numTrials,
     trials(trial_ind).trial_id = trial_num(trial_ind);
     
     if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
-        trials(trial_ind).start_time = 1;
+        trials(trial_ind).start_time = min(trial_time(cur_trial));
         trials(trial_ind).fixation_onset = fixOn_time(trial_num(trial_ind));
         trials(trial_ind).rule_onset = ruleOn_time(trial_num(trial_ind));
         trials(trial_ind).stim_onset = stimOn_time(trial_num(trial_ind));
@@ -135,7 +135,13 @@ parfor trial_ind = 1:numTrials,
         cur_time = trial_time(cur_trial);
         neuron_name = sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind));
         if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
-            trials(trial_ind).(neuron_name) = cur_time(logical(cur_spikes));
+            spike_times = cur_time(logical(cur_spikes));
+            if length(spike_times) == 1,
+                % Stupid hack to force the spikes to be an array.
+                trials(trial_ind).(neuron_name) = [spike_times spike_times];
+            else
+                trials(trial_ind).(neuron_name) = spike_times;
+            end
         else
             trials(trial_ind).(neuron_name) = [];
         end
