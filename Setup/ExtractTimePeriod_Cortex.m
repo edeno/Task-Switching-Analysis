@@ -56,7 +56,7 @@ for cur_trial = 1:num_trials,
     if isempty(opts.StartEncode),
         start_ind = 1;
     else
-        start_enc_ind = find(ismember(trials(cur_trial).Encodes, opts.StartEncode));
+        start_enc_ind = find(ismember(trials(cur_trial).Encodes,  [opts.StartEncode{:}]));
         if isempty(start_enc_ind),
             start_ind = NaN;
         else
@@ -68,7 +68,7 @@ for cur_trial = 1:num_trials,
     if isempty(opts.EndEncode),
         end_ind = round((trials(cur_trial).EndTime - trials(cur_trial).StartTime)*1000 + 1);
     else
-        end_enc_ind = find(ismember(trials(cur_trial).Encodes, opts.EndEncode));
+        end_enc_ind = find(ismember(trials(cur_trial).Encodes, [opts.EndEncode{:}]));
         if isempty(end_enc_ind),
             end_ind = NaN;
         else
