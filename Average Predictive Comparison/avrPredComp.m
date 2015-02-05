@@ -149,7 +149,7 @@ for factor_id = 1:numFactors,
             curLevel_est(:, neuron_ind, :) = exp(curLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
         end
         
-        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error'}),
+        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error', 'Congruency History'}),
             % Flip so higher cognitive demand condition is positive
             diff_est = lastLevel_est - curLevel_est;
             comparisonNames{counter_idx} = sprintf('%s - %s', lastLevelName, curLevelName);
