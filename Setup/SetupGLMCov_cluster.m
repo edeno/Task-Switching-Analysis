@@ -72,17 +72,10 @@ trial_time = cat(2, time{:})';
 numNeurons = size(spikes, 2);
 
 %% What trial does each time correspond to?
-Csize = cell2mat(cellfun(@length, time, 'UniformOutput', false));
+trial_id = num2cell(1:size(time, 2));
 
-trial_id = zeros(size(trial_time));
-cum_num = cumsum(Csize);
-trial_id(cum_num(1:end-1)+1) = 1;
-trial_id(1) = 1;
-trial_id = cumsum(trial_id);
-
-% There's a weird case where if the last couple trials are empty, trial id
-% counts too many
-trial_id(ismember(trial_id, find(histc(trial_id, 1:max(trial_id)) == 1))) = [];
+trial_id = cellfun(@(x,y) x(ones(size(y))), trial_id, time, 'UniformOutput', false);
+trial_id = cat(2, trial_id{:})';
 
 %% Label each trial time point with the appropriate covariate
 isAttempted = isAttempted(trial_id);
