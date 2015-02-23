@@ -14,3 +14,6 @@ end
 
 display(find(isError));
 error_message{isError}
+if sum(isError) == 0,
+   fprintf('No Errors!'); 
+end
