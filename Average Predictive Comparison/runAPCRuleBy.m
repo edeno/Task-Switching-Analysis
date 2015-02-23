@@ -8,7 +8,7 @@ overwrite = true;
 
 %% Pre-Test Stimulus
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Previous Congruency + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Previous Congruency + Session Time';
 
 for model_ind = 1:length(model)
     % Parse Model string for rule interactions
@@ -16,10 +16,13 @@ for model_ind = 1:length(model)
     isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
     parsedModelstr = parsedModelstr(isRuleInteraction);
     type = cellfun(@(x) x{~ismember(x, 'Rule')}, parsedModelstr, 'UniformOutput', false);
+    fprintf('\n Model: %s\n', model{model_ind});
     for time_ind = 1:length(timePeriods),
         % Compute average predicitve comparson of rule at each level of the
         % interactions
+         fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
         for type_ind = 1:length(type),
+            fprintf('\t\t Covariate: %s\n', type{type_ind});
             computeRuleByAPC(model{model_ind}, timePeriods{time_ind}, main_dir, type{type_ind}, 'numSim', numSim, ...
                 'numSamples', numSamples, 'overwrite', overwrite)
         end
@@ -28,7 +31,7 @@ end
 
 %% Post-Test Stimulus
 timePeriods = {'Stimulus Response', 'Saccade', 'Reward', 'Rule Response'};
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Indicator Prep Time + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Congruency History + Previous Error History * Response Direction + Rule * Indicator Prep Time + Session Time';
 
 for model_ind = 1:length(model)
     % Parse Model string for rule interactions
@@ -36,10 +39,13 @@ for model_ind = 1:length(model)
     isRuleInteraction = cellfun(@(x) ismember('Rule', x), parsedModelstr);
     parsedModelstr = parsedModelstr(isRuleInteraction);
     type = cellfun(@(x) x{~ismember(x, 'Rule')}, parsedModelstr, 'UniformOutput', false);
+    fprintf('\n Model: %s\n', model{model_ind});
     for time_ind = 1:length(timePeriods),
         % Compute average predicitve comparson of rule at each level of the
         % interactions
+         fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
         for type_ind = 1:length(type),
+            fprintf('\t\t Covariate: %s\n', type{type_ind});
             computeRuleByAPC(model{model_ind}, timePeriods{time_ind}, main_dir, type{type_ind}, 'numSim', numSim, ...
                 'numSamples', numSamples, 'overwrite', overwrite)
         end
