@@ -8,7 +8,7 @@ overwrite = true;
 
 %% Pre-Test Stimulus
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Previous Congruency + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History Indicator + Rule * Previous Congruency + Session Time';
 
 for model_ind = 1:length(model)
     % Parse Model string for covariates
@@ -29,7 +29,7 @@ end
 
 %% Post-Test Stimulus
 timePeriods = {'Stimulus Response', 'Saccade', 'Reward'};
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Congruency History + Previous Error History * Response Direction + Rule * Indicator Prep Time + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History Indicator + Rule * Congruency History + Previous Error History Indicator * Response Direction + Rule * Indicator Prep Time + Session Time';
 
 for model_ind = 1:length(model)
     % Parse Model string for covariates

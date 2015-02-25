@@ -8,7 +8,7 @@ isOverwrite = true;
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
 
 % All Interactions
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Previous Congruency + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History Indicator + Rule * Previous Congruency + Session Time';
 % % All Interactions w/o Congruency
 % model{2} = 'Rule * Rule Repetition + Rule * Previous Error History + Session Time';
 % % All Interactions w/o Congruency, Previous Error History
@@ -38,7 +38,7 @@ end
 
 %% Post-Test Stimulus
 timePeriods = {'Stimulus Response', 'Saccade', 'Reward'};
-model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Congruency History + Previous Error History * Response Direction + Rule * Indicator Prep Time + Session Time';
+model{1} = 'Rule * Rule Repetition + Rule * Previous Error History Indicator + Rule * Congruency History + Previous Error History Indicator * Response Direction + Rule * Indicator Prep Time + Session Time';
 
 for time_ind = 1:length(timePeriods),
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
