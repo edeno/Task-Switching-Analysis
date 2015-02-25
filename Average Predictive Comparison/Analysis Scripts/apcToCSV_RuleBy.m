@@ -1,4 +1,4 @@
-function apcToJSON_RuleBy(apc_type, valid_models)
+function apcToCSV_RuleBy(apc_type, valid_models)
 %% Set Parameters
 main_dir = '/data/home/edeno/Task Switching Analysis';
 
