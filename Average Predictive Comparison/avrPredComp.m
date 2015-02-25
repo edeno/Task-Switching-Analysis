@@ -98,7 +98,7 @@ for factor_id = 1:numFactors,
     if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
         history = factor_data(:, find(~ismember(1:numFactors, factor_id)));
         history = dummyvar(history);
-        curLevels = reshape(levels, [], 2);
+        curLevels = reshape(levels, 2, numFactors);
     else
         history = [];
         curLevels = levels';
@@ -149,7 +149,7 @@ for factor_id = 1:numFactors,
             curLevel_est(:, neuron_ind, :) = exp(curLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
         end
         
-        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error', 'Congruency History'}),
+        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error', 'Congruency History', 'Previous Error History'}),
             % Flip so higher cognitive demand condition is positive
             diff_est = lastLevel_est - curLevel_est;
             comparisonNames{counter_idx} = sprintf('%s - %s', lastLevelName, curLevelName);
@@ -159,8 +159,6 @@ for factor_id = 1:numFactors,
         end
         
         sum_est = curLevel_est + lastLevel_est;
-        
-       
         
         num = nansum(bsxfun(@times, summed_weights, diff_est));
         abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
