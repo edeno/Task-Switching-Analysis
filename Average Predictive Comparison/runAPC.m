@@ -28,7 +28,7 @@ for model_ind = 1:length(model)
 end
 
 %% Post-Test Stimulus
-timePeriods = {'Stimulus Response', 'Saccade', 'Reward', 'Rule Response'};
+timePeriods = {'Stimulus Response', 'Saccade', 'Reward'};
 model{1} = 'Rule * Rule Repetition + Rule * Previous Error History + Rule * Congruency History + Previous Error History * Response Direction + Rule * Indicator Prep Time + Session Time';
 
 for model_ind = 1:length(model)
