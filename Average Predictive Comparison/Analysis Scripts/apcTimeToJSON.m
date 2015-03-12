@@ -51,8 +51,8 @@ for time_ind = 1:numTimePeriods,
         
     end
     avgFiring =[ruleAPC_file.avpred.baseline_firing];
-    avgFiring(avgFiring > 1E3 | avgFiring < 1E-3) = 0;
     avgFiring = mean(avgFiring, 3);
+    avgFiring(avgFiring > 1E3 | avgFiring < 1E-3) = 0;
     for neuron_ind = 1:numNeurons,
         [apc(neuron_ind).Average_Firing_Rate(1, time_ind)] = avgFiring(neuron_ind);
     end
