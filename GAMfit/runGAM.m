@@ -1,7 +1,7 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
-ridgeLambda = [10.^(0:2)];
-numFolds = 5;
+ridgeLambda = 2;
+numFolds = 1;
 isOverwrite = true;
 
 %% Pre-Test Stimulus
