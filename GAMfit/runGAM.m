@@ -1,6 +1,6 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
-ridgeLambda = 2;
+ridgeLambda = 10;
 numFolds = 1;
 isOverwrite = true;
 

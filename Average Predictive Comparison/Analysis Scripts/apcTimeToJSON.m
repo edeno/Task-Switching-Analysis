@@ -50,11 +50,11 @@ for time_ind = 1:numTimePeriods,
         [apc.Unit_Number] = deal(unit_number{:});
         
     end
-    avgFiring =[ruleAPC_file.avpred.baseline_firing];
-    avgFiring = mean(avgFiring, 3);
-    avgFiring(avgFiring > 1E3 | avgFiring < 1E-3) = 0;
+    avgFiring{time_ind} = [ruleAPC_file.avpred.baseline_firing];
+    avgFiring_mean = mean(avgFiring{time_ind}, 3);
+    avgFiring_mean(avgFiring_mean > 1E3 | avgFiring_mean < 1E-3) = 0;
     for neuron_ind = 1:numNeurons,
-        [apc(neuron_ind).Average_Firing_Rate(1, time_ind)] = avgFiring(neuron_ind);
+        [apc(neuron_ind).Average_Firing_Rate(1, time_ind)] = avgFiring_mean(neuron_ind);
     end
     
     % Loop over covariates
@@ -83,7 +83,7 @@ for time_ind = 1:numTimePeriods,
         
         for level_ind = 1:length(levels),
             dat = cellfun(@(x) mean(x(level_ind, :), 2), cov_apc, 'UniformOutput', false);
-%             dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
+            %             dat = cellfun(@(x) sprintf('%.2f', x), dat, 'UniformOutput', false);
             for neuron_ind = 1:numNeurons,
                 [apc(neuron_ind).(levels{level_ind})(1, time_ind)] = dat{neuron_ind};
             end
@@ -91,6 +91,12 @@ for time_ind = 1:numTimePeriods,
         
     end
     
+end
+
+overall_avgFiring = cat(1, avgFiring{:});
+overall_avgFiring = mean(mean(overall_avgFiring, 1), 3);
+for neuron_ind = 1:numNeurons,
+    apc(neuron_ind).Overall_Average_Firing_Rate = overall_avgFiring(1, neuron_ind);
 end
 
 opt.FileName = sprintf('%s/%s main effects.json', main_dir, apc_type);
