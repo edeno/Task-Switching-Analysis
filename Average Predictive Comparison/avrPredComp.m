@@ -191,6 +191,7 @@ end
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
 [avpred.levels] = deal(comparisonNames);
+[avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
 
 save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
 [~, hostname] = system('hostname');
