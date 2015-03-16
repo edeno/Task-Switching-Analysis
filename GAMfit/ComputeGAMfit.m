@@ -64,6 +64,15 @@ numTrials = length(unique(trial_id));
 numPFC = sum(pfc);
 numACC = sum(~pfc);
 
+% Number of trials for each level
+trialIdByDesignMatrix = bsxfun(@times, designMatrix, ones(size(trial_id)));
+trialIdByDesignMatrix = bsxfun(@times, trialIdByDesignMatrix, trial_id);
+trialIdByDesignMatrix(trialIdByDesignMatrix == 0) = NaN;
+
+for k = 1:size(designMatrix, 2),
+   gam.numTrialsByLevel(k) = sum(~isnan(unique(trialIdByDesignMatrix(:, k))));
+end
+
 %% Do the fitting
 
 % Make sure covariates and spikes are same size
