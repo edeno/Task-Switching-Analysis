@@ -15,28 +15,27 @@ function [data, time, eye_pos, opts] = ExtractTimePeriod_Cortex(cells, trials, v
 % return the entire dataset.
 
 %% Set options
-opts.StartEncode = [];
-opts.EndEncode = [];
-opts.StartOffset = [];
-opts.EndOffset = [];
-opts.WindowSize = [];
-opts.WindowStep = [];
-opts.ValidWindow = 0;
-opts.SmoothParam = [];
-opts.SmoothType = '';
-opts.TimeIndex = [];
-opts.TimeResample = [];
-opts.TrialErrorsAllowed = [];
+inParser = inputParser;
 
-if mod(length(varargin), 2) == 0,
-    for i = 1:(length(varargin)/2),
-        if isfield(opts, varargin{2*i-1}),
-            opts.(varargin{2*i-1}) = varargin{2*i};
-        else
-            error('The passed option %s is not a valid option.', varargin{2*i-1});
-        end
-    end
-end
+inParser.addRequired('cells');
+inParser.addRequired('trials');
+inParser.addOptional('StartEncode', []);
+inParser.addOptional('EndEncode', []);
+inParser.addOptional('StartOffset', []);
+inParser.addOptional('EndOffset', []);
+inParser.addOptional('WindowSize', []);
+inParser.addOptional('WindowStep', []);
+inParser.addOptional('ValidWindow', []);
+inParser.addOptional('SmoothParam', []);
+inParser.addOptional('SmoothType', []);
+inParser.addOptional('TimeIndex', []);
+inParser.addOptional('TimeResample', []);
+inParser.addOptional('TrialErrorsAllowed', []);
+
+inParser.parse(cells, trials, varargin{:});
+
+% Add parameters to input structure after validation
+opts = inParser.Results;
 
 % If only a start encode is passed then it will be used for both start and end
 if ~isempty(opts.StartEncode) && isempty(opts.EndEncode),
