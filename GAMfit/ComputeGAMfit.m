@@ -152,12 +152,12 @@ if ~flag
                     
                     [par_est_path_temp(:, curLambda, curFold), fitInfo] = fitGAM(designMatrix(training_idx, :), spikes(training_idx, curNeuron), sqrtPen, ...
                         'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-                        'constraints', constraints, 'prior_weights', percent_trials(training_idx));
+                        'constraints', constraints);
                     
                     edf_temp(curLambda, curFold) = fitInfo.edf;
                     
                     [stats] = gamStats(designMatrix(test_idx, :), spikes(test_idx, curNeuron), fitInfo, trial_id(test_idx),...
-                        'Compact', true, 'prior_weights', percent_trials(test_idx));
+                        'Compact', true);
                     
                     switch (gamParams.predType)
                         case 'AUC'
@@ -205,10 +205,10 @@ if ~flag
         
         [neurons(curNeuron).par_est, fitInfo] = fitGAM(designMatrix, spikes(:, curNeuron), sqrtPen, ...
             'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-            'constraints', constraints, 'prior_weights', percent_trials);
+            'constraints', constraints);
         
         [neurons(curNeuron).stats] = gamStats(designMatrix, spikes(:, curNeuron), fitInfo, trial_id, ...
-            'Compact', false, 'prior_weights', percent_trials);
+            'Compact', false);
         
     end % End Neuron Loop
 end
