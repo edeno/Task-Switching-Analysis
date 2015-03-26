@@ -31,6 +31,9 @@ for time_ind = 1:numTimePeriods,
     apc_names(ismember(apc_names, {'.', '..'})) = [];
     
     ruleAPC_file = load(sprintf('%s/%s/Collected/apc_collected.mat', apc_dir, 'Rule'));
+
+    numTrialsByLevel = cat(1, ruleAPC_file.avpred.numTrialsByLevel);
+    keep_ind = all(numTrialsByLevel >= 0, 2);
     avpred = struct2table(ruleAPC_file.avpred);
     
     avpred.Brain_Area = brain_area_names(avpred.pfc+1)';
@@ -88,7 +91,7 @@ for time_ind = 1:numTimePeriods,
     end
     
     table_name = sprintf('%s/%s %s main effects.csv', main_dir, timePeriods{time_ind}, apc_type);
-    writetable(avpred, table_name, 'writeRowNames', true, 'Delimiter', ',');
+    writetable(avpred(keep_ind, :), table_name, 'writeRowNames', true, 'Delimiter', ',');
     clear avpred temp_table;
 end
 
