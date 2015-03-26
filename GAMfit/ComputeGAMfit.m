@@ -25,7 +25,12 @@ monkey_name = regexp(session_name, '(cc)|(isa)|(ch)', 'match');
 monkey_name = monkey_name{:};
 
 %% Setup Design Matrix
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, spikes(:,1));
+if all(gamParams.ridgeLambda == 0)
+    referenceLevel = 'Reference';
+else
+    referenceLevel = 'Full';
+end
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, spikes(:,1), 'level_reference', referenceLevel);
 
 clear GLMCov;
 
