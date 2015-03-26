@@ -4,6 +4,7 @@ inParser = inputParser;
 inParser.addRequired('model_str', @ischar);
 inParser.addRequired('GLMCov', @isstruct);
 inParser.addRequired('response', @isvector);
+inParser.addOptional('level_reference', 'Full', @ischar);
 
 inParser.parse(model_str, GLMCov, response, varargin{:});
 
@@ -45,7 +46,7 @@ for curTerm = 1:numTerms,
     
     % Convert to indicator variables if categorical
     isCategorical = [GLMCov(data_ind).isCategorical];
-    data = indicatorVar(data, isCategorical, levels, 'Full');
+    [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, GLMCov(data_ind).baselineLevel);
     numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
     
     % Figure out all the relevant interactions
@@ -190,7 +191,7 @@ rep = cellfun(@(x) x(:)', rep, 'UniformOutput', false);
 end
 
 %-----------------------------------------------------------------------------
-function [dummy] = indicatorVar(data, isCategorical, levels, type)
+function [dummy, levels] = indicatorVar(data, isCategorical, levels, type, baselineLevel)
 
 dummy = cell(size(data));
 
@@ -200,8 +201,9 @@ switch(type)
         dummy(~isCategorical) = data(~isCategorical);
     case 'Reference' % first level is the reference
         dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
-        dummy(isCategorical) = cellfun(@(dat) dat(:, 2:end), dummy(isCategorical), 'UniformOutput', false);
+        dummy(isCategorical) = cellfun(@(dat) dat(:, ~ismember(levels{:}, baselineLevel)), dummy(isCategorical), 'UniformOutput', false);
         dummy(~isCategorical) = data(~isCategorical);
+        levels = levels(~ismember(levels{:}, baselineLevel));
 end
 
 end
@@ -212,7 +214,7 @@ inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
 inParser.addRequired('smoothingFactor', @isstruct);
 inParser.addParamValue('bsplines', [], @isstruct);
-inParser.addParamValue('basis_dim', 30, @isnumeric);
+inParser.addParamValue('basis_dim', 10, @isnumeric);
 inParser.addParamValue('basis_degree', 3, @isnumeric);
 inParser.addParamValue('penalty_degree', 2, @isnumeric);
 inParser.addParamValue('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
