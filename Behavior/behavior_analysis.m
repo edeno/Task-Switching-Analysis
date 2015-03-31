@@ -64,7 +64,28 @@ xlim([-60 60]);
 box off;
 text(3,0,'Increase in Reaction Time (%) \rightarrow')
 text(-3,0,'\leftarrow Decrease in Reaction Time (%)', 'HorizontalAlignment','right')
+grid on;
+%% Reaction Time - log scale
+figure;
+plot(coef_CC(end:-1:2), 1:length(level_names), '--o'); hold all;
+plot(coef_ISA(end:-1:2), 1:length(level_names), '--o');
+plot(coef_CH(end:-1:2), 1:length(level_names), '--o');
+vline(0, 'k');
+set(gca, 'YTick', 1:length(level_names))
+set(gca, 'YTickLabel', level_names(end:-1:1))
+set(gca, 'YTick', 1:length(level_names))
+set(gca, 'YTickLabel', level_names(end:-1:1))
+set(gca, 'XAxisLocation', 'top')
+xlim(log([0.6, 1.6]))
+set(gca, 'XTick', log(0.6:0.1:1.6))
+set(gca, 'XTickLabel', -40:10:60)
+legend({'CC', 'ISA', 'CH'});
+title('Percent Change in Reaction Time');
 
+box off;
+text(3,0,'Increase in Reaction Time (%) \rightarrow')
+text(-3,0,'\leftarrow Decrease in Reaction Time (%)', 'HorizontalAlignment','right')
+grid on;
 %% Percent Correct
 Correct = double(cat(1, behavior.correct));
 
@@ -83,8 +104,27 @@ set(gca, 'YTickLabel', level_names(end:-1:1))
 set(gca, 'XAxisLocation', 'top')
 legend({'CC', 'ISA', 'CH'});
 title('Percent Change in Odds of Correct Response');
-xlim([-250 250]);
+xlim([-100 250]);
 box off;
 text(3,0,'Increase in Odds of Correct Response \rightarrow')
 text(-3,0,'\leftarrow Decrease in Odds of Correct Response', 'HorizontalAlignment','right')
+grid on;
+%% Incorrect/Correct - log scale
+figure;
+plot(coef_CC(end:-1:2), 1:length(level_names), '--o'); hold all;
+plot(coef_ISA(end:-1:2), 1:length(level_names), '--o');
+plot(coef_CH(end:-1:2), 1:length(level_names), '--o');
+vline(0, 'k');
+set(gca, 'YTick', 1:length(level_names))
+set(gca, 'YTickLabel', level_names(end:-1:1))
+set(gca, 'XAxisLocation', 'top')
+legend({'CC', 'ISA', 'CH'});
+title('Percent Change in Odds of Correct Response');
+xlim(log([0.05, 9.5]))
+set(gca, 'XTick', log(0.5:0.5:9.5))
+set(gca, 'XTickLabel', -50:50:950)
+box off;
+text(0.01,0,'Increase in Odds of Correct Response \rightarrow')
+text(-0.01,0,'\leftarrow Decrease in Odds of Correct Response', 'HorizontalAlignment','right')
+grid on;
 
