@@ -98,7 +98,7 @@ cov_info(18).baselineLevel = {'Congruent', 'Previous Congruent'};
 cov_info(19).name = 'Indicator Prep Time';
 cov_info(19).levels = {'Shortest', 'Short' 'Medium', 'Long', 'Longest'};
 cov_info(19).isCategorical = true;
-cov_info(19).baselineLevel = 'Longest';
+cov_info(19).baselineLevel = 'Medium';
 
 cov_info(20).name = 'Previous Congruency';
 cov_info(20).levels = {'Previous Congruent', 'Previous Incongruent'};
@@ -120,7 +120,7 @@ cov_info(22).baselineLevel = 'Previous Error5+';
 cov_info(23).name = 'Session Time';
 cov_info(23).levels = {'Early', 'Middle', 'Late'};
 cov_info(23).isCategorical = true;
-cov_info(23).baselineLevel = 'Early';
+cov_info(23).baselineLevel = 'Middle';
 
 validCov = {cov_info.name};
 
