@@ -47,24 +47,33 @@ level_names = [GLMCov(ismember({GLMCov.name}, 'Rule')).levels(rule_ind), ...
 %% Reaction Time
 Reaction_Time = cat(1, behavior.Reaction_Time);
 
-
 % Fit Model
-coef_CC = glmfit(designMatrix(isCC, :), Reaction_Time(isCC, :), 'normal', 'link', 'log');
-coef_CH = glmfit(designMatrix(isCH, :), Reaction_Time(isCH, :), 'normal', 'link', 'log');
-coef_ISA = glmfit(designMatrix(isISA, :), Reaction_Time(isISA, :), 'normal', 'link', 'log');
+[react_coef_CC, react_dev_CC, react_stats_CC] = glmfit(designMatrix(isCC, :), Reaction_Time(isCC, :), 'normal', 'link', 'log');
+[react_coef_ISA, react_dev_ISA, react_stats_ISA] =  glmfit(designMatrix(isISA, :), Reaction_Time(isISA, :), 'normal', 'link', 'log');
+[react_coef_CH, react_dev_CH, react_stats_CH] = glmfit(designMatrix(isCH, :), Reaction_Time(isCH, :), 'normal', 'link', 'log');
+
+% Standard Errors
+react_se_CC = [react_stats_CC.beta - react_stats_CC.se, react_stats_CC.beta + react_stats_CC.se];
+react_se_ISA = [react_stats_ISA.beta - react_stats_ISA.se, react_stats_ISA.beta + react_stats_ISA.se];
+react_se_CH = [react_stats_CH.beta - react_stats_CH.se, react_stats_CH.beta + react_stats_CH.se];
 
 % log scale
 figure;
-plot(coef_CC(end:-1:2), 1:length(level_names), '--o'); hold all;
-plot(coef_ISA(end:-1:2), 1:length(level_names), '--o');
-plot(coef_CH(end:-1:2), 1:length(level_names), '--o');
+subplot(3, 3, 1:6);
+plot(react_coef_CC(end:-1:2), 1:length(level_names), '-'); hold all;
+plot(react_coef_ISA(end:-1:2), 1:length(level_names), '-');
+plot(react_coef_CH(end:-1:2), 1:length(level_names), '-');
 vline(0, 'k');
+plot(react_se_CC(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'b')
+plot(react_se_ISA(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'g')
+plot(react_se_CH(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'r')
 set(gca, 'YTick', 1:length(level_names))
 set(gca, 'YTickLabel', level_names(end:-1:1))
 set(gca, 'YTick', 1:length(level_names))
 set(gca, 'YTickLabel', level_names(end:-1:1))
 set(gca, 'XAxisLocation', 'top')
 xlim(log([0.7, 1.4]))
+ylim([1-.5, length(level_names)+.5]);
 set(gca, 'XTick', log(0.7:0.1:1.4))
 set(gca, 'XTickLabel', -30:10:40)
 legend({'CC', 'ISA', 'CH'});
@@ -74,20 +83,51 @@ box off;
 text(0.05,0,'Increase in Reaction Time (%) \rightarrow')
 text(-0.05,0,'\leftarrow Decrease in Reaction Time (%)', 'HorizontalAlignment','right')
 grid on;
+
+edges = [0:10:1400];
+subplot(3, 3, 7);
+n = histc(Reaction_Time(isCC, :), edges);
+bar(edges,n/sum(n),'histc')
+vline(exp(react_coef_CC(1)));
+title('CC')
+xlabel('Reaction Time (ms)');
+ylabel('Relative Frequency');
+subplot(3, 3, 8);
+n = histc(Reaction_Time(isISA, :), edges);
+bar(edges,n/sum(n),'histc')
+vline(exp(react_coef_ISA(1)));
+title('ISA')
+xlabel('Reaction Time (ms)');
+
+subplot(3, 3, 9);
+n = histc(Reaction_Time(isCH, :), edges);
+bar(edges,n/sum(n),'histc')
+vline(exp(react_coef_CH(1)));
+title('CH')
+xlabel('Reaction Time (ms)');
+
 %% Incorrect/Correct
 Correct = double(cat(1, behavior.correct));
 
 % Fit Model
-coef_CC = glmfit(designMatrix(isCC, :), Correct(isCC, :),'binomial','link','logit');
-coef_CH = glmfit(designMatrix(isCH, :), Correct(isCH, :),'binomial','link','logit');
-coef_ISA = glmfit(designMatrix(isISA, :), Correct(isISA, :),'binomial','link','logit');
+[correct_coef_CC, correct_dev_CC, correct_stats_CC] = glmfit(designMatrix(isCC, :), Correct(isCC, :),'binomial','link','logit');
+[correct_coef_ISA, correct_dev_ISA, correct_stats_ISA] = glmfit(designMatrix(isISA, :), Correct(isISA, :),'binomial','link','logit');
+[correct_coef_CH, correct_dev_CH, correct_stats_CH] = glmfit(designMatrix(isCH, :), Correct(isCH, :),'binomial','link','logit');
+
+% Standard Errors
+correct_se_CC = [correct_stats_CC.beta - correct_stats_CC.se, correct_stats_CC.beta + correct_stats_CC.se];
+correct_se_ISA = [correct_stats_ISA.beta - correct_stats_ISA.se, correct_stats_ISA.beta + correct_stats_ISA.se];
+correct_se_CH = [correct_stats_CH.beta - correct_stats_CH.se, correct_stats_CH.beta + correct_stats_CH.se];
 
 % log scale
 figure;
-plot(coef_CC(end:-1:2), 1:length(level_names), '--o'); hold all;
-plot(coef_ISA(end:-1:2), 1:length(level_names), '--o');
-plot(coef_CH(end:-1:2), 1:length(level_names), '--o');
+plot(correct_coef_CC(end:-1:2), 1:length(level_names), '-'); hold all;
+plot(correct_coef_ISA(end:-1:2), 1:length(level_names), '-');
+plot(correct_coef_CH(end:-1:2), 1:length(level_names), '-');
 vline(0, 'k');
+plot(correct_se_CC(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'b')
+plot(correct_se_ISA(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'g')
+plot(correct_se_CH(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'r')
 set(gca, 'YTick', 1:length(level_names))
 set(gca, 'YTickLabel', level_names(end:-1:1))
 set(gca, 'XAxisLocation', 'top')
@@ -97,7 +137,7 @@ xlim(log([0.05, 9.5]))
 set(gca, 'XTick', log([0.1:0.1:0.4, 0.5:0.5:2, 3:2:9]))
 set(gca, 'XTickLabel', [-90:10:-60, -50:50:100,200:200:800])
 box off;
+ylim([1-.5, length(level_names)+.5]);
 text(0.05,0,'Increase in Odds of Correct Response \rightarrow')
 text(-0.05,0,'\leftarrow Decrease in Odds of Correct Response', 'HorizontalAlignment','right')
 grid on;
-
