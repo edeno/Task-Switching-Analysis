@@ -65,7 +65,7 @@ plot(react_coef_ISA(end:-1:2), 1:length(level_names), '-');
 plot(react_coef_CH(end:-1:2), 1:length(level_names), '-');
 vline(0, 'k');
 plot(react_se_CC(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'b')
-plot(react_se_ISA(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'g')
+plot(react_se_ISA(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'color', [0.00  0.50  0.00])
 plot(react_se_CH(end:-1:2,  :)', [1:length(level_names); 1:length(level_names)], 'r')
 set(gca, 'YTick', 1:length(level_names))
 set(gca, 'YTickLabel', level_names(end:-1:1))
@@ -87,21 +87,24 @@ grid on;
 edges = [0:10:1400];
 subplot(3, 3, 7);
 n = histc(Reaction_Time(isCC, :), edges);
-bar(edges,n/sum(n),'histc')
+h = bar(edges,n/sum(n),'histc');
+set(h,'FaceColor','blue');
 vline(exp(react_coef_CC(1)));
 title('CC')
 xlabel('Reaction Time (ms)');
 ylabel('Relative Frequency');
 subplot(3, 3, 8);
 n = histc(Reaction_Time(isISA, :), edges);
-bar(edges,n/sum(n),'histc')
+h = bar(edges,n/sum(n),'histc');
+set(h,'FaceColor',[0.00  0.50  0.00]);
 vline(exp(react_coef_ISA(1)));
 title('ISA')
 xlabel('Reaction Time (ms)');
 
 subplot(3, 3, 9);
 n = histc(Reaction_Time(isCH, :), edges);
-bar(edges,n/sum(n),'histc')
+h = bar(edges,n/sum(n),'histc');
+set(h,'FaceColor','red');
 vline(exp(react_coef_CH(1)));
 title('CH')
 xlabel('Reaction Time (ms)');
