@@ -201,7 +201,7 @@ switch(type)
         dummy(~isCategorical) = data(~isCategorical);
     case 'Reference' % first level is the reference
         dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
-        dummy(isCategorical) = cellfun(@(dat, level, baseLevel) dat(:, ~ismember(level, {baseLevel})), dummy(isCategorical), levels(isCategorical), baselineLevel(isCategorical), 'UniformOutput', false);
+        dummy(isCategorical) = cellfun(@(dat, level, baseLevel) dat(:, ~ismember(level, baseLevel)), dummy(isCategorical), levels(isCategorical), baselineLevel(isCategorical), 'UniformOutput', false);
         dummy(~isCategorical) = data(~isCategorical);
         levels = cellfun(@(level, baseLevel) level(~ismember(level, baseLevel)), levels, baselineLevel, 'UniformOutput', false);
 end
