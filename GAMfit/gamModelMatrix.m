@@ -4,6 +4,7 @@ inParser = inputParser;
 inParser.addRequired('model_str', @ischar);
 inParser.addRequired('GLMCov', @isstruct);
 inParser.addRequired('response', @isvector);
+inParser.addParameter('level_reference', 'Full', @ischar);
 
 inParser.parse(model_str, GLMCov, response, varargin{:});
 
@@ -45,7 +46,7 @@ for curTerm = 1:numTerms,
     
     % Convert to indicator variables if categorical
     isCategorical = [GLMCov(data_ind).isCategorical];
-    [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, GLMCov(data_ind).baselineLevel);
+    [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {GLMCov(data_ind).baselineLevel});
     numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
     
     % Figure out all the relevant interactions
@@ -200,9 +201,9 @@ switch(type)
         dummy(~isCategorical) = data(~isCategorical);
     case 'Reference' % first level is the reference
         dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
-        dummy(isCategorical) = cellfun(@(dat) dat(:, ~ismember(levels{:}, baselineLevel)), dummy(isCategorical), 'UniformOutput', false);
+        dummy(isCategorical) = cellfun(@(dat, level, baseLevel) dat(:, ~ismember(level, {baseLevel})), dummy(isCategorical), levels(isCategorical), baselineLevel(isCategorical), 'UniformOutput', false);
         dummy(~isCategorical) = data(~isCategorical);
-        levels = levels(~ismember(levels{:}, baselineLevel));
+        levels = cellfun(@(level, baseLevel) level(~ismember(level, baseLevel)), levels, baselineLevel, 'UniformOutput', false);
 end
 
 end
