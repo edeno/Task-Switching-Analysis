@@ -4,7 +4,6 @@ inParser = inputParser;
 inParser.addRequired('model_str', @ischar);
 inParser.addRequired('GLMCov', @isstruct);
 inParser.addRequired('response', @isvector);
-inParser.addOptional('level_reference', 'Full', @ischar);
 
 inParser.parse(model_str, GLMCov, response, varargin{:});
 
