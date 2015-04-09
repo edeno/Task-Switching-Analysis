@@ -2,6 +2,8 @@
 clear all; close all; clc;
 main_dir = '/data/home/edeno/Task Switching Analysis';
 load(sprintf('%s/paramSet.mat', main_dir), 'data_info', 'validFolders');
+jobMan = parcluster();
+isOverwrite = false;
 
 for time_ind = 1:length(validFolders),
     fprintf('\nTime Period: %s\n', validFolders{time_ind});
@@ -13,6 +15,12 @@ for time_ind = 1:length(validFolders),
     
     for models_ind = 1:length(models),
         fprintf('\tModel: %s\n', models{models_ind});
-        collectGAMfit(models{models_ind}, validFolders{time_ind});
+        gamJob{models_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
+            {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
+        
+        createTask(gamJob{models_ind}, @collectGAMfit, 0, ...
+            {models{models_ind}, validFolders{time_ind}, 'overwrite', isOverwrite});
+        submit(gamJob{models_ind});
+        
     end
 end
