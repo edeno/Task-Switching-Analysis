@@ -1,4 +1,4 @@
-function convertFile_toJSON(session_name, save_dir)
+function convertSpikeFile_toJSON(session_name, save_dir)
 % Load Common Parameters
 load('/data/home/edeno/Task Switching Analysis/paramSet.mat', 'data_info');
 load([data_info.processed_dir, '/Entire Trial/GLMCov/', session_name, '_GLMCov.mat']);
@@ -22,15 +22,6 @@ monkey_name = unique(behavior.monkey);
 
 trial_num = unique(trial_id);
 numTrials = length(trial_num);
-
-for neuron_ind = 1:numNeurons,
-    neurons(neuron_ind)= struct(...
-        'Name', sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind)), ...
-        'Brain_Area', area_names{pfc(neuron_ind)+1}, ...
-        'Monkey', monkey_name, ...
-        'File_Name', session_name, ...
-        'Number_of_Trials', numTrials);
-end
 
 rule_levels = GLMCov(ismember({GLMCov.name}, 'Rule')).levels;
 responseDir_levels = GLMCov(ismember({GLMCov.name}, 'Response Direction')).levels;
@@ -113,7 +104,6 @@ parfor trial_ind = 1:numTrials,
         trials(trial_ind).end_time = NaN;
     end
     
-    
     trials(trial_ind).Rule = Rule{trial_num(trial_ind)};
     trials(trial_ind).Rule_Repetition = Rule_Repetition{trial_num(trial_ind)};
     trials(trial_ind).Response_Direction = Response_Direction{trial_num(trial_ind)};
@@ -129,32 +119,48 @@ parfor trial_ind = 1:numTrials,
     trials(trial_ind).Fixation_Break = fixationBreak{trial_num(trial_ind)};
     trials(trial_ind).Reaction_Time = behavior.Reaction_Time(trial_num(trial_ind));
     
-    for neuron_ind = 1:numNeurons,
-        cur_spikes = spikes(cur_trial, neuron_ind);
-        cur_spikes(isnan(cur_spikes)) = 0;
-        cur_time = trial_time(cur_trial);
-        neuron_name = sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind));
-        if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
-            spike_times = cur_time(logical(cur_spikes));
-            if length(spike_times) == 1,
-                % Stupid hack to force the spikes to be an array.
-                trials(trial_ind).(neuron_name) = [spike_times spike_times];
-            else
-                trials(trial_ind).(neuron_name) = spike_times;
-            end
-        else
-            trials(trial_ind).(neuron_name) = [];
-        end
-    end
-    
 end
 
-data2json.neurons = neurons;
-data2json.trials = trials;
 
-opt.FileName = [session_name, '.json'];
+opt.FileName = [session_name, '_TrialInfo.json'];
 opt.NaN = 'null';
 
 cd(save_dir);
-cur_json = savejson(session_name, data2json, opt);
+savejson('', trials, opt);
+
+%%
+
+for neuron_ind = 1:numNeurons,
+    neuron = struct(...
+        'Name', sprintf('%s_%d_%d', session_name, wire_number(neuron_ind), unit_number(neuron_ind)), ...
+        'Brain_Area', area_names{pfc(neuron_ind)+1}, ...
+        'Monkey', monkey_name, ...
+        'File_Name', session_name, ...
+        'Number_of_Trials', numTrials);
+    
+    for trial_ind = 1:numTrials,
+        cur_trial = ismember(trial_id, trial_num(trial_ind));
+        neuron.Spikes(trial_ind).trial_id = trial_num(trial_ind);
+        
+        cur_spikes = spikes(cur_trial, neuron_ind);
+        cur_spikes(isnan(cur_spikes)) = 0;
+        cur_time = trial_time(cur_trial);
+        if ~behavior.Fixation_Break(trial_num(trial_ind)) && ~isnan(react_time(trial_num(trial_ind))),
+            spike_times = cur_time(logical(cur_spikes))';
+            if length(spike_times) == 1,
+                % Stupid hack to force the spikes to be an array.
+                neuron.Spikes(trial_ind).spikes = [spike_times spike_times];
+            else
+                neuron.Spikes(trial_ind).spikes = spike_times;
+            end
+        else
+            neuron.Spikes(trial_ind).spikes = [];
+        end
+    end
+    
+    opt.FileName = ['Neuron_', neuron.Name,'.json'];
+    savejson('', neuron, opt);
+    
+    clear neuron
+end
 end
