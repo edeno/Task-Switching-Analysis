@@ -3,16 +3,16 @@ load('/data/home/edeno/Task Switching Analysis/paramSet', ...
     'validFolders', 'session_names', 'monkey_names', 'cov_info', 'data_info');
 
 %%
-for monkey_ind = 1:length(monkey_names),
-    trialInfo.monkey(monkey_ind).name = monkey_names{monkey_ind};
-    curSessions = regexp(session_names, [lower(monkey_names{monkey_ind}),'.*'], 'match');
+for subject_ind = 1:length(monkey_names),
+    trialInfo.subject(subject_ind).name = monkey_names{subject_ind};
+    curSessions = regexp(session_names, [lower(monkey_names{subject_ind}),'.*'], 'match');
     curSessions = [curSessions{:}];
     for session_ind = 1:length(curSessions),
-        trialInfo.monkey(monkey_ind).sessionNames(session_ind).name = curSessions{session_ind};
+        trialInfo.subject(subject_ind).sessionNames(session_ind).name = curSessions{session_ind};
         curSessionFile = sprintf('%s/%s.sdt', data_info.rawData_dir, curSessions{session_ind});
         curSessionFile = load(curSessionFile, '-mat', 'cells');
         for neuron_ind = 1:length(curSessionFile.cells),
-            trialInfo.monkey(monkey_ind).sessionNames(session_ind).neurons{neuron_ind} = ...
+            trialInfo.subject(subject_ind).sessionNames(session_ind).neurons{neuron_ind} = ...
                 sprintf('%s_%d_%d', ...
                 curSessions{session_ind}, ...
                 curSessionFile.cells(neuron_ind).WireNumber, ...
