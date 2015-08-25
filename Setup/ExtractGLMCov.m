@@ -2,7 +2,7 @@
 clear all; close all; clc;
 
 %% Setup
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 cd(main_dir);
 
 % Find Cluster
@@ -29,7 +29,7 @@ for folder_ind = 1:length(validFolders),
     end
     
     % Create a job to run on the cluster
-    glmCovJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', {which('saveMillerlab')}, 'NumWorkersRange', [1 12]);
+    glmCovJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir});
     
     % Loop through Processed Data Directories
     for session_ind = 1:numSessions,

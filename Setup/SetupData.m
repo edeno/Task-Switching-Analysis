@@ -2,7 +2,7 @@
 clear all; close all; clc;
 
 % Define main data directory
-data_info.main_dir = '/data/home/edeno/Task Switching Analysis';
+data_info.main_dir = getenv('MAIN_DIR');
 
 % Make main
 if ~exist(data_info.main_dir, 'dir')

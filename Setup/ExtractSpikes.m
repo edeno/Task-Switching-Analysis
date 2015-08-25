@@ -1,7 +1,7 @@
 clear all; close all; clc;
 
 %% Setup
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 cd(main_dir);
 
 % Find Cluster
@@ -34,6 +34,8 @@ validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Re
 
 for folder_ind = 1:length(validFolders),
     
+    fprintf('Processing Spikes for: %s\n', validFolders{folder_ind});
+    
     if any(ismember(validFolders{folder_ind}, {'Entire Trial', 'Intertrial Interval', 'Fixation'})),
         spike_opts.start_off = 0;
     else
@@ -50,7 +52,7 @@ for folder_ind = 1:length(validFolders),
     end
     
     % Create a job to run on the cluster
-    spikesJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', {which('saveMillerlab')}, 'NumWorkersRange', [1 12]);
+    spikesJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir});
     
     % Loop through Raw Data Directories
     for session_ind = 1:numSessions,

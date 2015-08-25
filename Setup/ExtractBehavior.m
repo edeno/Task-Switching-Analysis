@@ -2,7 +2,7 @@
 clear all; close all; clc;
 
 %% Setup
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 cd(main_dir);
 
 % Find Cluster
@@ -18,7 +18,7 @@ react_bounds = [100 313];
 %% Get Behavior
 
 % Create a job to run on the cluster
-behaviorJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', {which('saveMillerlab')}, 'NumWorkersRange', [1 12]);
+behaviorJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir});
 
 % Loop through Raw Data Directories
 for session_ind = 1:numSessions,
@@ -52,13 +52,13 @@ for k = 1:length(behavior)
     behavior(k).Normalized_Prep_Time = norm_prep(cat(1, behavior.day) == k);
 end
 
-%% Split prep period into fifths
+%% Split prep period into thirds
 prep = cat(1, behavior.Prep_Time);
 indicator_prep = nan(size(prep));
 monk = grp2idx(cat(1, behavior.monkey))';
 
 for k = 1:max(monk)
-    prep_quant_bounds = [-inf quantile(prep(monk == k), [1/5 2/5 3/5 4/5]) inf];
+    prep_quant_bounds = [-inf quantile(prep(monk == k), (1:(3-1))/3) inf];
     [~, bin] = histc(prep(monk == k), prep_quant_bounds);
     bin(bin == 0) = NaN;
     indicator_prep(monk == k) = bin;

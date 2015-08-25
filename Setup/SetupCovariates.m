@@ -1,6 +1,6 @@
 %% Setup Covariates
 clear all; close all; clc;
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 
 %% Define Covariates
 cov_info(1).name = 'Prep Time';
@@ -96,7 +96,7 @@ cov_info(18).isCategorical = true;
 cov_info(18).baselineLevel = {'Congruent', 'Previous Congruent'};
 
 cov_info(19).name = 'Indicator Prep Time';
-cov_info(19).levels = {'Shortest', 'Short' 'Medium', 'Long', 'Longest'};
+cov_info(19).levels = {'Short' 'Medium', 'Long'};
 cov_info(19).isCategorical = true;
 cov_info(19).baselineLevel = 'Medium';
 

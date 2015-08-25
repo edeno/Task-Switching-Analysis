@@ -1,6 +1,6 @@
 %% Setup Session Names
 clear all; close all; clc;
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 load_file_name = sprintf('%s/paramSet.mat', main_dir);
 load(load_file_name);
 

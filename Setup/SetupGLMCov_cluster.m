@@ -168,7 +168,7 @@ spike_hist = spalloc(size(spikes, 1), numNeurons*numLags, nansum(nansum(spikes))
 parts_quant = unique(floor(quantile(1:(numLags+1), [0:0.1:1])));
 
 for parts_ind = 1:(length(parts_quant)-1),
-   
+    
     curLags = parts_quant(parts_ind):(parts_quant(parts_ind+1)-1);
     part_hist = lagmatrix(spikes, curLags);
     part_hist(isnan(part_hist)) = 0;
@@ -187,10 +187,15 @@ else
 end
 
 %% Save Everything
-
-saveMillerlab('edeno', save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
-    'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-    'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
-
+[~, hostname] = system('hostname');
+if strcmp(hostname, 'millerlab')
+    saveMillerlab('edeno', save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
+        'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
+        'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
+else
+    save(save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
+        'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
+        'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
+end
 
 end

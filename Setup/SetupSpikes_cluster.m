@@ -28,6 +28,11 @@ end
     'SmoothType', spike_opts.smooth_type, 'SmoothParam', spike_opts.smooth_param, 'TimeResample', spike_opts.time_resample);
 
 save_file_name = sprintf('%s/%s_data.mat', save_dir, session_name);
-saveMillerlab('edeno', save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
+[~, hostname] = system('hostname');
+if strcmp(hostname, 'millerlab')
+    saveMillerlab('edeno', save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
+else
+    save(save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
+end
 
 end

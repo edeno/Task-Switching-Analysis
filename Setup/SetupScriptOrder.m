@@ -2,6 +2,7 @@
 clear all; close all; clc;
 
 %% Setup Data
+setMainDir; % Defines main directory
 SetupData; %  Sets up folders
 % Need to transfer raw data into raw data folder
 SetupSessionNames; % Sets up data names

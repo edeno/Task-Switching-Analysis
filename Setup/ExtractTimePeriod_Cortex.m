@@ -81,7 +81,7 @@ end %trial loop
 %Add in any specified offsets
 if ~isempty(opts.StartOffset),
     trial_time(:, 1) = trial_time(:, 1) + opts.StartOffset;
-    if opts.ValidWindow && ~isempty(opts.WindowSize) && ~isempty(opts.WindowStep),
+    if ~isempty(opts.ValidWindow) && ~isempty(opts.WindowSize) && ~isempty(opts.WindowStep),
         trial_time(:, 1) = trial_time(:, 1) - opts.WindowSize + 1; %extend backwards so we have valid data into past
     end
 end
