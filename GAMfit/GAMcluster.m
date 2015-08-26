@@ -44,7 +44,7 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 gamParams = inParser.Results;
 
 if all(size(gamParams.ridgeLambda) ~= size(gamParams.smoothLambda)),
-    error('ridgeLambda must equal smoothLambda'); 
+    error('ridgeLambda must equal smoothLambda');
 end
 
 %% Setup Data Directories and Cluster Job Manager
@@ -85,15 +85,19 @@ GAMfit_names = strcat(session_names, '_GAMfit.mat');
 for session_ind = 1:length(session_names),
     
     if exist(sprintf('%s/%s', save_dir, GAMfit_names{session_ind}), 'file') && ~gamParams.overwrite,
-       continue;
+        continue;
     end
     
     fprintf('\t...Session: %s\n', session_names{session_ind});
-    gamJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
-        {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
-    
-    createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
-    submit(gamJob{session_ind}); 
+    [~, hostname] = system('hostname');
+    if ~strcmp(strtrim(hostname), 'cns-ws18'),
+        gamJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
+            {which('saveMillerlab')}, 'NumWorkersRange', [8 12], 'Type', 'Pool');
+        createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
+        submit(gamJob{session_ind});
+    else
+        ComputeGAMfit(timePeriod_dir, session_names{session_ind}, gamParams, save_dir);
+    end
 end
 
 fclose(fileID);
