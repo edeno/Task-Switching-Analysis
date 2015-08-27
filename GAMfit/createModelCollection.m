@@ -16,7 +16,7 @@ for covInd = 1:covLength,
         modelCollectionCov(emptyCellInd) = {' + '};
         modelCollectionCov = num2cell(modelCollectionCov, 1);
         modelCollection = [modelCollection strcat(modelCollectionCov{:})'];
-        clear modelListCov;
+        clear modelCollectionCov;
     else
         modelCollection = [modelCollection covariates(modelInd)];
     end
