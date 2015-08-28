@@ -1,6 +1,6 @@
 function collectGAMfit(regressionModel_str, timePeriod, varargin)
 %%
-main_dir = '/data/home/edeno/Task Switching Analysis';
+main_dir = getenv('MAIN_DIR');
 load(sprintf('%s/paramSet.mat', main_dir), ...
     'data_info', 'validFolders', 'session_names');
 
@@ -50,9 +50,16 @@ end
 
 save_file_name = sprintf('%s/neurons.mat', save_dir);
 
+[~, hostname] = system('hostname');
+hostname = strcat(hostname);
 try
-    saveMillerlab('edeno', save_file_name, 'neurons', ...
-        'gam', 'gamParams', '-v7.3');
+    if strcmp(hostname, 'millerlab'),
+        saveMillerlab('edeno', save_file_name, 'neurons', ...
+            'gam', 'gamParams', '-v7.3');
+    else
+        save(save_file_name, 'neurons', ...
+            'gam', 'gamParams', '-v7.3');
+    end
 catch
     fprintf('Model does not exist');
 end
