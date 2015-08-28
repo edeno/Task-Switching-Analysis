@@ -51,7 +51,7 @@ end
 save_file_name = sprintf('%s/neurons.mat', save_dir);
 
 [~, hostname] = system('hostname');
-hostname = strcat(hostname);
+hostname = strtrim(hostname);
 try
     if strcmp(hostname, 'millerlab'),
         saveMillerlab('edeno', save_file_name, 'neurons', ...

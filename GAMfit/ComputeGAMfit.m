@@ -220,7 +220,7 @@ end
 
 %% Save to file
 [~, hostname] = system('hostname');
-hostname = strcat(hostname);
+hostname = strtrim(hostname);
 if strcmp(hostname, 'millerlab'),
     saveMillerlab('edeno', save_file_name, 'neurons', 'trial_id', ...
         'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', 'designMatrix', ...
