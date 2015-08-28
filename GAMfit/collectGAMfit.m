@@ -1,4 +1,4 @@
-function collectGAMfit(regressionModel_str, timePeriod, varargin)
+function collectGAMfit(modelFolderName, timePeriod, varargin)
 %%
 main_dir = getenv('MAIN_DIR');
 load(sprintf('%s/paramSet.mat', main_dir), ...
@@ -9,7 +9,7 @@ inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
 inParser.addParamValue('overwrite', false, @islogical)
 
-inParser.parse(regressionModel_str, timePeriod, varargin{:});
+inParser.parse(modelFolderName, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 params = inParser.Results;
