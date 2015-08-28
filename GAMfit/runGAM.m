@@ -1,15 +1,15 @@
 clear all; close all; clc;
-main_dir = '/data/home/edeno/Task Switching Analysis';
-ridgeLambda = 10.^(-1:3);
-numFolds = 5;
+setMainDir;
+main_dir = getenv('MAIN_DIR');
+ridgeLambda = 0;
+numFolds = 1;
 isOverwrite = true;
 
 %% Pre-Test Stimulus
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus'};
-
-% All Interactions
-model{1} = 'Rule + Rule Repetition + Previous Error + Previous Congruency';
-model{2} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Previous Congruency';
+covariates = {'Rule', 'Rule Repetition', 'Previous Error History', 'Previous Congruency'};
+ruleInteractionCovariates = {'Rule * Rule Repetition', 'Rule * Previous Error History', 'Rule * Previous Congruency'};
+model = unique([createModelCollection(covariates) createModelCollection(ruleInteractionCovariates)], 'stable');
 
 for time_ind = 1:length(timePeriods),
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
@@ -21,8 +21,9 @@ end
 
 %% Post-Test Stimulus
 timePeriods = {'Stimulus Response', 'Saccade', 'Reward'};
-model{1} = 'Rule + Rule Repetition + Congruency History + Previous Error * Response Direction + Indicator Prep Time';
-model{2} = 'Rule * Rule Repetition + Rule * Previous Error + Rule * Congruency History + Previous Error * Response Direction + Rule * Indicator Prep Time';
+covariates = {'Rule', 'Rule Repetition', 'Congruency History', 'Previous Error History', 'Response Direction', 'Indicator Prep Time'};
+ruleInteractionCovariates = {'Rule * Rule Repetition', 'Rule * Congruency History', 'Rule * Previous Error History', 'Rule * Response Direction', 'Rule * Indicator Prep Time'};
+model = unique([createModelCollection(covariates) createModelCollection(ruleInteractionCovariates)], 'stable');
 
 for time_ind = 1:length(timePeriods),
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
