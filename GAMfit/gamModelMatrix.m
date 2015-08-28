@@ -35,97 +35,105 @@ numTerms = length(model.terms);
 
 bsplines = cell(numTerms, 1);
 
-% For each term
-for curTerm = 1:numTerms,
-    
-    term_names = regexp(model.terms{curTerm}, ':', 'split');
-    data_ind = find(ismember({GLMCov.name}, term_names));
-    
-    data = {GLMCov(data_ind).data};
-    levels = {GLMCov(data_ind).levels};
-    
-    % Convert to indicator variables if categorical
-    isCategorical = [GLMCov(data_ind).isCategorical];
-    [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {GLMCov(data_ind).baselineLevel});
-    numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
-    
-    % Figure out all the relevant interactions
-    if length(numLevels) < 2,
-        % If no interactions, then just let the factor be added to the
-        % design matrix
-        data_temp = data{:};
-        levels_temp = levels{:};
-    else
-        % Find all combinations of levels of each factor  
-        [rep] = allpairs2(numLevels);
+if ~strcmp(lower(model_str), 'constant'),
+    % For each term
+    for curTerm = 1:numTerms,
         
-        % Sort so that the interactions start with the first level of the
-        % first factor, then the second, and so on.
-        [~, rep_sort_ind] = sort(rep{1});
-        for rep_ind = 1:length(rep),
-            rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
+        term_names = regexp(model.terms{curTerm}, ':', 'split');
+        data_ind = find(ismember({GLMCov.name}, term_names));
+        
+        if isempty(data_ind),
+            fprint('%s not found, skipping...\n', model.terms{curTerm});
+            continue;
         end
         
-        % Replicate each factor level the number of times needed for all
-        % possible combintations
-        data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
-        levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
+        data = {GLMCov(data_ind).data};
+        levels = {GLMCov(data_ind).levels};
         
-        % Multiply the factors together for the interactions
-        data_temp = data{1};
-        levels_temp = levels{1};
+        % Convert to indicator variables if categorical
+        isCategorical = [GLMCov(data_ind).isCategorical];
+        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {GLMCov(data_ind).baselineLevel});
+        numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
         
-        for var_ind = 2:length(data),
-            data_temp = data_temp.*data{var_ind};
-            levels_temp = strcat(levels_temp, ':', levels{var_ind});
-        end
-        
-    end
-    
-    designMatrix_constant = [designMatrix_constant data_temp];
-    
-    numLevels = size(data_temp, 2);
-    
-    cov_names_constant = [cov_names_constant repmat(model.terms(curTerm), 1, numLevels)];
-    sqrtPen_constant = [sqrtPen_constant repmat({1}, 1, numLevels)];
-    constraints_constant = [constraints_constant repmat({1}, 1, numLevels)];
-    constraintLevel_constant = [constraintLevel_constant levels_temp];
-    penalty_constant = [penalty_constant repmat({1}, 1, numLevels)];
-    
-    % Deal with Smoothing
-    if model.isSmooth(curTerm),
-        
-        smoothParams = [];
-        
-        % Factor to be smoothed
-        factor.name = model.terms(curTerm);
-        factor.data = data_temp;
-        factor.levels = levels_temp;
-        smoothParams{1} = factor;
-        
-        % Find smoothing factor
-        if isempty(model.smoothingTerm{curTerm}),
-            smoothingFactor.data = [];
-            smoothingFactor.name = [];
-            smoothParams{2} = smoothingFactor;
+        % Figure out all the relevant interactions
+        if length(numLevels) < 2,
+            % If no interactions, then just let the factor be added to the
+            % design matrix
+            data_temp = data{:};
+            levels_temp = levels{:};
         else
-            smoothingFactor.data = GLMCov(ismember({GLMCov.name}, model.smoothingTerm{curTerm})).data;
-            smoothingFactor.name = model.smoothingTerm{curTerm};
-            smoothParams{2} = smoothingFactor;
+            % Find all combinations of levels of each factor
+            [rep] = allpairs2(numLevels);
+            
+            % Sort so that the interactions start with the first level of the
+            % first factor, then the second, and so on.
+            [~, rep_sort_ind] = sort(rep{1});
+            for rep_ind = 1:length(rep),
+                rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
+            end
+            
+            % Replicate each factor level the number of times needed for all
+            % possible combintations
+            data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
+            levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
+            
+            % Multiply the factors together for the interactions
+            data_temp = data{1};
+            levels_temp = levels{1};
+            
+            for var_ind = 2:length(data),
+                data_temp = data_temp.*data{var_ind};
+                levels_temp = strcat(levels_temp, ':', levels{var_ind});
+            end
+            
         end
         
-        smoothParams = [smoothParams [model.smoothParams_opt{curTerm, :}]];
+        designMatrix_constant = [designMatrix_constant data_temp];
         
-        [smoothMatrix, bsplines{curTerm}, smoothCov_name, smoothLevel_names, ...
-            smoothSqrtPen, smoothConstraints, smoothPenalty, smoothConNames] = factorBySpline(smoothParams{:});
+        numLevels = size(data_temp, 2);
         
-        designMatrix_spline = [designMatrix_spline smoothMatrix];
-        levels_spline = [levels_spline smoothLevel_names];
-        cov_names_spline = [cov_names_spline smoothCov_name];
-        sqrtPen_spline = [sqrtPen_spline smoothSqrtPen];
-        constraints_spline = [constraints_spline smoothConstraints];
-        penalty_spline = [penalty_spline smoothPenalty];
-        constraintLevel_spline = [constraintLevel_spline smoothConNames];
+        cov_names_constant = [cov_names_constant repmat(model.terms(curTerm), 1, numLevels)];
+        sqrtPen_constant = [sqrtPen_constant repmat({1}, 1, numLevels)];
+        constraints_constant = [constraints_constant repmat({1}, 1, numLevels)];
+        constraintLevel_constant = [constraintLevel_constant levels_temp];
+        penalty_constant = [penalty_constant repmat({1}, 1, numLevels)];
+        
+        % Deal with Smoothing
+        if model.isSmooth(curTerm),
+            
+            smoothParams = [];
+            
+            % Factor to be smoothed
+            factor.name = model.terms(curTerm);
+            factor.data = data_temp;
+            factor.levels = levels_temp;
+            smoothParams{1} = factor;
+            
+            % Find smoothing factor
+            if isempty(model.smoothingTerm{curTerm}),
+                smoothingFactor.data = [];
+                smoothingFactor.name = [];
+                smoothParams{2} = smoothingFactor;
+            else
+                smoothingFactor.data = GLMCov(ismember({GLMCov.name}, model.smoothingTerm{curTerm})).data;
+                smoothingFactor.name = model.smoothingTerm{curTerm};
+                smoothParams{2} = smoothingFactor;
+            end
+            
+            smoothParams = [smoothParams [model.smoothParams_opt{curTerm, :}]];
+            
+            [smoothMatrix, bsplines{curTerm}, smoothCov_name, smoothLevel_names, ...
+                smoothSqrtPen, smoothConstraints, smoothPenalty, smoothConNames] = factorBySpline(smoothParams{:});
+            
+            designMatrix_spline = [designMatrix_spline smoothMatrix];
+            levels_spline = [levels_spline smoothLevel_names];
+            cov_names_spline = [cov_names_spline smoothCov_name];
+            sqrtPen_spline = [sqrtPen_spline smoothSqrtPen];
+            constraints_spline = [constraints_spline smoothConstraints];
+            penalty_spline = [penalty_spline smoothPenalty];
+            constraintLevel_spline = [constraintLevel_spline smoothConNames];
+        end
+        
     end
     
 end
