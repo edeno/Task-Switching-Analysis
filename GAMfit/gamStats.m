@@ -102,7 +102,7 @@ stats.AUC_rescaled = 2 * abs(stats.AUC - .5);
 
 % Mutual Information
 
-stats.mutual_information = (dev - dev_const)/sum(y); % bits/spike
+stats.mutual_information = (dev - dev_const)/(-2 * sum(y)); % bits/spike
 
 if stats.Compact,
     return;
