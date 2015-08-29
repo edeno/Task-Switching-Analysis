@@ -37,6 +37,7 @@ inParser.addParamValue('overwrite', false, @islogical)
 inParser.addParamValue('includeIncorrect', false, @islogical);
 inParser.addParamValue('includeFixationBreaks', false, @islogical);
 inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
+inParser.addParamValue('isPrediction', false, @islogical);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
@@ -96,7 +97,11 @@ fprintf(fileID, '\t includeIncorrect: %d\n', gamParams.includeIncorrect);
 %% Process Data
 fprintf('\nProcessing Model: %s\n', regressionModel_str);
 gamJob = cell(1, length(session_names));
-GAMfit_names = strcat(session_names, '_GAMfit.mat');
+if gamParams.isPrediction,
+    GAMfit_names = strcat(session_names, '_GAMpred.mat');
+else
+    GAMfit_names = strcat(session_names, '_GAMfit.mat');
+end
 
 % Loop through files in the data directory
 for session_ind = 1:length(session_names),
