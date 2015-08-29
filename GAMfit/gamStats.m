@@ -102,7 +102,7 @@ stats.AUC_rescaled = 2 * abs(stats.AUC - .5);
 
 % Mutual Information
 
-stats.mutual_information = (-.5/length(y)) * (dev - dev_const); % bits/s
+stats.mutual_information = (dev - dev_const)/sum(y); % bits/spike
 
 if stats.Compact,
     return;
@@ -121,8 +121,6 @@ u1 = u(1:numParam, :);
 % effective degrees of freedom edf = trace(u1*u1'); runs out of memory if computed directly
 edf = sum(u1(:).*u1(:));
 stats.edf = edf;
-
-
 
 %% Theoretical Bias-Corrected Performance Measures
 stats.AIC = dev + 2*extraFitPenalty*edf;
