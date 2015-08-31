@@ -197,6 +197,7 @@ if ~flag
             end
         else
             bestLambda_ind = 1;
+            neurons(curNeuron).numSpikesPerFold(1) = sum(spikes(:, curNeuron));
             if gamParams.isPrediction,
                 lambda_vec = nan(size(constant_ind));
                 lambda_vec(constant_ind) = ridgeLambda(bestLambda_ind);
@@ -223,16 +224,16 @@ if ~flag
             'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
             'constraints', constraints);
         
-        [neurons(curNeuron).stats] = gamStats(designMatrix, spikes(:, curNeuron), fitInfo, trial_id, ...
+        stats = gamStats(designMatrix, spikes(:, curNeuron), fitInfo, trial_id, ...
             'Compact', false);
         
-        pred_error(:, :, 4) = neurons(curNeuron).stats.AIC;
-        pred_error(:, :, 5) = neurons(curNeuron).stats.GCV;
-        pred_error(:, :, 6) = neurons(curNeuron).stats.BIC;
-        pred_error(:, :, 7) = neurons(curNeuron).stats.UBRE;
+        neurons(curNeuron).stats = stats;
+        pred_error(:, :, 4) = stats.AIC;
+        pred_error(:, :, 5) = stats.GCV;
+        pred_error(:, :, 6) = stats.BIC;
+        pred_error(:, :, 7) = stats.UBRE;
         
         neurons(curNeuron).pred_error = pred_error;
-        
         
     end % End Neuron Loop
 end
