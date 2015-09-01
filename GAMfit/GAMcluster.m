@@ -56,6 +56,12 @@ jobMan = parcluster();
 % Specify Home and Data Directory
 timePeriod_dir = sprintf('%s/%s', data_info.processed_dir, timePeriod);
 
+model_dir = sprintf('%s/Models/', timePeriod_dir);
+
+if ~exist(model_dir, 'dir'),
+    mkdir(model_dir);
+end
+
 if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
     load(sprintf('%s/Models/modelList.mat', timePeriod_dir));
     if any(ismember({modelList.modelName}, gamParams.regressionModel_str))
