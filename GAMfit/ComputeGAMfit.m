@@ -25,7 +25,7 @@ wire_number = double(wire_number);
 unit_number = double(unit_number);
 pfc = double(pfc);
 
-monkey_name = regexp(session_name, '(cc)|(isa)|(ch)', 'match');
+monkey_name = regexp(session_name, '(cc)|(isa)|(ch)|(test)', 'match');
 monkey_name = monkey_name{:};
 
 %% Setup Design Matrix

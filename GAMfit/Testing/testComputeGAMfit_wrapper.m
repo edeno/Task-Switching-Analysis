@@ -1,19 +1,55 @@
-function [neurons, gam, designMatrix, spikes, model_dir] = testComputeGAMfit_wrapper(gamParams, Rate, GLMCov_name, timePeriod_dir, session_name)
+function [neurons, gam, designMatrix, spikes, save_dir] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
+
+setMainDir;
+main_dir = getenv('MAIN_DIR');
+
+load(sprintf('%s/paramSet.mat', main_dir), ...
+    'data_info');
+
+validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+
+inParser = inputParser;
+inParser.addRequired('regressionModel_str', @ischar);
+inParser.addRequired('Rate',  @(x) isnumeric(x) & all(x > 0));
+inParser.addParamValue('numFolds', 10, @(x) isnumeric(x) && x > 0)
+inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParamValue('smoothLambda', 10.^(-3:1:3), @isvector)
+inParser.addParamValue('ridgeLambda', 10.^(-3:1:3), @isvector)
+inParser.addParamValue('overwrite', false, @islogical)
+inParser.addParamValue('includeIncorrect', false, @islogical);
+inParser.addParamValue('includeFixationBreaks', false, @islogical);
+inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
+inParser.addParamValue('isPrediction', false, @islogical);
+inParser.addParamValue('spikes', [], @(x) isnumeric(x));
+
+inParser.parse(regressionModel_str, Rate, varargin{:});
+
+% Add parameters to input structure after validation
+gamParams = inParser.Results;
+
+timePeriod_dir = sprintf('%s/Testing/', data_info.processed_dir);
 
 % Simulate Spikes
-dt = 1E-3;
-spikes = simPoisson(Rate, dt);
+if isempty(gamParams.spikes),
+    dt = 1E-3;
+    spikes = simPoisson(Rate, dt);
+    % Append spikes to GLMCov file
+    % Save Simulated Session
+    GLMCov_name = sprintf('%s/GLMCov/test_GLMCov.mat', timePeriod_dir);
+    save(GLMCov_name, 'spikes', '-append');
+else
+    spikes = gamParams.spikes;
+end
 
-% Append spikes to GLMCov file
-save(GLMCov_name, 'spikes', '-append');
+
 
 % Save directory
-model_dir = sprintf('%s/Models/%s', timePeriod_dir, gamParams.regressionModel_str);
-if ~exist(model_dir, 'dir'),
-    mkdir(model_dir);
+save_dir = sprintf('%s/Models/%s', timePeriod_dir, gamParams.regressionModel_str);
+if ~exist(save_dir, 'dir'),
+    mkdir(save_dir);
 end
 
 % Estimate GAM parameters
-[neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, model_dir);
+[neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, 'test', gamParams, save_dir);
 
 end
