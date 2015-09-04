@@ -44,7 +44,7 @@ subplot(1,2,1);
 meanPredError = [squeeze(mean([neurons.pred_error(:, :, 2)], 1)), squeeze(mean([neurons_misspecified.pred_error(:, :, 2)], 1))];
 plot(1:2, meanPredError)
 set(gca, 'XTick', 1:2)
-set(gca, 'XTickLabel', {'Correct', 'Incorrect'})
+set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
 hline(0.5, 'k');
 title('AUC')
 
@@ -53,6 +53,6 @@ subplot(1,2,2);
 meanPredError = [squeeze(mean([neurons.pred_error(:, :, 3)], 1)), squeeze(mean([neurons_misspecified.pred_error(:, :, 3)], 1))];
 plot(1:2, meanPredError)
 set(gca, 'XTick', 1:2)
-set(gca, 'XTickLabel', {'Correct', 'Incorrect'})
+set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
 hline(0.0, 'k');
 title('Mutual Information (bits / spike)')
