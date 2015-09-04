@@ -82,72 +82,72 @@ isAttempted = isAttempted(trial_id);
 isCorrect = isCorrect(trial_id);
 GLMCov = cov_info;
 
-% Prep Time
+% 1. Prep Time
 Prep_Time = Prep_Time(trial_id);
-GLMCov(1).data =  Prep_Time;
+GLMCov(ismember({cov_info.name}, 'Prep Time')).data =  Prep_Time;
 
-% Rule
-GLMCov(2).data =  Rule(trial_id);
+% 2. Rule
+GLMCov(ismember({cov_info.name}, 'Rule')).data =  Rule(trial_id);
 
-% Switch
-GLMCov(3).data = Rule_Switch(trial_id);
+% 3. Switch
+GLMCov(ismember({cov_info.name}, 'Switch')).data = Rule_Switch(trial_id);
 
-% Congruency
-GLMCov(4).data = Congruency(trial_id);
+% 4. Congruency
+GLMCov(ismember({cov_info.name}, 'Congruency')).data = Congruency(trial_id);
 
-% Test Stimulus
-GLMCov(5).data = Test_Stimulus(trial_id);
+% 5. Test Stimulus
+GLMCov(ismember({cov_info.name}, 'Test Stimulus')).data = Test_Stimulus(trial_id);
 
-% Rule Cues
-GLMCov(6).data = Rule_Cues(trial_id);
+% 6. Rule Cues
+GLMCov(ismember({cov_info.name}, 'Rule Cues')).data = Rule_Cues(trial_id);
 
-% Rule Cue Switch
-GLMCov(7).data = Rule_Cue_Switch(trial_id);
+% 7. Rule Cue Switch
+GLMCov(ismember({cov_info.name}, 'Rule Cue Switch')).data = Rule_Cue_Switch(trial_id);
 
-% Test Stimulus Color
-GLMCov(8).data = Test_Stimulus_Color(trial_id);
+% 8. Test Stimulus Color
+GLMCov(ismember({cov_info.name}, 'Test Stimulus Color')).data = Test_Stimulus_Color(trial_id);
 
-% Test Stimulus Orientation
-GLMCov(9).data = Test_Stimulus_Orientation(trial_id);
+% 9. Test Stimulus Orientation
+GLMCov(ismember({cov_info.name}, 'Test Stimulus Orientation')).data = Test_Stimulus_Orientation(trial_id);
 
-% Normalized Prep Time
-GLMCov(10).data = Normalized_Prep_Time(trial_id);
+% 10. Normalized Prep Time
+GLMCov(ismember({cov_info.name}, 'Normalized Prep Time')).data = Normalized_Prep_Time(trial_id);
 
-% Response Direction
-GLMCov(11).data = Response_Direction(trial_id);
+% 11. Response Direction
+GLMCov(ismember({cov_info.name}, 'Response Direction')).data = Response_Direction(trial_id);
 
-% Previous Error
-GLMCov(12).data = Previous_Error(trial_id);
+% 12. Previous Error
+GLMCov(ismember({cov_info.name}, 'Previous Error')).data = Previous_Error(trial_id);
 
-% Previous Error Indicator
-GLMCov(13).data = Previous_Error_History(trial_id, :);
+% 13. Previous Error History
+GLMCov(ismember({cov_info.name}, 'Previous Error History')).data = Previous_Error_History(trial_id, :);
 
-% Switch History
-GLMCov(14).data = Rule_Repetition(trial_id, :);
+% 14. Rule Repetition
+GLMCov(ismember({cov_info.name}, 'Rule Repetition')).data = Rule_Repetition(trial_id, :);
 
-% Trial Time
-GLMCov(15).data = trial_time;
+% 15. Trial Time
+GLMCov(ismember({cov_info.name}, 'Trial Time')).data = trial_time;
 
-% Switch Distance
-GLMCov(16).data = dist_sw(trial_id);
+% 16. Switch Distance
+GLMCov(ismember({cov_info.name}, 'Switch Distance')).data = dist_sw(trial_id);
 
-% Error Distance
-GLMCov(17).data = dist_err(trial_id);
+% 17. Error Distance
+GLMCov(ismember({cov_info.name}, 'Error Distance')).data = dist_err(trial_id);
 
-% Congruency History
-GLMCov(18).data = Congruency_History(trial_id, :);
+% 18. Congruency History
+GLMCov(ismember({cov_info.name}, 'Congruency History')).data = Congruency_History(trial_id, :);
 
-% Indicator Prep Time
-GLMCov(19).data = Indicator_Prep_Time(trial_id);
+% 19. Indicator Prep Time
+GLMCov(ismember({cov_info.name}, 'Indicator Prep Time')).data = Indicator_Prep_Time(trial_id);
 
-% Previous Congruency
-GLMCov(20).data = Previous_Congruency(trial_id);
+% 20. Previous Congruency
+GLMCov(ismember({cov_info.name}, 'Previous Congruency')).data = Previous_Congruency(trial_id);
 
-% Error History - non-cumulative errors
-GLMCov(22).data = Previous_Error_History_Indicator(trial_id);
+% 22. Previous Error History Indicator - non-cumulative errors
+GLMCov(ismember({cov_info.name}, 'Previous Error History Indicator')).data = Previous_Error_History_Indicator(trial_id);
 
-% Session Time
-GLMCov(23).data = Session_Time(trial_id);
+% 23. Session Time
+GLMCov(ismember({cov_info.name}, 'Session Time')).data = Session_Time(trial_id);
 
 % Indicator function for when the test stimulus is on
 sample_on = trial_time >= Prep_Time;
@@ -167,16 +167,15 @@ spike_hist = spalloc(size(spikes, 1), numNeurons*numLags, nansum(nansum(spikes))
 
 parts_quant = unique(floor(quantile(1:(numLags+1), [0:0.1:1])));
 
-for parts_ind = 1:(length(parts_quant)-1),
-    
+for parts_ind = 1:(length(parts_quant)-1),   
     curLags = parts_quant(parts_ind):(parts_quant(parts_ind+1)-1);
     part_hist = lagmatrix(spikes, curLags);
     part_hist(isnan(part_hist)) = 0;
     spike_hist(:, [1:(numNeurons*length(curLags))] + (parts_quant(parts_ind) - 1)*numNeurons) = sparse(part_hist);
-    
 end
 
-GLMCov(21).data = spike_hist;
+% 21. Spike History
+GLMCov(ismember({cov_info.name}, 'Spike History')).data = spike_hist;
 
 %% Find which areas correspond to PFC
 % isa5 is a special case
