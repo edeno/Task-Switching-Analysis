@@ -101,8 +101,11 @@ end
 % stats.AUC_rescaled = 2 * (stats.AUC - .5);
 
 % Mutual Information
-
-stats.mutual_information = (dev - dev_const)/(-2 * sum(y)); % bits/spike
+if numSpikes > 0,
+    stats.mutual_information = ((dev - dev_const) / -2) / numSpikes; % bits/spike
+else
+    stats.mutual_information = NaN;
+end
 
 if stats.Compact,
     return;
