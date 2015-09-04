@@ -98,7 +98,7 @@ else
     stats.AUC = [];
 end
 
-stats.AUC_rescaled = 2 * abs(stats.AUC - .5);
+% stats.AUC_rescaled = 2 * (stats.AUC - .5);
 
 % Mutual Information
 
