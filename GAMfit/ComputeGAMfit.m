@@ -127,7 +127,6 @@ constant_ind = gam.constant_ind;
 validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
 numPredType = length(validPredType);
 predInd = ismember(validPredType, gamParams.predType);
-mean_pred_error = nan(1, numLambda, numPredType);
 
 if ~flag
     fprintf('\nFitting GAMs ...\n');
@@ -175,7 +174,7 @@ if ~flag
                     % Store different types of prediction error for each
                     % fold and lambda
                     pred_error(curFold, curLambda, 1) = stats.dev;
-                    pred_error(curFold, curLambda, 2) = stats.AUC_rescaled;
+                    pred_error(curFold, curLambda, 2) = stats.AUC;
                     pred_error(curFold, curLambda, 3) = stats.mutual_information;
                     
                 end % End Lambda Loop
