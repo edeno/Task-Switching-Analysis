@@ -103,7 +103,7 @@ end
 % Mutual Information
 if numSpikes > 0 && strcmp(distr, 'poisson'),
     log2Likelihood = @(r, lambda) r' * log2(lambda) - sum(lambda); % Poisson only
-    stats.mutual_information = (log2Likelihood(y, mu) - log2Likelihood(y, mu_const)) / numSpikes; % bits/spike
+    stats.mutual_information = (log2Likelihood(y, mu) - log2Likelihood(y, ones(size(y)) * nanmean(y))) / numSpikes; % bits/spike
 else
     stats.mutual_information = NaN;
 end
