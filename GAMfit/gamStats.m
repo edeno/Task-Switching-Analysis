@@ -101,8 +101,9 @@ end
 % stats.AUC_rescaled = 2 * (stats.AUC - .5);
 
 % Mutual Information
-if numSpikes > 0,
-    stats.mutual_information = ((dev - dev_const) / -2) / numSpikes; % bits/spike
+if numSpikes > 0 && strcmp(distr, 'poisson'),
+    log2Likelihood = @(r, lambda) r' * log2(lambda) - sum(lambda); % Poisson only
+    stats.mutual_information = (log2Likelihood(y, mu) - log2Likelihood(y, mu_const)) / numSpikes; % bits/spike
 else
     stats.mutual_information = NaN;
 end
