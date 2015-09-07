@@ -56,3 +56,16 @@ set(gca, 'XTick', 1:2)
 set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
 hline(0.0, 'k');
 title('Mutual Information (bits / spike)')
+
+% Akaike Information Criterion
+[~, AIC_ind] = min([neurons.stats.AIC, neurons_misspecified.stats.AIC])
+[weightsAIC, diffAIC, bestAIC_ind] = computeAICWeights([neurons.stats.AIC, neurons_misspecified.stats.AIC]')
+
+% Bayesian Information Criterion
+[~, BIC_ind] = min([neurons.stats.BIC, neurons_misspecified.stats.BIC])
+
+% Unbiased Risk estimator
+[~, UBRE_ind] = min([neurons.stats.UBRE, neurons_misspecified.stats.UBRE])
+
+[~, GCV_ind] = min([neurons.stats.GCV, neurons_misspecified.stats.GCV])
+
