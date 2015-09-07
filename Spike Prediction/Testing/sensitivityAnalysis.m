@@ -56,4 +56,6 @@ for sample_ind = 1:numSamples,
     end
 end
 
+save('sensitivityAnalysis.mat', 'AUC', 'MI', 'ruleRatio', 'numSamples', ...
+    'numTrials', 'orientRate', 'colorRate', 'numFolds', 'ridgeLambda')
 %% Plot
