@@ -51,7 +51,6 @@ isNan = isnan(mu) | isnan(y);
 y(isNan) = [];
 trial_id(isNan) = [];
 mu(isNan) = [];
-mu_const(isNan) = [];
 prior_weights(isNan) = [];
 x(isNan, :) = [];
 
@@ -87,8 +86,6 @@ end
 di = devFun(mu,y,N);
 dev = sum(prior_weights .* di);
 
-di_const = devFun(mu_const, y, N);
-dev_const = sum(prior_weights .* di_const);
 stats.dev = dev;
 if numSpikes > 0
     [stats.fp, stats.tp, ~, stats.AUC] = perfcurve(y, mu, 1);
