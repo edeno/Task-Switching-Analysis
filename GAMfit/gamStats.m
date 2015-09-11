@@ -93,9 +93,9 @@ stats.dev = dev;
 if numSpikes > 0
     [stats.fp, stats.tp, ~, stats.AUC] = perfcurve(y, mu, 1);
 else
-    stats.fp = [];
-    stats.tp = [];
-    stats.AUC = [];
+    stats.fp = NaN;
+    stats.tp = NaN;
+    stats.AUC = NaN;
 end
 
 % stats.AUC_rescaled = 2 * (stats.AUC - .5);
