@@ -22,9 +22,8 @@ function GAMcluster(regressionModel_str, timePeriod, main_dir, varargin)
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', main_dir), ...
-    'data_info', 'cov_info', 'validFolders', 'session_names', 'numMaxLags', 'monkey_names');
-
-validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+    'data_info', 'cov_info', 'validFolders', 'session_names', ...
+    'numMaxLags', 'monkey_names', 'validPredType');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);

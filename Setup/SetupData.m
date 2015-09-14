@@ -58,8 +58,9 @@ trial_info.Incorrect = 6;
 trial_info.FixationBreak = [3 4];
 
 monkey_names = {'CC', 'CH', 'ISA'};
+validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
 
 %% Save Everything
 
 save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
-save(save_file_name, '*_info', 'monkey_names');
+save(save_file_name, '*_info', 'monkey_names', 'validPredType');
