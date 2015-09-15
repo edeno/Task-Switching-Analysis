@@ -66,6 +66,9 @@ brainArea = 'ACC';
 
 plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
 
+predType = 'MI';
+plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
+
 %% Previous Error History vs. Rule Repetition
 
 modelsToCompare = {'Previous Error History', 'Rule Repetition + Previous Error History', ...
@@ -75,6 +78,9 @@ brainArea = 'ACC';
 
 plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
 
+predType = 'MI';
+plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
+
 %% Previous Error History vs. Rule
 
 modelsToCompare = {'Previous Error History', 'Rule + Previous Error History', ...
@@ -82,6 +88,9 @@ modelsToCompare = {'Previous Error History', 'Rule + Previous Error History', ..
 predType = 'AUC';
 brainArea = 'ACC';
 
+plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
+
+predType = 'MI';
 plotCompareTwoModels(modelsToCompare, meanPredError, predType, isPFC, modelNames, timePeriodNames, validPredType, brainArea)
 
 
