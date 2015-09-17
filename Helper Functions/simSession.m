@@ -1,4 +1,4 @@
-function [GLMCov, trial_time] = simSession(numTrials)
+function [GLMCov, trial_time, isCorrect, isAttempted] = simSession(numTrials)
 
 setMainDir;
 main_dir = getenv('MAIN_DIR');

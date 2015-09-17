@@ -1,12 +1,10 @@
-function [neurons, gam, designMatrix, spikes, save_dir] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
+function [neurons, gam, designMatrix, spikes, save_dir, gamParams] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
 
 setMainDir;
 main_dir = getenv('MAIN_DIR');
 
 load(sprintf('%s/paramSet.mat', main_dir), ...
-    'data_info');
-
-validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+    'data_info', 'validPredType');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
