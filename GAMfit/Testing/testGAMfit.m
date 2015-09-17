@@ -42,14 +42,24 @@ numSpikes = neurons.stats.timeRescale.numSpikes;
 CI = 1.36 / sqrt(numSpikes);
 
 plot(uniformCDFvalues, neurons.stats.timeRescale.sortedKS); hold all;
-plot(neurons_misspecified.stats.timeRescale.uniformCDFvalues, neurons_misspecified.stats.timeRescale.sortedKS);
+plot(uniformCDFvalues, neurons_misspecified.stats.timeRescale.sortedKS);
 plot(uniformCDFvalues, (uniformCDFvalues + CI), 'k--');
 plot(uniformCDFvalues, (uniformCDFvalues - CI), 'k--');
 axis([0 1 0 1]);
 line;
 legend('True Model', 'Mispecified Model');
 title('KS Plot');
+xlabel('Empirical CDF');
+ylabel('Model CDF');
 box off;
+
+figure;
+plot(uniformCDFvalues, neurons.stats.timeRescale.sortedKS - uniformCDFvalues); hold all;
+plot(uniformCDFvalues, neurons_misspecified.stats.timeRescale.sortedKS - uniformCDFvalues);
+ylabel('Model CDF - Empirical CDF');
+legend('True Model', 'Mispecified Model');
+hline([-CI CI], 'k--');
+hline(0, 'k-')
 
 %% PSTH Correlation
 adjustedTrueRate = trueRate;
