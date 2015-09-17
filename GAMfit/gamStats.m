@@ -27,7 +27,6 @@ beta = fitInfo.beta;
 con_beta = fitInfo.con_beta;
 ilinkFun = fitInfo.ilinkFun;
 offset = fitInfo.gam.offset;
-const_beta = fitInfo.const_beta;
 
 if isempty(stats.prior_weights)
     prior_weights = fitInfo.gam.prior_weights;
@@ -45,7 +44,6 @@ N = fitInfo.N;
 distr = fitInfo.gam.distr;
 %%
 mu = ilinkFun(offset + x*con_beta);
-mu_const = ilinkFun(offset + ones(size(y))*const_beta);
 
 isNan = isnan(mu) | isnan(y);
 y(isNan) = [];
@@ -66,9 +64,9 @@ if strcmp(distr, 'poisson')
     
     if numSpikes > 0
         %     autoCorr = xcorr(normalRescaledISIs, 'coef');
-       sortKS = sort(uniformRescaledISIs, 'ascend');
+       sortedKS = sort(uniformRescaledISIs, 'ascend');
        uniformCDFvalues = ([1:numSpikes] - 0.5)' / numSpikes;
-       ksStat = max(abs(sortKS - uniformCDFvalues));
+       ksStat = max(abs(sortedKS - uniformCDFvalues));
     else
         ksStat = 1;
         uniformCDFvalues = [];
@@ -76,6 +74,7 @@ if strcmp(distr, 'poisson')
     end
     
     stats.timeRescale.uniformCDFvalues = uniformCDFvalues;
+    stats.timeRescale.sortedKS = sortedKS;
     stats.timeRescale.ksStat = ksStat;
     stats.timeRescale.numSpikes = numSpikes;
     stats.timeRescale.rescaledISIs = rescaledISIs;
