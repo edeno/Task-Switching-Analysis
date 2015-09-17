@@ -55,7 +55,7 @@ x(isNan, :) = [];
 % Time Rescale
 if strcmp(distr, 'poisson')
     lambdaInt = accumarray(trial_id, mu, [], @(x) {cumsum(x)}, {NaN}); % Integrated Intensity Function by Trial
-    spikeInd = accumarray(trial_id, y, [], @(x) {find(x)}); % Spike times by Trial
+    spikeInd = accumarray(trial_id, y, [], @(x) {find(x == 1)}); % Spike times by Trial
     rescaledISIs = cell2mat(cellfun(@(x,y) (diff([0; x(y)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
     
     uniformRescaledISIs = 1 - exp(-rescaledISIs); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
