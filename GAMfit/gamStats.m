@@ -58,27 +58,29 @@ x(isNan, :) = [];
 if strcmp(distr, 'poisson')
     lambdaInt = accumarray(trial_id, mu, [], @(x) {cumsum(x)}, {NaN}); % Integrated Intensity Function by Trial
     spikeInd = accumarray(trial_id, y, [], @(x) {find(x)}); % Spike times by Trial
-    Z = cell2mat(cellfun(@(x,y) (diff([0; x(y)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
+    rescaledISIs = cell2mat(cellfun(@(x,y) (diff([0; x(y)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
     
-    U = expcdf(Z, 1); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
-    G = norminv(U, 0, 1); % Convert to normal distribution
-    numSpikes = length(U); % Number of Spikes
+    uniformRescaledISIs = 1 - exp(-rescaledISIs); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
+    normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
+    numSpikes = length(uniformRescaledISIs); % Number of Spikes
     
     if numSpikes > 0
-        %     autoCorr = xcorr(G, 'coef');
-        [~, p, ks_stat] = kstest(U, [U unifcdf(U, 0, 1)]);
+        %     autoCorr = xcorr(normalRescaledISIs, 'coef');
+       sortKS = sort(uniformRescaledISIs, 'ascend');
+       uniformCDFvalues = ([1:numSpikes] - 0.5)' / numSpikes;
+       ksStat = max(abs(sortKS - uniformCDFvalues));
     else
-        p = [];
-        ks_stat = [];
+        ksStat = 1;
+        uniformCDFvalues = [];
         % autoCorr = [];
     end
     
-    stats.timeRescale.p = p;
-    stats.timeRescale.ks_stat = ks_stat;
+    stats.timeRescale.uniformCDFvalues = uniformCDFvalues;
+    stats.timeRescale.ksStat = ksStat;
     stats.timeRescale.numSpikes = numSpikes;
-    stats.timeRescale.Z = Z;
-    stats.timeRescale.U = U;
-    stats.timeRescale.G = G;
+    stats.timeRescale.rescaledISIs = rescaledISIs;
+    stats.timeRescale.uniformRescaledISIs = uniformRescaledISIs;
+    stats.timeRescale.normalRescaledISIs = normalRescaledISIs;
     %     stats.autoCorr = autoCorr;
 end
 
