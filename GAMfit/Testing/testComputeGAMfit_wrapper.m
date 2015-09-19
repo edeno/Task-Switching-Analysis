@@ -1,4 +1,4 @@
-function [neurons, gam, designMatrix, spikes, save_dir, gamParams] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
+function [neurons, stats, gam, designMatrix, spikes, save_dir, gamParams] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
 
 setMainDir;
 main_dir = getenv('MAIN_DIR');
@@ -11,8 +11,8 @@ inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('Rate',  @(x) isnumeric(x) & all(x > 0));
 inParser.addParamValue('numFolds', 10, @(x) isnumeric(x) && x > 0)
 inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParamValue('smoothLambda', 10.^(-3:1:3), @isvector)
-inParser.addParamValue('ridgeLambda', 10.^(-3:1:3), @isvector)
+inParser.addParamValue('smoothLambda', 0, @isvector)
+inParser.addParamValue('ridgeLambda', 0, @isvector)
 inParser.addParamValue('overwrite', false, @islogical)
 inParser.addParamValue('includeIncorrect', false, @islogical);
 inParser.addParamValue('includeFixationBreaks', false, @islogical);
@@ -48,6 +48,6 @@ if ~exist(save_dir, 'dir'),
 end
 
 % Estimate GAM parameters
-[neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, 'test', gamParams, save_dir);
+[neurons, stats, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, 'test', gamParams, save_dir);
 
 end

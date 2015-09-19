@@ -1,4 +1,4 @@
-function [neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, save_dir)
+function [neurons, stats, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, save_dir)
 
 %% Setup Save File
 if gamParams.isPrediction,
@@ -68,186 +68,226 @@ if ~gamParams.includeFixationBreaks
     percent_trials(~isAttempted) = [];
 end
 
+% Make sure covariates are of class double
+designMatrix = double(designMatrix);
 
 numTrials = length(unique(trial_id));
 numPFC = sum(pfc);
 numACC = sum(~pfc);
 
-% Number of trials for each level
-trialIdByDesignMatrix = bsxfun(@times, designMatrix, ones(size(trial_id)));
-trialIdByDesignMatrix = bsxfun(@times, trialIdByDesignMatrix, trial_id);
-trialIdByDesignMatrix(trialIdByDesignMatrix == 0) = NaN;
-
-for k = 1:size(designMatrix, 2),
-    gam.numTrialsByLevel(k) = sum(~isnan(unique(trialIdByDesignMatrix(:, k))));
-end
-
-%% Do the fitting
-
-% Make sure covariates and spikes are same size
-flag = size(designMatrix, 1) ~= size(spikes, 1);
-
-% Make sure covariates are of class double
-designMatrix = double(designMatrix);
-
-% Shut off constant default setting on GLM
-const = 'off';
-
-% Pre-allocate structure
-neurons(numNeurons).par_est = [];
-neurons(numNeurons).stats = [];
+% % Number of trials for each level
+% trialIdByDesignMatrix = bsxfun(@times, designMatrix, ones(size(trial_id)));
+% trialIdByDesignMatrix = bsxfun(@times, trialIdByDesignMatrix, trial_id);
+% trialIdByDesignMatrix(trialIdByDesignMatrix == 0) = NaN;
+%
+% for k = 1:size(designMatrix, 2),
+%     gam.numTrialsByLevel(k) = sum(~isnan(unique(trialIdByDesignMatrix(:, k))));
+% end
 
 wire_number = num2cell(wire_number);
 unit_number = num2cell(unit_number);
 pfc = num2cell(pfc);
+brainAreas = {'ACC', 'dlPFC'};
+stats = cell([1 numNeurons]);
+neurons = cell([1 numNeurons]);
+%% Do the fitting
+fprintf('\nFitting GAMs ...\n');
+parfor curNeuron = 1:numNeurons,
+    fprintf('\nNeuron %d \n', curNeuron);
+    if gamParams.isPrediction,
+        neurons{curNeuron} = predictGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
+    else
+        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
+    end
+end % End Neuron Loop
 
-[neurons.wire_number] = deal(wire_number{:});
-[neurons.unit_number] = deal(unit_number{:});
-[neurons.file] = deal(session_name);
-[neurons.pfc] = deal(pfc{:});
-[neurons.monkey] = deal(monkey_name);
-
-% Setup Cross Validation Folds
-numParam = size(gam.constraints, 1);
-numFolds = gamParams.numFolds;
-ridgeLambda = gamParams.ridgeLambda;
-smoothLambda = gamParams.smoothLambda;
-numLambda = size(ridgeLambda, 2);
-trials = unique(trial_id);
-if numFolds > 1,
-    CVO = cvpartition(length(trials), 'Kfold', numFolds);
-else
-    CVO = [];
+for curNeuron = 1:numNeurons,
+    neurons{curNeuron}.wire_number = wire_number{curNeuron};
+    neurons{curNeuron}.unit_number = unit_number{curNeuron};
+    neurons{curNeuron}.session_name = session_name(curNeuron);
+    neurons{curNeuron}.monkey = monkey_name(curNeuron);
+    neurons{curNeuron}.brainArea = brainAreas(pfc{curNeuron});
 end
-par_est_path = cell(numNeurons, 1);
-edf = cell(numNeurons, 1);
-sqrtPen = gam.sqrtPen;
-constraints = gam.constraints;
-constant_ind = gam.constant_ind;
-validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
-numPredType = length(validPredType);
-predInd = ismember(validPredType, gamParams.predType);
 
-if ~flag
-    fprintf('\nFitting GAMs ...\n');
-    parfor curNeuron = 1:numNeurons,
-        fprintf('\nNeuron %d \n', curNeuron);
-        if numFolds > 1
-            % Cross validate the model on each lambda and choose the best
-            % one
-            pred_error = nan(numFolds, numLambda, numPredType);
-            par_est_path_temp = nan(numParam, numLambda, numFolds);
-            edf_temp = nan(numLambda, numFolds);
-            
-            for curFold = 1:numFolds
-                
-                fprintf('\t Lambda Selection: Fold #%d\n', curFold);
-                if numFolds > 1
-                    training_idx = ismember(trial_id, trials(CVO.training(curFold)));
-                    test_idx = ismember(trial_id, trials(CVO.test(curFold)));
-                else
-                    training_idx = true(size(designMatrix, 1), 1);
-                    test_idx = true(size(designMatrix, 1), 1);
-                end
-                
-                neurons(curNeuron).numSpikesPerFold(curFold) = sum(spikes(test_idx, curNeuron));
-                
-                % Fit the model on each lambda for each fold of the
-                % cross validation
-                for curLambda = 1:numLambda,
-                    
-                    fprintf('\t\t ... Lambda %d\n', curLambda);
-                    lambda_vec = nan(size(constant_ind));
-                    lambda_vec(constant_ind) = ridgeLambda(curLambda);
-                    lambda_vec(~constant_ind) = smoothLambda(curLambda);
-                    lambda_vec(1) = 0;
-                    
-                    [par_est_path_temp(:, curLambda, curFold), fitInfo] = fitGAM(designMatrix(training_idx, :), spikes(training_idx, curNeuron), sqrtPen, ...
-                        'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-                        'constraints', constraints);
-                    
-                    edf_temp(curLambda, curFold) = fitInfo.edf;
-                    
-                    [stats] = gamStats(designMatrix(test_idx, :), spikes(test_idx, curNeuron), fitInfo, trial_id(test_idx),...
-                        'Compact', true);
-                    
-                    % Store different types of prediction error for each
-                    % fold and lambda
-                    pred_error(curFold, curLambda, 1) = stats.dev;
-                    pred_error(curFold, curLambda, 2) = stats.AUC;
-                    pred_error(curFold, curLambda, 3) = stats.mutual_information;
-                    
-                end % End Lambda Loop
-                
-            end % End Fold Loop
-            
-            par_est_path{curNeuron} = par_est_path_temp(2:end, :, :);
-            edf{curNeuron} = edf_temp;
-            
-            % Calculate mean prediction error for best fit model
-            mean_pred_error = mean(pred_error, 1);
-            
-            % Determine the best lambda for best fit model
-            switch (gamParams.predType)
-                case {'AUC', 'MI'}
-                    [~, bestLambda_ind] = max(mean_pred_error(:, :, predInd));
-                case 'Dev'
-                    [~, bestLambda_ind] = min(mean_pred_error(:, :, predInd));
-            end
-        else
-            bestLambda_ind = 1;
-            neurons(curNeuron).numSpikesPerFold(1) = sum(spikes(:, curNeuron));
-            if gamParams.isPrediction,
-                lambda_vec = nan(size(constant_ind));
-                lambda_vec(constant_ind) = ridgeLambda(bestLambda_ind);
-                lambda_vec(~constant_ind) = smoothLambda(bestLambda_ind);
-                lambda_vec(1) = 0;
-                
-                [neurons(curNeuron).par_est, fitInfo] = fitGAM(designMatrix, spikes(:, curNeuron), sqrtPen, ...
-                    'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-                    'constraints', constraints);
-                
-                [neurons(curNeuron).stats] = gamStats(designMatrix, spikes(:, curNeuron), fitInfo, trial_id, ...
-                    'Compact', false);
-                
-            end
-            
-        end % End Number of Folds
-        
-        lambda_vec = nan(size(constant_ind));
-        lambda_vec(constant_ind) = ridgeLambda(bestLambda_ind);
-        lambda_vec(~constant_ind) = smoothLambda(bestLambda_ind);
-        lambda_vec(1) = 0;
-        
-        [neurons(curNeuron).par_est, fitInfo] = fitGAM(designMatrix, spikes(:, curNeuron), sqrtPen, ...
-            'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-            'constraints', constraints);
-        
-        stats = gamStats(designMatrix, spikes(:, curNeuron), fitInfo, trial_id, ...
-            'Compact', false);
-        
-        neurons(curNeuron).stats = stats;
-        pred_error(:, :, 4) = stats.AIC;
-        pred_error(:, :, 5) = stats.GCV;
-        pred_error(:, :, 6) = stats.BIC;
-        pred_error(:, :, 7) = stats.UBRE;
-        
-        neurons(curNeuron).pred_error = pred_error;
-        
-    end % End Neuron Loop
-end
+neurons = [neurons{:}];
+stats = [stats{:}];
 
 %% Save to file
 [~, hostname] = system('hostname');
 hostname = strtrim(hostname);
 if strcmp(hostname, 'millerlab'),
     saveMillerlab('edeno', save_file_name, 'neurons', 'trial_id', ...
-        'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', ...
-        'designMatrix', 'validPredType', 'CVO', '-v7.3');
+        'gam', 'trial_time', 'num*', 'gamParams', ...
+        'designMatrix', '-v7.3');
 else
     save(save_file_name, 'neurons', 'trial_id', ...
-        'gam', 'trial_time', 'num*', 'gamParams', 'par_est_path', 'edf', ...
-        'designMatrix', 'validPredType',  'CVO', '-v7.3');
+        'gam', 'trial_time', 'num*', 'gamParams', ...
+        'designMatrix', '-v7.3');
+end
+
+end
+
+%%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id, varargin)
+
+inParser = inputParser;
+inParser.addRequired('designMatrix', @ismatrix);
+inParser.addRequired('spikes', @isvector);
+inParser.addRequired('gam', @isstruct);
+inParser.addRequired('gamParams', @isstruct);
+inParser.addRequired('trial_id', @isvector);
+inParser.addParamValue('smoothLambda', [], @isnumeric);
+inParser.addParamValue('ridgeLambda', [], @isnumeric);
+
+% Make sure covariates and spikes are same size
+flag = size(designMatrix, 1) ~= size(spikes, 1);
+if flag,
+    error('Design matrix and spikes are not the same size');
+end
+
+inParser.parse(designMatrix, spikes, gam, gamParams, trial_id, varargin{:});
+
+ridgeLambda = inParser.Results.ridgeLambda;
+smoothLambda = inParser.Results.smoothLambda;
+
+%% Pick a Lambda if there's more than one, unless there's one specified
+if isempty(ridgeLambda) && isempty(smoothLambda),
+    [ridgeLambdaGrid, smoothLambdaGrid] = meshgrid(gamParams.ridgeLambda, gamParams.smoothLambda);
+    ridgeLambdaGrid = ridgeLambdaGrid(:);
+    smoothLambdaGrid = smoothLambdaGrid(:);
+else
+    ridgeLambdaGrid = ridgeLambda;
+    smoothLambdaGrid = smoothLambda;
+end
+numLambda = length(ridgeLambdaGrid);
+
+if numLambda > 1,
+    [bestLambda_ind] = pickLambda(designMatrix, spikes, gam, gamParams, trial_id, ridgeLambdaGrid, smoothLambdaGrid);
+else
+    bestLambda_ind = 1;
+end
+
+% Shut off constant default setting on GLM
+const = 'off';
+
+%% Fit the best model
+lambda_vec = nan([1 size(designMatrix, 2)]);
+lambda_vec(gam.constant_ind) = ridgeLambdaGrid(bestLambda_ind);
+lambda_vec(~gam.constant_ind) = smoothLambdaGrid(bestLambda_ind);
+lambda_vec(1) = 0;
+
+[neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, gam.sqrtPen, ...
+    'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
+    'constraints', gam.constraints);
+
+stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
+    'Compact', false);
+
+end
+
+%%%%%%%%%%%%%%%% Function to return only predictions of GAM %%%%%%%%%%%%%%%
+function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id, varargin)
+
+neuron.Dev = nan(1, gamParams.numFolds);
+neuron.AUC = nan(1, gamParams.numFolds);
+neuron.mutualInformation = nan(1, gamParams.numFolds);
+trials = unique(trial_id);
+
+if gamParams.numFolds > 1
+    CVO = cvpartition(length(trials), 'Kfold', gamParams.numFolds);
+end
+
+for curFold = 1:gamParams.numFolds,
+    fprintf('\t Prediction: Fold #%d\n', curFold);
+    if gamParams.numFolds > 1
+        trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
+        testIdx = ismember(trial_id, trials(CVO.test(curFold)));
+    else
+        trainingIdx = true(size(designMatrix, 1), 1);
+        testIdx = true(size(designMatrix, 1), 1);
+    end
+    
+    %% Estimate Model
+    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam, gamParams, trial_id(trainingIdx));
+    
+    [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
+            'Compact', true);
+    %% Store a prediction on the test set
+    neuron.Dev(curFold) = stats.Dev;
+    neuron.AUC(curFold) = stats.AUC;
+    neuron.mutualInformation(curFold) = stats.mutual_information;
+end
+neuron.CVO = CVO;
+
+end
+
+%%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
+function [bestLambda_ind, parEstPath, edf] = pickLambda(designMatrix, spikes, gam, gamParams, trial_id, ridgeLambdaGrid, smoothLambdaGrid)
+
+numLambda = length(ridgeLambdaGrid);
+numParam = size(gam.constraints, 1);
+trials = unique(trial_id);
+const = 'off';
+
+% Cross validate the model on each lambda and choose the best
+% one
+if gamParams.numFolds > 1
+    CVO = cvpartition(length(trials), 'Kfold', gamParams.numFolds);
+end
+predError = nan(gamParams.numFolds, numLambda);
+parEstPath = nan(numParam, numLambda, gamParams.numFolds);
+edf = nan(numLambda, gamParams.numFolds);
+
+for curFold = 1:gamParams.numFolds,
+    
+    fprintf('\t\t Lambda Selection: Fold #%d\n', curFold);
+    if gamParams.numFolds > 1
+        trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
+        testIdx = ismember(trial_id, trials(CVO.test(curFold)));
+    else
+        trainingIdx = true(size(designMatrix, 1), 1);
+        testIdx = true(size(designMatrix, 1), 1);
+    end
+    
+    % Fit the model on each lambda for each fold of the
+    % cross validation
+    for curLambda = 1:numLambda,
+        
+        fprintf('\t\t\t ... Lambda %d\n', curLambda);
+        lambda_vec = nan([1 size(designMatrix, 2)]);
+        lambda_vec(gam.constant_ind) = ridgeLambdaGrid(curLambda);
+        lambda_vec(~gam.constant_ind) = smoothLambdaGrid(curLambda);
+        lambda_vec(1) = 0;
+        
+        [parEstPath(:, curLambda, curFold), fitInfo] = fitGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam.sqrtPen, ...
+            'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
+            'constraints', gam.constraints);
+        
+        edf(curLambda, curFold) = fitInfo.edf;
+        
+        [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
+            'Compact', true);
+        
+        % Store prediction error
+        predError(curFold, curLambda) = stats.(gamParams.predType);
+        
+    end % End Lambda Loop
+    
+end % End Fold Loop
+
+parEstPath = parEstPath(2:end, :, :);
+
+% Calculate mean prediction error for best fit model
+meanPredError = mean(predError, 1);
+
+% Determine the best lambda for best fit model
+switch (gamParams.predType)
+    case {'AUC', 'MI'}
+        [~, bestLambda_ind] = max(meanPredError);
+    case {'Dev', 'AIC', 'BIC', 'GCV', 'UBRE'}
+        [~, bestLambda_ind] = min(meanPredError);
+    otherwise
+        bestLambda_ind = NaN;
 end
 
 end

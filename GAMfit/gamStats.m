@@ -1,7 +1,7 @@
-function [stats] = gamStats(x, y, fitInfo, trial_id, varargin)
+function [stats] = gamStats(designMatrix, y, fitInfo, trial_id, varargin)
 
 inParser = inputParser;
-inParser.addRequired('x', @ismatrix);
+inParser.addRequired('designMatrix', @ismatrix);
 inParser.addRequired('y', @ismatrix);
 inParser.addRequired('fitInfo', @isstruct);
 inParser.addRequired('trial_id', @ismatrix);
@@ -9,9 +9,9 @@ inParser.addParamValue('extraFitPenalty', 1, @isvector); % set to 1.4 if want ex
 inParser.addParamValue('prior_weights', [], @isvector);
 inParser.addParamValue('Compact', false, @islogical);
 
-inParser.parse(x, y, fitInfo, trial_id, varargin{:});
+inParser.parse(designMatrix, y, fitInfo, trial_id, varargin{:});
 stats = inParser.Results;
-stats = rmfield(stats, {'x','y','trial_id'});
+stats = rmfield(stats, {'designMatrix','y','trial_id'});
 
 sqrtw = fitInfo.sqrtw;
 sqrtPenMatrix = fitInfo.sqrtPenMatrix;
@@ -43,14 +43,14 @@ extraFitPenalty = stats.extraFitPenalty;
 N = fitInfo.N;
 distr = fitInfo.gam.distr;
 %%
-mu = ilinkFun(offset + x*con_beta);
+mu = ilinkFun(offset + designMatrix*con_beta);
 
 isNan = isnan(mu) | isnan(y);
 y(isNan) = [];
 trial_id(isNan) = [];
 mu(isNan) = [];
 prior_weights(isNan) = [];
-x(isNan, :) = [];
+designMatrix(isNan, :) = [];
 
 % Time Rescale
 if strcmp(distr, 'poisson')
@@ -85,9 +85,9 @@ end
 
 % Deviance
 di = devFun(mu,y,N);
-dev = sum(prior_weights .* di);
+Dev = sum(prior_weights .* di);
 
-stats.dev = dev;
+stats.Dev = Dev;
 if numSpikes > 0
     [stats.fp, stats.tp, ~, stats.AUC] = perfcurve(y, mu, 1);
 else
@@ -110,7 +110,7 @@ if stats.Compact,
     return;
 end
 %% Get effective degrees of freedom (trace of the influence "hat" matrix a)
-xw_r = bsxfun(@times,x,sqrtw);
+xw_r = bsxfun(@times,designMatrix,sqrtw);
 [~, R] = qr(xw_r,0);
 [u, d, v] = svd([R; sqrtPenMatrix], 0);
 
@@ -125,11 +125,11 @@ edf = sum(u1(:).*u1(:));
 stats.edf = edf;
 
 %% Theoretical Bias-Corrected Performance Measures
-stats.AIC = dev + 2*extraFitPenalty*edf;
-stats.BIC = dev + log(numData)*extraFitPenalty*edf;
-stats.GCV = (numData*dev) / (numData - extraFitPenalty*edf)^2;
+stats.AIC = Dev + 2*extraFitPenalty*edf;
+stats.BIC = Dev + log(numData)*extraFitPenalty*edf;
+stats.GCV = (numData*Dev) / (numData - extraFitPenalty*edf)^2;
 if strcmp(distr, 'poisson') || strcmp(distr, 'binomial'),
-    stats.UBRE = (dev/numData) + ((2*extraFitPenalty*edf)/numData) - 1; % Scaled AIC
+    stats.UBRE = (Dev/numData) + ((2*extraFitPenalty*edf)/numData) - 1; % Scaled AIC
 end
 
 stats.anscresid = anscresid(mu,y,N);
