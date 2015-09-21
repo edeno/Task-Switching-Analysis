@@ -81,36 +81,3 @@ plot(misspecifiedModelRate, '--');
 title(sprintf('Corr: %d', corr(misspecifiedModelRate, adjustedTrueRate)));
 legend('True Rate', 'Model Rate');
 
-%%
-% Time model
-numFolds = 5;
-
-adjustedTrueRate = trueRate;
-adjustedTrueRate((~gamParams.includeIncorrect .* ~isCorrect) | (~gamParams.includeFixationBreaks .* ~isAttempted)) = [];
-
-model = 's(Rule, Trial Time)';
-[neurons, stats, gam, designMatrix, spikes, model_dir, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
-    'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
-    'isPrediction', false);
-
-est = exp(designMatrix * (neurons.par_est' * gam.constraints)') * 1000;
-
-figure;
-plot(est(ismember(trial_id, [1:40])))
-hold all;
-plot(adjustedTrueRate(ismember(trial_id, [1:40])));
-
-figure;
-uniformCDFvalues = stats.timeRescale.uniformCDFvalues;
-numSpikes = stats.timeRescale.numSpikes;
-CI = 1.36 / sqrt(numSpikes);
-
-plot(uniformCDFvalues, stats.timeRescale.sortedKS); hold all;
-plot(uniformCDFvalues, (uniformCDFvalues + CI), 'k--');
-plot(uniformCDFvalues, (uniformCDFvalues - CI), 'k--');
-axis([0 1 0 1]);
-line;
-title('KS Plot');
-xlabel('Empirical CDF');
-ylabel('Model CDF');
-box off;
