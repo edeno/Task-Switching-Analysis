@@ -39,10 +39,31 @@ else
     spikes = gamParams.spikes;
 end
 
-
-
 % Save directory
-save_dir = sprintf('%s/Models/%s', timePeriod_dir, gamParams.regressionModel_str);
+model_dir = sprintf('%s/Models/', timePeriod_dir);
+
+if ~exist(model_dir, 'dir'),
+    mkdir(model_dir);
+end
+
+if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
+    load(sprintf('%s/Models/modelList.mat', timePeriod_dir));
+    if any(ismember({modelList.modelName}, gamParams.regressionModel_str))
+        modelListLength = find(ismember({modelList.modelName}, gamParams.regressionModel_str));
+    else
+        modelListLength = length(modelList) + 1;
+        modelList(modelListLength).modelName = gamParams.regressionModel_str;
+        modelList(modelListLength).folderName = sprintf('M%d', modelListLength);
+    end
+else
+    modelListLength = 1;
+    modelList(modelListLength).modelName = gamParams.regressionModel_str;
+    modelList(modelListLength).folderName = 'M1';
+end
+save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+
+save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(modelListLength).folderName);
+
 if ~exist(save_dir, 'dir'),
     mkdir(save_dir);
 end
