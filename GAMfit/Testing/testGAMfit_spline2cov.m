@@ -104,3 +104,28 @@ title('KS Plot');
 xlabel('Empirical CDF');
 ylabel('Model CDF');
 box off;
+
+figure;
+plot(uniformCDFvalues, stats.timeRescale.sortedKS - uniformCDFvalues); hold all;
+ylabel('Model CDF - Empirical CDF');
+hline([-CI CI], 'k--');
+hline(0, 'k-');
+box off;
+
+figure;
+subplot(1,2,1);
+plot(stats.timeRescale.uniformRescaledISIs(1:end-1), stats.timeRescale.uniformRescaledISIs(2:end), '.');
+xlabel('k - 1'); ylabel('k');
+box off;
+title('Consecutive Intervals of Uniform ISIs');
+
+subplot(1,2,2);
+CI = 1.96 / sqrt(numSpikes);
+[coef, lags] = xcorr(stats.timeRescale.normalRescaledISIs(~isinf(stats.timeRescale.normalRescaledISIs)), 'coeff');
+hline([-CI CI], 'k--');
+hline(0, 'k-');
+plot(lags, coef, '.');
+box off;
+ylabel('Correlation Coefficient');
+xlabel('Lags');
+title('Autocorrelation of Uniform ISIs');
