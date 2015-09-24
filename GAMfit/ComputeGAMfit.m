@@ -23,7 +23,7 @@ load(data_file_name);
 % For some reason, matlab freaks out if you don't do this
 wire_number = double(wire_number);
 unit_number = double(unit_number);
-pfc = double(pfc);
+pfc = logical(pfc);
 
 monkey_name = regexp(session_name, '(cc)|(isa)|(ch)|(test)', 'match');
 monkey_name = monkey_name{:};
@@ -104,9 +104,9 @@ end % End Neuron Loop
 for curNeuron = 1:numNeurons,
     neurons{curNeuron}.wire_number = wire_number{curNeuron};
     neurons{curNeuron}.unit_number = unit_number{curNeuron};
-    neurons{curNeuron}.session_name = session_name(curNeuron);
-    neurons{curNeuron}.monkey = monkey_name(curNeuron);
-    neurons{curNeuron}.brainArea = brainAreas(pfc{curNeuron});
+    neurons{curNeuron}.session_name = session_name;
+    neurons{curNeuron}.monkey = monkey_name;
+    neurons{curNeuron}.brainArea = brainAreas{pfc{curNeuron} + 1};
 end
 
 neurons = [neurons{:}];
