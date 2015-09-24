@@ -57,8 +57,9 @@ if strcmp(distr, 'poisson')
     lambdaInt = accumarray(trial_id, mu, [], @(x) {cumsum(x)}, {NaN}); % Integrated Intensity Function by Trial
     spikeInd = accumarray(trial_id, y, [], @(x) {find(x == 1)}); % Spike times by Trial
     rescaledISIs = cell2mat(cellfun(@(x,y) (diff([0; x(y)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
+    maxTransformedInterval = cell2mat(cellfun(@(x,y) x(end) - x(y), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
     
-    uniformRescaledISIs = 1 - exp(-rescaledISIs); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
+    uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
     normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
     numSpikes = length(uniformRescaledISIs); % Number of Spikes
     
