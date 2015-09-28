@@ -28,15 +28,16 @@ load(sprintf('%s/paramSet.mat', main_dir), ...
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
-inParser.addParamValue('numFolds', 10, @(x) isnumeric(x) && x > 0)
-inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParamValue('smoothLambda', 10.^(-3:1:3), @isvector)
-inParser.addParamValue('ridgeLambda', 10.^(-3:1:3), @isvector)
-inParser.addParamValue('overwrite', false, @islogical)
-inParser.addParamValue('includeIncorrect', false, @islogical);
-inParser.addParamValue('includeFixationBreaks', false, @islogical);
-inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
-inParser.addParamValue('isPrediction', false, @islogical);
+inParser.addParameter('numFolds', 10, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParameter('smoothLambda', 10.^(-3:1:3), @isvector)
+inParser.addParameter('ridgeLambda', 10.^(-3:1:3), @isvector)
+inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('includeIncorrect', false, @islogical);
+inParser.addParameter('includeFixationBreaks', false, @islogical);
+inParser.addParameter('includeTimeBeforeZero', false, @islogical);
+inParser.addParameter('isPrediction', false, @islogical);
+inParser.addParameter('isLocal', false, @islogical);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
@@ -44,7 +45,7 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 gamParams = inParser.Results;
 
 if all(size(gamParams.ridgeLambda) ~= size(gamParams.smoothLambda)),
-    error('ridgeLambda must equal smoothLambda');
+    error('ridgeLambda size must equal smoothLambda size');
 end
 
 %% Setup Data Directories and Cluster Job Manager
@@ -62,22 +63,16 @@ if ~exist(model_dir, 'dir'),
 end
 
 if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
-    load(sprintf('%s/Models/modelList.mat', timePeriod_dir));
-    if any(ismember({modelList.modelName}, gamParams.regressionModel_str))
-        modelListLength = find(ismember({modelList.modelName}, gamParams.regressionModel_str));
-    else
-        modelListLength = length(modelList) + 1;
-        modelList(modelListLength).modelName = gamParams.regressionModel_str;
-        modelList(modelListLength).folderName = sprintf('M%d', modelListLength);
+    load(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+    if ~modelList.isKey(gamParams.regressionModel_str)
+        modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
     end
 else
-    modelListLength = 1;
-    modelList(modelListLength).modelName = gamParams.regressionModel_str;
-    modelList(modelListLength).folderName = 'M1';
+    modelList = containers.Map(gamParams.regressionModel_str, 'M1');
 end
 save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
 
-save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(modelListLength).folderName);
+save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(gamParams.regressionModel_str));
 
 if ~exist(save_dir, 'dir'),
     mkdir(save_dir);
@@ -117,7 +112,9 @@ for session_ind = 1:length(session_names),
     
     fprintf('\t...Session: %s\n', session_names{session_ind});
     [~, hostname] = system('hostname');
-    if ~strcmp(strtrim(hostname), 'cns-ws18'),
+    if ~gamParams.isLocal,
+        job = TorqueJob('examplefun', {{'hello', 1}, {'world', 2}, {'!', 3}}, ...
+                   'walltime=2:00:00,mem=8GB')
         gamJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
             {which('saveMillerlab')}, 'NumWorkersRange', [8 12], 'Type', 'Pool');
         createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
