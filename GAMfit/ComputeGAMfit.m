@@ -1,23 +1,65 @@
-function [neurons, stats, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, save_dir)
+function [neurons, stats, gam, designMatrix] = ComputeGAMfit(sessionName, varargin)
+% Reshape args back into structure
+gamParams = reshape(varargin, 2, []);
+gamParams = cell2struct(gamParams(2, :), gamParams(1, :), 2);
+%% Log parameters
+fprintf('\n------------------------\n');
+fprintf('\nSession: %s\n', sessionName);
+fprintf('\nDate: %s\n \n', datestr(now));
+fprintf('\nGAM Parameters\n');
+fprintf('\t regressionModel_str: %s\n', gamParams.regressionModel_str);
+fprintf('\t timePeriod: %s\n', gamParams.timePeriod);
+fprintf('\t numFolds: %d\n', gamParams.numFolds);
+fprintf('\t ridgeLambda: %d\n', gamParams.ridgeLambda);
+fprintf('\t smoothLambda: %d\n', gamParams.smoothLambda);
+fprintf('\t overwrite: %d\n', gamParams.overwrite);
+fprintf('\t includeIncorrect: %d\n', gamParams.includeIncorrect);
+fprintf('\t includeTimeBeforeZero: %d\n', gamParams.includeTimeBeforeZero);
+fprintf('\t isPrediction: %d\n', gamParams.isPrediction);
+%% Get directories
+main_dir = getWorkingDir();
+timePeriod_dir = sprintf('%s/Processed Data/%s/', main_dir, gamParams.timePeriod);
+%% Create Model Directory
+model_dir = sprintf('%s/Models/', timePeriod_dir);
+
+if ~exist(model_dir, 'dir'),
+    mkdir(model_dir);
+end
+
+if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
+    load(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+    if ~modelList.isKey(gamParams.regressionModel_str)
+        modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
+    end
+else
+    modelList = containers.Map(gamParams.regressionModel_str, 'M1');
+end
+save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+
+save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(gamParams.regressionModel_str));
+
+if ~exist(save_dir, 'dir'),
+    mkdir(save_dir);
+end
 
 %% Setup Save File
 if gamParams.isPrediction,
-    save_file_name = sprintf('%s/%s_GAMpred.mat', save_dir, session_name);
+    saveFileName = sprintf('%s/%s_GAMpred.mat', save_dir, sessionName);
 else
-    save_file_name = sprintf('%s/%s_GAMfit.mat', save_dir, session_name);
+    saveFileName = sprintf('%s/%s_GAMfit.mat', save_dir, sessionName);
 end
 
-if exist(save_file_name, 'file') && ~gamParams.overwrite,
+if exist(saveFileName, 'file') && ~gamParams.overwrite,
     designMatrix = [];
     gam = [];
     neurons = [];
-    fprintf('File %s already exists. Skipping.\n', save_file_name);
+    fprintf('File %s already exists. Skipping.\n', saveFileName);
     return;
 end
 
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
-data_file_name = sprintf('%s/GLMCov/%s_GLMCov.mat', timePeriod_dir, session_name);
+data_file_name = sprintf('%s/GLMCov/%s_GLMCov.mat', timePeriod_dir, sessionName);
 load(data_file_name);
 
 % For some reason, matlab freaks out if you don't do this
@@ -25,7 +67,7 @@ wire_number = double(wire_number);
 unit_number = double(unit_number);
 pfc = logical(pfc);
 
-monkey_name = regexp(session_name, '(cc)|(isa)|(ch)|(test)', 'match');
+monkey_name = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
 monkey_name = monkey_name{:};
 
 %% Setup Design Matrix
@@ -90,11 +132,12 @@ pfc = num2cell(pfc);
 brainAreas = {'ACC', 'dlPFC'};
 stats = cell([1 numNeurons]);
 neurons = cell([1 numNeurons]);
+isPrediction = gamParams.isPrediction;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
 parfor curNeuron = 1:numNeurons,
     fprintf('\nNeuron %d \n', curNeuron);
-    if gamParams.isPrediction,
+    if isPrediction,
         neurons{curNeuron} = predictGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
     else
         [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
@@ -104,7 +147,7 @@ end % End Neuron Loop
 for curNeuron = 1:numNeurons,
     neurons{curNeuron}.wire_number = wire_number{curNeuron};
     neurons{curNeuron}.unit_number = unit_number{curNeuron};
-    neurons{curNeuron}.session_name = session_name;
+    neurons{curNeuron}.session_name = sessionName;
     neurons{curNeuron}.monkey = monkey_name;
     neurons{curNeuron}.brainArea = brainAreas{pfc{curNeuron} + 1};
 end
@@ -116,17 +159,9 @@ gam.trial_id = trial_id;
 gam.trial_time = trial_time;
 
 %% Save to file
-[~, hostname] = system('hostname');
-hostname = strtrim(hostname);
-if strcmp(hostname, 'millerlab'),
-    saveMillerlab('edeno', save_file_name, 'neurons', ...
-        'gam', 'num*', 'gamParams', ...
-        'designMatrix', '-v7.3');
-else
-    save(save_file_name, 'neurons', ...
-        'gam', 'num*', 'gamParams', ...
-        'designMatrix', '-v7.3');
-end
+save(saveFileName, 'neurons', ...
+    'gam', 'num*', 'gamParams', ...
+    'designMatrix', '-v7.3');
 
 end
 
@@ -139,8 +174,8 @@ inParser.addRequired('spikes', @isvector);
 inParser.addRequired('gam', @isstruct);
 inParser.addRequired('gamParams', @isstruct);
 inParser.addRequired('trial_id', @isvector);
-inParser.addParamValue('smoothLambda', [], @isnumeric);
-inParser.addParamValue('ridgeLambda', [], @isnumeric);
+inParser.addParameter('smoothLambda', [], @isnumeric);
+inParser.addParameter('ridgeLambda', [], @isnumeric);
 
 % Make sure covariates and spikes are same size
 flag = size(designMatrix, 1) ~= size(spikes, 1);
@@ -214,7 +249,7 @@ for curFold = 1:gamParams.numFolds,
     [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam, gamParams, trial_id(trainingIdx));
     
     [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
-            'Compact', true);
+        'Compact', true);
     %% Store a prediction on the test set
     neuron.Dev(curFold) = stats.Dev;
     neuron.AUC(curFold) = stats.AUC;

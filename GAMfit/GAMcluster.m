@@ -16,14 +16,15 @@
 % includeIncorrect: true, *false* (optional)
 % inoTimeInteraction: {}, any valid covariate (optional)
 
-function GAMcluster(regressionModel_str, timePeriod, main_dir, varargin)
+function [gamJob] = GAMcluster(regressionModel_str, timePeriod, varargin)
 
 %% Validate Parameters
+main_dir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', main_dir), ...
     'data_info', 'cov_info', 'validFolders', 'session_names', ...
-    'numMaxLags', 'monkey_names', 'validPredType');
+    'monkey_names', 'validPredType');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
@@ -44,86 +45,23 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 % Add parameters to input structure after validation
 gamParams = inParser.Results;
 
-if all(size(gamParams.ridgeLambda) ~= size(gamParams.smoothLambda)),
-    error('ridgeLambda size must equal smoothLambda size');
-end
-
-%% Setup Data Directories and Cluster Job Manager
-
-% Specify Cluster Profile
-jobMan = parcluster();
-
-% Specify Home and Data Directory
-timePeriod_dir = sprintf('%s/%s', data_info.processed_dir, timePeriod);
-
-model_dir = sprintf('%s/Models/', timePeriod_dir);
-
-if ~exist(model_dir, 'dir'),
-    mkdir(model_dir);
-end
-
-if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
-    load(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
-    if ~modelList.isKey(gamParams.regressionModel_str)
-        modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
-    end
-else
-    modelList = containers.Map(gamParams.regressionModel_str, 'M1');
-end
-save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
-
-save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(gamParams.regressionModel_str));
-
-if ~exist(save_dir, 'dir'),
-    mkdir(save_dir);
-end
-
-%% Create or Open Log File
-log_file = sprintf('%s/Log.log', save_dir);
-fileID = fopen(log_file, 'w+');
-
-% Load the covariate file to process
-fprintf(fileID, '\n------------------------\n');
-fprintf(fileID, '\nDate: %s\n \n', datestr(now));
-fprintf(fileID, '\nGAM Parameters\n');
-fprintf(fileID, '\t regressionModel_str: %s\n', gamParams.regressionModel_str);
-fprintf(fileID, '\t timePeriod: %s\n', gamParams.timePeriod);
-fprintf(fileID, '\t numFolds: %d\n', gamParams.numFolds);
-fprintf(fileID, '\t ridgeLambda: %d\n', gamParams.ridgeLambda);
-fprintf(fileID, '\t smoothLambda: %d\n', gamParams.smoothLambda);
-fprintf(fileID, '\t overwrite: %d\n', gamParams.overwrite);
-fprintf(fileID, '\t includeIncorrect: %d\n', gamParams.includeIncorrect);
-
 %% Process Data
 fprintf('\nProcessing Model: %s\n', regressionModel_str);
-gamJob = cell(1, length(session_names));
-if gamParams.isPrediction,
-    GAMfit_names = strcat(session_names, '_GAMpred.mat');
+gamJob = [];
+
+if gamParams.isLocal,
+    % Run Locally
+    for session_ind = 1:length(session_names),
+        fprintf('\t...Session: %s\n', session_names{session_ind});
+        args = struct2args(gamParams);
+        ComputeGAMfit(session_names{session_ind}, args{:});
+    end
 else
-    GAMfit_names = strcat(session_names, '_GAMfit.mat');
+    % Use Cluster
+    constantArgs = {struct2args(gamParams)};
+    args = cellfun(@(x) [x; constantArgs{:}]', session_names, 'UniformOutput', false);
+    gamJob = TorqueJob('ComputeGAMfit', args, ...
+        'walltime=24:00:00,mem=16GB');
 end
-
-% Loop through files in the data directory
-for session_ind = 1:length(session_names),
-    
-    if exist(sprintf('%s/%s', save_dir, GAMfit_names{session_ind}), 'file') && ~gamParams.overwrite,
-        continue;
-    end
-    
-    fprintf('\t...Session: %s\n', session_names{session_ind});
-    [~, hostname] = system('hostname');
-    if ~gamParams.isLocal,
-        job = TorqueJob('examplefun', {{'hello', 1}, {'world', 2}, {'!', 3}}, ...
-                   'walltime=2:00:00,mem=8GB')
-        gamJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
-            {which('saveMillerlab')}, 'NumWorkersRange', [8 12], 'Type', 'Pool');
-        createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
-        submit(gamJob{session_ind});
-    else
-        ComputeGAMfit(timePeriod_dir, session_names{session_ind}, gamParams, save_dir);
-    end
-end
-
-fclose(fileID);
 
 end
