@@ -1,7 +1,4 @@
-function [neurons, stats, gam, designMatrix] = ComputeGAMfit(sessionName, varargin)
-% Reshape args back into structure
-gamParams = reshape(varargin, 2, []);
-gamParams = cell2struct(gamParams(2, :), gamParams(1, :), 2);
+function [neurons, stats, gam, designMatrix] = ComputeGAMfit(sessionName, gamParams)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);

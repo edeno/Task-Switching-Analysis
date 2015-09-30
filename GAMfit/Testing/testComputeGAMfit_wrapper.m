@@ -42,7 +42,6 @@ else
 end
 
 %% Estimate GAM parameters
-args = struct2args(gamParams);
-[neurons, stats, gam, designMatrix] = ComputeGAMfit('test', args{:});
+[neurons, stats, gam, designMatrix] = ComputeGAMfit('test', gamParams);
 
 end

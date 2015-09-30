@@ -53,13 +53,11 @@ if gamParams.isLocal,
     % Run Locally
     for session_ind = 1:length(session_names),
         fprintf('\t...Session: %s\n', session_names{session_ind});
-        args = struct2args(gamParams);
-        ComputeGAMfit(session_names{session_ind}, args{:});
+        ComputeGAMfit(session_names{session_ind}, gamParams);
     end
 else
     % Use Cluster
-    constantArgs = {struct2args(gamParams)};
-    args = cellfun(@(x) [x; constantArgs{:}]', session_names, 'UniformOutput', false);
+    args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
         'walltime=24:00:00,mem=16GB');
 end
