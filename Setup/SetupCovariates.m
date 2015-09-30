@@ -1,6 +1,6 @@
 %% Setup Covariates
-clear all; close all; clc;
-main_dir = getenv('MAIN_DIR');
+clear variables;
+main_dir = getWorkingDir();
 
 %% Define Covariates
 cov_info(1).name = 'Prep Time';

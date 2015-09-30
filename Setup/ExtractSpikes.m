@@ -1,7 +1,7 @@
 clear all; close all; clc;
 
 %% Setup
-main_dir = getenv('MAIN_DIR');
+main_dir = getWorkingDir();
 cd(main_dir);
 
 % Find Cluster
@@ -9,7 +9,8 @@ jobMan = parcluster();
 cleanupClusterJob(jobMan, 'edeno', 'finished');
 
 % Load Common Parameters
-load('paramSet.mat', 'session_names', 'data_info', 'trial_info', 'numSessions');
+load('paramSet.mat', 'session_names', 'data_info', 'trial_info', ...
+    'numSessions', 'validFolders', 'encodeMap');
 
 % Set parameters
 spike_opts.end_off = 0;
@@ -18,17 +19,6 @@ spike_opts.smooth_param = [];
 spike_opts.smooth_type = [];
 spike_opts.time_resample = [];
 spike_opts.data_dir = data_info.rawData_dir;
-
-encode_period = [{trial_info.Start_encode trial_info.FixationOn_encode}; ...
-    {trial_info.FixationAccquired_encode trial_info.RuleOn_encode}; ...
-    {trial_info.RuleOn_encode trial_info.SampleOn_encode}; ...
-    {trial_info.SampleOn_encode trial_info.SaccadeStart_encode}; ...
-    {trial_info.RuleOn_encode trial_info.SaccadeStart_encode}; ...
-    {trial_info.SaccadeStart_encode trial_info.RewardStart_encode}; ...
-    {trial_info.RewardStart_encode trial_info.End_encode}; ...
-    {trial_info.Start_encode trial_info.End_encode};];
-
-validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Response', 'Rule Response', 'Saccade', 'Reward', 'Entire Trial'};
 
 %% Loop through Time Periods to Extract Spikes
 
@@ -68,4 +58,4 @@ end
 
 %% Append Information to ParamSet
 save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
-save(save_file_name, 'spike_opts', 'validFolders', '-append');
+save(save_file_name, 'spike_opts', '-append');

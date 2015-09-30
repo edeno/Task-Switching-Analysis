@@ -1,7 +1,6 @@
 function [GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials)
 
-setMainDir;
-main_dir = getenv('MAIN_DIR');
+main_dir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', main_dir), ...
