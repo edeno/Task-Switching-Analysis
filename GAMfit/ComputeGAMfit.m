@@ -132,6 +132,10 @@ neurons = cell([1 numNeurons]);
 isPrediction = gamParams.isPrediction;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
+
+% Parallel Pool Configuration
+parpool([2, 12], 'SpmdEnabled', false);
+
 parfor curNeuron = 1:numNeurons,
     fprintf('\nNeuron %d \n', curNeuron);
     if isPrediction,
