@@ -1,6 +1,4 @@
-clear all; close all; clc;
-setMainDir;
-main_dir = getenv('MAIN_DIR');
+clear variables; clc;
 ridgeLambda = 0;
 numFolds = 10;
 isOverwrite = true;
