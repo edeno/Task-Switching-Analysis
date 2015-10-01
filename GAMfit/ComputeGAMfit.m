@@ -160,6 +160,7 @@ gam.trial_id = trial_id;
 gam.trial_time = trial_time;
 
 %% Save to file
+fprintf('\nSaving GAMs ...\n');
 save(saveFileName, 'neurons', ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', '-v7.3');
