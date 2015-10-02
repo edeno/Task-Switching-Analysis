@@ -97,8 +97,8 @@ switch distr
         muLims = realmin(dataClass).^.25;
 end
 
-maxIter = 20;
-tol = 1E-6;
+maxIter = 25;
+tol = 1E-8;
 augmented_weights = ones(size(sqrtPenMatrix, 1), 1);
 
 fullX =  [x; sqrtPenMatrix];
