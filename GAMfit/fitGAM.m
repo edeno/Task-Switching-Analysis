@@ -55,7 +55,7 @@ if anybad > 0
 end
 
 if strcmp(const,'on')
-    x = [ones(size(x,1),1) x];
+    x = [ones(size(x,1),1), x];
 end
 dataClass = superiorfloat(x,y);
 x = cast(x,dataClass);
@@ -97,8 +97,8 @@ switch distr
         muLims = realmin(dataClass).^.25;
 end
 
-maxIter = 25;
-tol = 1E-8;
+maxIter = 25; % maximum number of iterations before stopping
+tol = 1E-8; % termination tolerance
 augmented_weights = ones(size(sqrtPenMatrix, 1), 1);
 
 fullX =  [x; sqrtPenMatrix];
@@ -116,9 +116,9 @@ for iter = 1:maxIter,
     
     % If the weights have an enormous range, we won't be able to do IRLS very
     % well.  The prior weights may be bad, or the fitted mu's may have too
-    % wide a range, which is probably because the data do as well, or because
+    % wide a range, which is probably because the data has a wide range as well, or because
     % the link function is trying to go outside the distribution's support.
-    wtol = max(sqrtw) * eps(dataClass)^(2/3);
+    wtol = max(sqrtw) * eps(dataClass)^(2/3); % max weight acceptable
     t = (sqrtw < wtol);
     if any(t)
         t = t & (sqrtw ~= 0);
@@ -130,11 +130,14 @@ for iter = 1:maxIter,
             warned = true;
         end
     end
-    
+    % Form the augmented matrix for the response and weights
     fullY = [pseudoData - offset; augmented_y];
     fullWeights = [sqrtw; augmented_weights];
+    % Solve the weighted fit for beta
     beta = wfit(fullY, fullX, fullWeights);
+    % New linear prediction
     eta.new = offset + (x * beta);
+    % Error between current prediction and new prediction
     dz = max(abs(eta.current - eta.new));
     
     % Compute predicted mean using inverse link function
@@ -217,7 +220,7 @@ if rankXW < ncolx
     perm = perm(keepCols);
 end
 
-% Compute the LS coefficients, filling in zeros in elements corresponding
+% Compute the least squares coefficients, filling in zeros in elements corresponding
 % to rows of R that were thrown out.
 bb = R \ z;
 
