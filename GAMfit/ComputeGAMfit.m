@@ -133,13 +133,13 @@ isPrediction = gamParams.isPrediction;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
 
-% Parallel Pool Configuration
-poolobj = gcp('nocreate');
-if isempty(poolobj),
-    minWorkers = 2;
-    maxWorkers = 12;
-    parpool([minWorkers, maxWorkers], 'SpmdEnabled', false);
-end
+% % Parallel Pool Configuration
+% poolobj = gcp('nocreate');
+% if isempty(poolobj),
+%     minWorkers = 2;
+%     maxWorkers = 12;
+%     parpool([minWorkers, maxWorkers], 'SpmdEnabled', false);
+% end
 
 parfor curNeuron = 1:numNeurons,
     fprintf('\nNeuron %d \n', curNeuron);
