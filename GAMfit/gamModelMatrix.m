@@ -4,7 +4,7 @@ inParser = inputParser;
 inParser.addRequired('model_str', @ischar);
 inParser.addRequired('GLMCov', @isstruct);
 inParser.addRequired('response', @isvector);
-inParser.addParamValue('level_reference', 'Full', @ischar);
+inParser.addParameter('level_reference', 'Full', @ischar);
 
 inParser.parse(model_str, GLMCov, response, varargin{:});
 
@@ -35,7 +35,7 @@ numTerms = length(model.terms);
 
 bsplines = cell(numTerms, 1);
 
-if ~strcmp(lower(model_str), 'constant'),
+if ~strcmpi(model_str, 'constant'),
     % For each term
     for curTerm = 1:numTerms,
         
@@ -221,12 +221,12 @@ function [X, bsplines, cov_name, covLevel_names, sqrtPen, constraints, penalty, 
 inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
 inParser.addRequired('smoothingFactor', @isstruct);
-inParser.addParamValue('bsplines', [], @isstruct);
-inParser.addParamValue('basis_dim', 10, @isnumeric);
-inParser.addParamValue('basis_degree', 3, @isnumeric);
-inParser.addParamValue('penalty_degree', 2, @isnumeric);
-inParser.addParamValue('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('knots', [], @isvector);
+inParser.addParameter('bsplines', [], @isstruct);
+inParser.addParameter('basis_dim', 10, @isnumeric);
+inParser.addParameter('basis_degree', 3, @isnumeric);
+inParser.addParameter('penalty_degree', 2, @isnumeric);
+inParser.addParameter('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('knots', [], @isvector);
 
 inParser.parse(factor, varargin{:});
 
