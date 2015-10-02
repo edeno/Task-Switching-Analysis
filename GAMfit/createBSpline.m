@@ -2,11 +2,11 @@ function [bsplines] = createBSpline(time, varargin)
 
 inParser = inputParser;
 inParser.addRequired('time', @isvector);
-inParser.addParamValue('basis_dim', 10, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('basis_degree', 3, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('penalty_degree', 2, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('knots', [], @ismatrix);
+inParser.addParameter('basis_dim', 10, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('basis_degree', 3, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('penalty_degree', 2, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('knots', [], @ismatrix);
 
 inParser.parse(time, varargin{:});
 
