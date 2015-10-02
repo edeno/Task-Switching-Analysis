@@ -31,8 +31,8 @@ inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
 inParser.addParameter('numFolds', 10, @(x) isnumeric(x) && x > 0)
 inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParameter('smoothLambda', 10.^(-3:1:3), @isvector)
-inParser.addParameter('ridgeLambda', 10.^(-3:1:3), @isvector)
+inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
+inParser.addParameter('ridgeLambda', 10.^(-3), @isvector)
 inParser.addParameter('overwrite', false, @islogical)
 inParser.addParameter('includeIncorrect', false, @islogical);
 inParser.addParameter('includeFixationBreaks', false, @islogical);
@@ -59,7 +59,7 @@ else
     % Use Cluster
     args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
-        'walltime=24:00:00,mem=16GB');
+        'walltime=24:00:00,mem=24GB');
 end
 
 end
