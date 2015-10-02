@@ -42,6 +42,8 @@ else
 end
 
 %% Estimate GAM parameters
+profile on;
 [neurons, stats, gam, designMatrix] = ComputeGAMfit('test', gamParams);
+profile viewer;
 
 end
