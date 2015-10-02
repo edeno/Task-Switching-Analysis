@@ -101,6 +101,8 @@ maxIter = 20;
 tol = 1E-6;
 augmented_weights = ones(size(sqrtPenMatrix, 1), 1);
 
+fullX =  [x; sqrtPenMatrix];
+
 %% Begin fitting
 for iter = 1:maxIter,
     
@@ -116,7 +118,7 @@ for iter = 1:maxIter,
     % well.  The prior weights may be bad, or the fitted mu's may have too
     % wide a range, which is probably because the data do as well, or because
     % the link function is trying to go outside the distribution's support.
-    wtol = max(sqrtw)*eps(dataClass)^(2/3);
+    wtol = max(sqrtw) * eps(dataClass)^(2/3);
     t = (sqrtw < wtol);
     if any(t)
         t = t & (sqrtw ~= 0);
@@ -129,8 +131,10 @@ for iter = 1:maxIter,
         end
     end
     
-    beta = wfit([pseudoData - offset; augmented_y], [x; sqrtPenMatrix], [sqrtw; augmented_weights]);
-    eta.new = offset + x*beta;
+    fullY = [pseudoData - offset; augmented_y];
+    fullWeights = [sqrtw; augmented_weights];
+    beta = wfit(fullY, fullX, fullWeights);
+    eta.new = offset + (x * beta);
     dz = max(abs(eta.current - eta.new));
     
     % Compute predicted mean using inverse link function
@@ -158,23 +162,19 @@ for iter = 1:maxIter,
     if iter == maxIter,
         warning('Iteration Limit Reached'); 
     end
-    
-%     display(iter)
-    
 end
 
 xw_r = bsxfun(@times,x,sqrtw);
 [~, R] = qr(xw_r,0);
-[u, d, v] = svd([R; sqrtPenMatrix], 0);
+[u, d, ~] = svd([R; sqrtPenMatrix], 0);
 
-keepCols = diag(d) > abs(d(1)).*max(numData,numParam).*eps(class(d));
-d = d(keepCols, keepCols);
-v = v(:, keepCols);
+% Keep the linearly independent columns using svd
+keepCols = diag(d) > (abs(d(1)) .* max(numData,numParam) .* eps(class(d)));
 u = u(:, keepCols);
 
 u1 = u(1:numParam, :);
-% effective degrees of freedom edf = trace(u1*u1'); runs out of memory if computed directly
-edf = sum(u1(:).*u1(:));
+% effective degrees of freedom edf = trace(u1 * u1'); runs out of memory if computed directly
+edf = sum(u1(:) .* u1(:));
 
 %% Return fitInfo for diagnostics
 fitInfo.sqrtw = sqrtw;
@@ -195,8 +195,6 @@ beta = constraints * beta;
 fitInfo.beta = beta;
 fitInfo.distrFun = distrFun;
 
-[fitInfo.const_beta] = glmfit(ones(size(y)), y, distr, 'link', link, 'weights', prior_weights', 'constant', 'off');
-
 
 end
 
@@ -209,8 +207,8 @@ xw = x .* sw(:,ones(1,ncolx));
 [Q, R, perm] = qr(xw,0);
 
 z = Q'*yw;
-% Use the rank-revealing QR to remove dependent columns of XW.
-keepCols = (abs(diag(R)) > abs(R(1)).*max(nrowx,ncolx).*eps(class(R)));
+% Use the rank-revealing QR to keep the linearly independent columns of XW.
+keepCols = abs(diag(R)) > (abs(R(1)) .* max(nrowx,ncolx) .* eps(class(R)));
 
 rankXW = sum(keepCols);
 if rankXW < ncolx
