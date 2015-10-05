@@ -1,18 +1,19 @@
 % This function queues up the code for computing the average predictive
 % comparison between rules (at a specificied level of another covariate) on
 % the cluster
-function computeAPC(regressionModel_str, timePeriod, main_dir, type, varargin)
+function computeAPC(regressionModel_str, timePeriod, type, varargin)
 
 % Load Common Parameters
+main_dir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', main_dir), 'session_names', 'data_info', 'validFolders');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
 inParser.addRequired('type',  @ischar);
-inParser.addParamValue('numSim', 1000, @(x) isnumeric(x) && x > 0)
-inParser.addParamValue('numSamples', 1000, @(x) isnumeric(x) && x > 0)
-inParser.addParamValue('overwrite', false, @islogical)
+inParser.addParameter('numSim', 1000, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('numSamples', 1000, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('overwrite', false, @islogical)
 
 inParser.parse(regressionModel_str, timePeriod, type, varargin{:});
 
@@ -21,7 +22,7 @@ apcParams = inParser.Results;
 
 apcJob = cell(1, length(session_names));
 
-save_dir = sprintf('%s/%s/Models/%s/APC/%s/', data_info.processed_dir, timePeriod, regressionModel_str, type);
+save_dir = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, timePeriod, regressionModel_str, type);
 if ~exist(save_dir, 'dir'),
    mkdir(save_dir);
 end
