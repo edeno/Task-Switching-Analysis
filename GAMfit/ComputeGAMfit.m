@@ -183,14 +183,14 @@ smoothLambdaGrid = smoothLambdaGrid(:);
 
 numLambda = length(ridgeLambdaGrid);
 
+% Shut off constant default setting on GLM
+const = 'off';
+
 if numLambda > 1 && gamParams.numFolds > 1,
     bestLambda_ind = pickLambda();
 else
     bestLambda_ind = 1;
 end
-
-% Shut off constant default setting on GLM
-const = 'off';
 
 %% Fit the best model
 lambdaVec = nan([1 size(designMatrix, 2)]);
