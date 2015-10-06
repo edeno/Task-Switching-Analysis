@@ -36,7 +36,7 @@ augmented_y = zeros(size(sqrtPenMatrix, 1), 1);
 converged = false;
 
 % Check the response
-[y, N] = checkResponse(y, distr);
+N = checkResponse();
 
 % Set distribution-specific defaults.
 [distrFun] = getGLMDistrParams(distr);
@@ -44,11 +44,11 @@ converged = false;
 startMu = distrFun.startMu;
 sqrtvarFun = distrFun.sqrtvarFun;
 if strcmp(link, 'canonical'),
-   link = distrFun.canonicalLink;
+    link = distrFun.canonicalLink;
 end
 
 % Remove missing values from the data.  Also turns row vectors into columns.
-[anybad,~,y,x,offset,prior_weights,N] = removeNaN(y,x,offset,prior_weights,N);
+[anybad, ~, y, x, offset, prior_weights, N] = removeNaN(y, x, offset, prior_weights, N);
 if anybad > 0
     badStr = {'', 'Covariate', 'Offset', 'Prior Weights', ''};
     error('GAMfit: %s size mismatch', badStr{anybad})
@@ -102,6 +102,7 @@ tol = 1E-8; % termination tolerance
 augmented_weights = ones(size(sqrtPenMatrix, 1), 1);
 
 fullX =  [x; sqrtPenMatrix];
+[nrowx,ncolx] = size(fullX);
 
 %% Begin fitting
 for iter = 1:maxIter,
@@ -110,7 +111,7 @@ for iter = 1:maxIter,
     deta = dlinkFun(mu);
     pseudoData = eta.current + (y - mu) .* deta;
     
-    % Compute IRLS weights the inverse of the variance function
+    % Compute IRLS weights - the inverse of the variance function
     sqrtirls = abs(deta) .* sqrtvarFun(mu, N);
     sqrtw = sqrt(prior_weights) ./ sqrtirls;
     
@@ -163,11 +164,11 @@ for iter = 1:maxIter,
     end
     
     if iter == maxIter,
-        warning('Iteration Limit Reached'); 
+        warning('Iteration Limit Reached');
     end
 end
 
-xw_r = bsxfun(@times,x,sqrtw);
+xw_r = bsxfun(@times, x, sqrtw);
 [~, R] = qr(xw_r,0);
 [u, d, ~] = svd([R; sqrtPenMatrix], 0);
 
@@ -198,73 +199,72 @@ beta = constraints * beta;
 fitInfo.beta = beta;
 fitInfo.distrFun = distrFun;
 
-
-end
-
-function [b] = wfit(y,x,sw)
-% Perform a weighted least squares fit
-[nrowx,ncolx] = size(x);
-yw = y .* sw;
-xw = x .* sw(:,ones(1,ncolx));
-
-[Q, R, perm] = qr(xw,0);
-
-z = Q'*yw;
-% Use the rank-revealing QR to keep the linearly independent columns of XW.
-keepCols = abs(diag(R)) > (abs(R(1)) .* max(nrowx,ncolx) .* eps(class(R)));
-
-rankXW = sum(keepCols);
-if rankXW < ncolx
-    R = R(keepCols,keepCols);
-    z = z(keepCols,:);
-    perm = perm(keepCols);
-end
-
-% Compute the least squares coefficients, filling in zeros in elements corresponding
-% to rows of R that were thrown out.
-bb = R \ z;
-
-b = zeros(ncolx,1);
-b(perm) = bb;
-
-end
-
-function [y, N] = checkResponse(y, distr)
-
-N = [];
-
-switch distr
-    case 'normal'
-    case 'binomial'
-        if size(y,2) == 1
-            % N will get set to 1 below
-            if any(y < 0 | y > 1)
-                error(message('stats:glmfit:BadDataBinomialFormat'));
-            end
-        elseif size(y,2) == 2
-            y(y(:,2)==0,2) = NaN;
-            N = y(:,2);
-            y = y(:,1) ./ N;
-            if any(y < 0 | y > 1)
-                error(message('stats:glmfit:BadDataBinomialRange'));
-            end
-        else
-            error(message('stats:glmfit:MatrixOrBernoulliRequired'));
+%% Perform a weighted least squares fit
+    function [beta] = wfit()
+        
+        yw = fullY .* fullWeights;
+        xw = bsxfun(@times, fullX, fullWeights);
+        
+        [Q, wR, perm] = qr(xw,0);
+        
+        z = Q'*yw;
+        % Use the rank-revealing QR to keep the linearly independent columns of XW.
+        wKeepCols = abs(diag(wR)) > (abs(wR(1)) .* max(nrowx,ncolx) .* eps(class(wR)));
+        
+        rankXW = sum(wKeepCols);
+        if rankXW < ncolx
+            wR = wR(wKeepCols,wKeepCols);
+            z = z(wKeepCols,:);
+            perm = perm(wKeepCols);
         end
         
-    case 'poisson'
-        if any(y < 0)
-            error(message('stats:glmfit:BadDataPoisson'));
+        % Compute the least squares coefficients, filling in zeros in elements corresponding
+        % to rows of R that were thrown out.
+        bb = wR \ z;
+        
+        beta = zeros(ncolx,1);
+        beta(perm) = bb;
+        
+    end
+%% Check response
+    function [N] = checkResponse()
+        
+        N = [];
+        
+        switch distr
+            case 'normal'
+            case 'binomial'
+                if size(y,2) == 1
+                    % N will get set to 1 below
+                    if any(y < 0 | y > 1)
+                        error(message('stats:glmfit:BadDataBinomialFormat'));
+                    end
+                elseif size(y,2) == 2
+                    y(y(:,2)==0,2) = NaN;
+                    N = y(:,2);
+                    y = y(:,1) ./ N;
+                    if any(y < 0 | y > 1)
+                        error(message('stats:glmfit:BadDataBinomialRange'));
+                    end
+                else
+                    error(message('stats:glmfit:MatrixOrBernoulliRequired'));
+                end
+                
+            case 'poisson'
+                if any(y < 0)
+                    error(message('stats:glmfit:BadDataPoisson'));
+                end
+            case 'gamma'
+                if any(y <= 0)
+                    error(message('stats:glmfit:BadDataGamma'));
+                end
+            case 'inverse gaussian'
+                if any(y <= 0)
+                    error(message('stats:glmfit:BadDataInvGamma'));
+                end
         end
-    case 'gamma'
-        if any(y <= 0)
-            error(message('stats:glmfit:BadDataGamma'));
-        end
-    case 'inverse gaussian'
-        if any(y <= 0)
-            error(message('stats:glmfit:BadDataInvGamma'));
-        end
-end
+        
+    end
 
 end
 
