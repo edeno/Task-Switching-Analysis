@@ -141,12 +141,25 @@ fprintf('\nFitting GAMs ...\n');
 %     parpool([minWorkers, maxWorkers], 'SpmdEnabled', false);
 % end
 
+% Transfer static assets to each worker only once
+if verLessThan('matlab', '8.6'),
+    dM = WorkerObjectWrapper(designMatrix);
+    g = WorkerObjectWrapper(gam);
+    gP = WorkerObjectWrapper(gamParams);
+    tI = WorkerObjectWrapper(trial_id);
+else
+    dM = parallel.pool.Constant(designMatrix);
+    g = parallel.pool.Constant(gam);
+    gP = parallel.pool.Constant(gamParams);
+    tI = parallel.pool.Constant(trial_id);
+end
+
 parfor curNeuron = 1:numNeurons,
     fprintf('\nNeuron %d \n', curNeuron);
     if isPrediction,
-        neurons{curNeuron} = predictGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
+        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value);
     else
-        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(designMatrix, spikes(:, curNeuron), gam, gamParams, trial_id);
+        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value);
     end
 end % End Neuron Loop
 
@@ -207,7 +220,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
 
 %%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
     function [bestLambda_ind] = pickLambda()
-%         numParam = size(gam.constraints, 1);
+        %         numParam = size(gam.constraints, 1);
         trials = unique(trial_id);
         
         % Cross validate the model on each lambda and choose the best
