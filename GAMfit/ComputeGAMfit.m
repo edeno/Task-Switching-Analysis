@@ -173,41 +173,18 @@ save(saveFileName, 'neurons', 'stats', ...
 end
 
 %%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
-function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id, varargin)
-
-inParser = inputParser;
-inParser.addRequired('designMatrix', @ismatrix);
-inParser.addRequired('spikes', @isvector);
-inParser.addRequired('gam', @isstruct);
-inParser.addRequired('gamParams', @isstruct);
-inParser.addRequired('trial_id', @isvector);
-inParser.addParameter('smoothLambda', [], @isnumeric);
-inParser.addParameter('ridgeLambda', [], @isnumeric);
-
-% Make sure covariates and spikes are same size
-flag = size(designMatrix, 1) ~= size(spikes, 1);
-if flag,
-    error('Design matrix and spikes are not the same size');
-end
-
-inParser.parse(designMatrix, spikes, gam, gamParams, trial_id, varargin{:});
-
-ridgeLambda = inParser.Results.ridgeLambda;
-smoothLambda = inParser.Results.smoothLambda;
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id)
 
 %% Pick a Lambda if there's more than one, unless there's one specified
-if isempty(ridgeLambda) && isempty(smoothLambda),
-    [ridgeLambdaGrid, smoothLambdaGrid] = meshgrid(gamParams.ridgeLambda, gamParams.smoothLambda);
-    ridgeLambdaGrid = ridgeLambdaGrid(:);
-    smoothLambdaGrid = smoothLambdaGrid(:);
-else
-    ridgeLambdaGrid = ridgeLambda;
-    smoothLambdaGrid = smoothLambda;
-end
+
+[ridgeLambdaGrid, smoothLambdaGrid] = meshgrid(gamParams.ridgeLambda, gamParams.smoothLambda);
+ridgeLambdaGrid = ridgeLambdaGrid(:);
+smoothLambdaGrid = smoothLambdaGrid(:);
+
 numLambda = length(ridgeLambdaGrid);
 
-if numLambda > 1,
-    [bestLambda_ind] = pickLambda(designMatrix, spikes, gam, gamParams, trial_id, ridgeLambdaGrid, smoothLambdaGrid);
+if numLambda > 1 && gamParams.numFolds > 1,
+    bestLambda_ind = pickLambda();
 else
     bestLambda_ind = 1;
 end
@@ -216,22 +193,88 @@ end
 const = 'off';
 
 %% Fit the best model
-lambda_vec = nan([1 size(designMatrix, 2)]);
-lambda_vec(gam.constant_ind) = ridgeLambdaGrid(bestLambda_ind);
-lambda_vec(~gam.constant_ind) = smoothLambdaGrid(bestLambda_ind);
-lambda_vec(1) = 0;
+lambdaVec = nan([1 size(designMatrix, 2)]);
+lambdaVec(gam.constant_ind) = ridgeLambdaGrid(bestLambda_ind);
+lambdaVec(~gam.constant_ind) = smoothLambdaGrid(bestLambda_ind);
+lambdaVec(1) = 0;
 
 [neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, gam.sqrtPen, ...
-    'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
+    'lambda', lambdaVec, 'distr', 'poisson', 'constant', const, ...
     'constraints', gam.constraints);
 
 stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
     'Compact', false);
 
+%%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
+    function [bestLambda_ind] = pickLambda()
+%         numParam = size(gam.constraints, 1);
+        trials = unique(trial_id);
+        
+        % Cross validate the model on each lambda and choose the best
+        % one
+        CVO = cvpartition(length(trials), 'Kfold', gamParams.numFolds);
+        
+        predError = nan(gamParams.numFolds, numLambda);
+        %         parEstPath = nan(numParam, numLambda, gamParams.numFolds);
+        %         edf = nan(numLambda, gamParams.numFolds);
+        
+        for curFold = 1:gamParams.numFolds,
+            
+            fprintf('\t\t Lambda Selection: Fold #%d\n', curFold);
+            if gamParams.numFolds > 1
+                trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
+                testIdx = ismember(trial_id, trials(CVO.test(curFold)));
+            else
+                trainingIdx = true(size(designMatrix, 1), 1);
+                testIdx = true(size(designMatrix, 1), 1);
+            end
+            
+            % Fit the model on each lambda for each fold of the
+            % cross validation
+            for curLambda = 1:numLambda,
+                
+                fprintf('\t\t\t ... Lambda %d\n', curLambda);
+                pickLambdaVec = nan([1 size(designMatrix, 2)]);
+                pickLambdaVec(gam.constant_ind) = ridgeLambdaGrid(curLambda);
+                pickLambdaVec(~gam.constant_ind) = smoothLambdaGrid(curLambda);
+                pickLambdaVec(1) = 0;
+                
+                [~, pickLambdaFitInfo] = fitGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam.sqrtPen, ...
+                    'lambda', pickLambdaVec, 'distr', 'poisson', 'constant', const, ...
+                    'constraints', gam.constraints);
+                
+                %                 edf(curLambda, curFold) = fitInfo.edf;
+                
+                [pickLambdaStats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), pickLambdaFitInfo, trial_id(testIdx),...
+                    'Compact', true);
+                
+                % Store prediction error
+                predError(curFold, curLambda) = pickLambdaStats.(gamParams.predType);
+                
+            end % End Lambda Loop
+            
+        end % End Fold Loop
+        
+        %         parEstPath = parEstPath(2:end, :, :);
+        
+        % Calculate mean prediction error for best fit model
+        meanPredError = nanmean(predError, 1);
+        
+        % Determine the best lambda for best fit model
+        switch (gamParams.predType)
+            case {'AUC', 'MI'}
+                [~, bestLambda_ind] = max(meanPredError);
+            case {'Dev', 'AIC', 'BIC', 'GCV', 'UBRE'}
+                [~, bestLambda_ind] = min(meanPredError);
+            otherwise
+                bestLambda_ind = NaN;
+        end
+    end
+
 end
 
 %%%%%%%%%%%%%%%% Function to return only predictions of GAM %%%%%%%%%%%%%%%
-function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id, varargin)
+function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id)
 
 neuron.Dev = nan(1, gamParams.numFolds);
 neuron.AUC = nan(1, gamParams.numFolds);
@@ -266,73 +309,3 @@ neuron.CVO = CVO;
 
 end
 
-%%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
-function [bestLambda_ind, parEstPath, edf] = pickLambda(designMatrix, spikes, gam, gamParams, trial_id, ridgeLambdaGrid, smoothLambdaGrid)
-
-numLambda = length(ridgeLambdaGrid);
-numParam = size(gam.constraints, 1);
-trials = unique(trial_id);
-const = 'off';
-
-% Cross validate the model on each lambda and choose the best
-% one
-if gamParams.numFolds > 1
-    CVO = cvpartition(length(trials), 'Kfold', gamParams.numFolds);
-end
-predError = nan(gamParams.numFolds, numLambda);
-parEstPath = nan(numParam, numLambda, gamParams.numFolds);
-edf = nan(numLambda, gamParams.numFolds);
-
-for curFold = 1:gamParams.numFolds,
-    
-    fprintf('\t\t Lambda Selection: Fold #%d\n', curFold);
-    if gamParams.numFolds > 1
-        trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
-        testIdx = ismember(trial_id, trials(CVO.test(curFold)));
-    else
-        trainingIdx = true(size(designMatrix, 1), 1);
-        testIdx = true(size(designMatrix, 1), 1);
-    end
-    
-    % Fit the model on each lambda for each fold of the
-    % cross validation
-    for curLambda = 1:numLambda,
-        
-        fprintf('\t\t\t ... Lambda %d\n', curLambda);
-        lambda_vec = nan([1 size(designMatrix, 2)]);
-        lambda_vec(gam.constant_ind) = ridgeLambdaGrid(curLambda);
-        lambda_vec(~gam.constant_ind) = smoothLambdaGrid(curLambda);
-        lambda_vec(1) = 0;
-        
-        [parEstPath(:, curLambda, curFold), fitInfo] = fitGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam.sqrtPen, ...
-            'lambda', lambda_vec, 'distr', 'poisson', 'constant', const, ...
-            'constraints', gam.constraints);
-        
-        edf(curLambda, curFold) = fitInfo.edf;
-        
-        [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
-            'Compact', true);
-        
-        % Store prediction error
-        predError(curFold, curLambda) = stats.(gamParams.predType);
-        
-    end % End Lambda Loop
-    
-end % End Fold Loop
-
-parEstPath = parEstPath(2:end, :, :);
-
-% Calculate mean prediction error for best fit model
-meanPredError = mean(predError, 1);
-
-% Determine the best lambda for best fit model
-switch (gamParams.predType)
-    case {'AUC', 'MI'}
-        [~, bestLambda_ind] = max(meanPredError);
-    case {'Dev', 'AIC', 'BIC', 'GCV', 'UBRE'}
-        [~, bestLambda_ind] = min(meanPredError);
-    otherwise
-        bestLambda_ind = NaN;
-end
-
-end
