@@ -59,7 +59,7 @@ else
     % Use Cluster
     args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
-        'walltime=24:00:00,mem=84GB');
+        'walltime=24:00:00,mem=90GB');
 end
 
 end
