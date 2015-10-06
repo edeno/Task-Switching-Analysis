@@ -135,7 +135,7 @@ for iter = 1:maxIter,
     fullY = [pseudoData - offset; augmented_y];
     fullWeights = [sqrtw; augmented_weights];
     % Solve the weighted fit for beta
-    beta = wfit(fullY, fullX, fullWeights);
+    beta = wfit();
     % New linear prediction
     eta.new = offset + (x * beta);
     % Error between current prediction and new prediction
