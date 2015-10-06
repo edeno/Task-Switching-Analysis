@@ -143,10 +143,10 @@ fprintf('\nFitting GAMs ...\n');
 
 % Transfer static assets to each worker only once
 if verLessThan('matlab', '8.6'),
-    dM = WorkerObjectWrapper(designMatrix);
-    g = WorkerObjectWrapper(gam);
-    gP = WorkerObjectWrapper(gamParams);
-    tI = WorkerObjectWrapper(trial_id);
+    dM = WorkerObjWrapper(designMatrix);
+    g = WorkerObjWrapper(gam);
+    gP = WorkerObjWrapper(gamParams);
+    tI = WorkerObjWrapper(trial_id);
 else
     dM = parallel.pool.Constant(designMatrix);
     g = parallel.pool.Constant(gam);
