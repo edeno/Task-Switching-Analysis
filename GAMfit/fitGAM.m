@@ -79,8 +79,7 @@ if isempty(N), N = 1; end
 
 % Initialize mu and eta from y.
 mu = startMu(y,N);
-eta.new = dlinkFun(mu);
-eta.current = linkFun(mu);
+etaCurrent = linkFun(mu);
 beta = zeros(numParam,1,dataClass);
 warned = false;
 
@@ -109,7 +108,7 @@ for iter = 1:maxIter,
     
     % Compute adjusted dependent variable for least squares fit
     deta = dlinkFun(mu);
-    pseudoData = eta.current + (y - mu) .* deta;
+    pseudoData = etaCurrent + (y - mu) .* deta;
     
     % Compute IRLS weights - the inverse of the variance function
     sqrtirls = abs(deta) .* sqrtvarFun(mu, N);
@@ -137,12 +136,12 @@ for iter = 1:maxIter,
     % Solve the weighted fit for beta
     beta = wfit();
     % New linear prediction
-    eta.new = offset + (x * beta);
+    etaNew = offset + (x * beta);
     % Error between current prediction and new prediction
-    dz = max(abs(eta.current - eta.new));
+    dz = max(abs(etaCurrent - etaNew));
     
     % Compute predicted mean using inverse link function
-    mu = ilinkFun(eta.new);
+    mu = ilinkFun(etaNew);
     
     % Force mean in bounds, in case the link function is a wacky choice
     switch distr
@@ -156,7 +155,7 @@ for iter = 1:maxIter,
             end
     end
     
-    eta.current = eta.new;
+    etaCurrent = etaNew;
     
     if(dz < tol),
         converged = true;
