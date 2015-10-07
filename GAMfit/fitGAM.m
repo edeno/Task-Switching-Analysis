@@ -47,12 +47,8 @@ if strcmp(link, 'canonical'),
     link = distrFun.canonicalLink;
 end
 
-% Remove missing values from the data.  Also turns row vectors into columns.
-[anybad, ~, y, x, offset, prior_weights, N] = removeNaN(y, x, offset, prior_weights, N);
-if anybad > 0
-    badStr = {'', 'Covariate', 'Offset', 'Prior Weights', ''};
-    error('GAMfit: %s size mismatch', badStr{anybad})
-end
+% Remove missing values from the data.
+removeNaN();
 
 if strcmp(const,'on')
     x = [ones(size(x,1),1), x];
@@ -227,9 +223,7 @@ fitInfo.distrFun = distrFun;
     end
 %% Check response
     function [N] = checkResponse()
-        
         N = [];
-        
         switch distr
             case 'normal'
             case 'binomial'
@@ -262,8 +256,37 @@ fitInfo.distrFun = distrFun;
                     error(message('stats:glmfit:BadDataInvGamma'));
                 end
         end
-        
     end
-
+%% Remove missing values from the data.
+    function removeNaN() 
+        % Check for NaNs
+        wasNaN = isnan(y) | any(isnan(x), 2);
+        
+        if ~isempty(offset),
+            wasNaN = wasNan | isnan(offset);
+        end
+        if ~isempty(prior_weights),
+            wasNaN = wasNan | isnan(prior_weights);
+        end
+        if ~isempty(offset),
+            wasNaN = wasNan | isnan(N);
+        end
+        
+        % Remove NaNs
+        if any(wasNaN),
+            y(wasNaN) = [];
+            x(wasNaN, :) = [];
+            
+            if ~isempty(offset),
+                offset(wasNaN) = [];
+            end
+            if ~isempty(offset),
+                prior_weights(wasNaN) = [];
+            end
+            if ~isempty(offset),
+                N(wasNaN) = [];
+            end
+        end
+    end
 end
 
