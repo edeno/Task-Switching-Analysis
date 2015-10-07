@@ -141,18 +141,27 @@ fprintf('\nFitting GAMs ...\n');
 %     parpool([minWorkers, maxWorkers], 'SpmdEnabled', false);
 % end
 
-% Transfer static assets to each worker only once
+% Remove NaNs beforehand to avoid the memory cost of removing them in fitGaM
+wasNaN = any(isnan(spikes), 2) | any(isnan(designMatrix), 2);
+
+%Transfer static assets to each worker only once
 if verLessThan('matlab', '8.6'),
-    dM = WorkerObjWrapper(designMatrix);
+    dM = WorkerObjWrapper(designMatrix(~wasNaN, :));
     g = WorkerObjWrapper(gam);
     gP = WorkerObjWrapper(gamParams);
-    tI = WorkerObjWrapper(trial_id);
+    tI = WorkerObjWrapper(trial_id(~wasNaN, :));
 else
-    dM = parallel.pool.Constant(designMatrix);
+    dM = parallel.pool.Constant(designMatrix(~wasNaN, :));
     g = parallel.pool.Constant(gam);
     gP = parallel.pool.Constant(gamParams);
-    tI = parallel.pool.Constant(trial_id);
+    tI = parallel.pool.Constant(trial_id(~wasNaN, :));
 end
+
+spikes = spikes(~wasNaN, :);
+% dM.Value = designMatrix(~wasNaN, :);
+% g.Value = gam;
+% gP.Value = gamParams;
+% tI.Value = trial_id(~wasNaN, :);
 
 parfor curNeuron = 1:numNeurons,
     fprintf('\nNeuron %d \n', curNeuron);
@@ -182,6 +191,13 @@ fprintf('\nSaving GAMs ...\n');
 save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', '-v7.3');
+
+if ~gamParams.isLocal,
+    neurons = [];
+    stats = [];
+    gam = [];
+    designMatrix = [];
+end
 
 end
 
