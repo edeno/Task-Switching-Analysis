@@ -1,4 +1,4 @@
-clear variables; close all; clc;
+clear variables; close all; clc; profile off;
 
 % GAMpred parameters
 numFolds = 1;

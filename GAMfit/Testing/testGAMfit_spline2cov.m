@@ -1,4 +1,4 @@
-clear all; close all; clc;
+clear variables; close all; clc; profile off;
 
 % GAMpred parameters
 isOverwrite = true;
