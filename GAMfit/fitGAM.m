@@ -17,9 +17,6 @@ function [beta, fitInfo]= fitGAM(x, y, sqrtPenMatrix, varargin)
 
 %% Parse inputs and set parameters for fitting
 inParser = inputParser;
-inParser.addRequired('x', @ismatrix);
-inParser.addRequired('y', @ismatrix);
-inParser.addRequired('penaltyMatrix', @ismatrix);
 inParser.addOptional('lambda', 1, @isnumeric);
 inParser.addOptional('distr', 'normal', @ischar);
 inParser.addOptional('link', 'canonical', @ischar);
@@ -29,23 +26,17 @@ inParser.addOptional('offset', [], @isvector);
 inParser.addOptional('constraints', 1, @ismatrix);
 inParser.addOptional('constant', 'on', @ischar);
 
-inParser.parse(x, y, sqrtPenMatrix, varargin{:});
-
+inParser.parse(varargin{:});
 gam = inParser.Results;
-gam = rmfield(gam, {'x','y', 'penaltyMatrix'});
-lambda = gam.lambda;
-distr = gam.distr;
 link = gam.link;
-if ismember(distr, {'normal', 'gamma'}),
+
+if ismember(gam.distr, {'normal', 'gamma'}),
     estdisp = true;
 else
     estdisp = gam.estdisp;
 end
-prior_weights = gam.prior_weights;
-const = gam.constant;
-offset = gam.offset;
-constraints = gam.constraints;
-sqrtPenMatrix = bsxfun(@times, sqrt(lambda), sqrtPenMatrix);
+
+sqrtPenMatrix = bsxfun(@times, sqrt(gam.lambda), sqrtPenMatrix);
 augmented_y = zeros(size(sqrtPenMatrix, 1), 1);
 
 converged = false;
@@ -54,7 +45,7 @@ converged = false;
 N = checkResponse();
 
 % Set distribution-specific defaults.
-[distrFun] = getGLMDistrParams(distr);
+[distrFun] = getGLMDistrParams(gam.distr);
 
 startMu = distrFun.startMu;
 sqrtvarFun = distrFun.sqrtvarFun;
@@ -65,7 +56,7 @@ end
 % Remove missing values from the data.
 removeNaN();
 
-if strcmp(const,'on')
+if strcmp(gam.constant,'on')
     x = [ones(size(x,1),1), x];
 end
 dataClass = superiorfloat(x,y);
@@ -74,14 +65,14 @@ y = cast(y,dataClass);
 
 [numData,numParam] = size(x);
 
-if isempty(prior_weights)
-    prior_weights = ones(size(y));
-elseif any(prior_weights == 0)
+if isempty(gam.prior_weights)
+    gam.prior_weights = ones(size(y));
+elseif any(gam.prior_weights == 0)
     % A zero weight means ignore the observation, so n is reduced by one.
     % Residuals will be computed, however.
-    numData = numData - sum(prior_weights == 0);
+    numData = numData - sum(gam.prior_weights == 0);
 end
-if isempty(offset), offset = 0; gam.offset = 0; end
+if isempty(gam.offset), gam.offset = 0; end
 if isempty(N), N = 1; end
 
 % Instantiate functions for one of the canned links, or validate a
@@ -96,7 +87,7 @@ warned = false;
 
 % Enforce limits on mu to guard against an inverse link that doesn't map into
 % the support of the distribution.
-switch distr
+switch gam.distr
     case 'binomial'
         % mu is a probability, so order one is the natural scale, and eps is a
         % reasonable lower limit on that scale (plus it's symmetric).
@@ -123,7 +114,7 @@ for iter = 1:maxIter,
     
     % Compute IRLS weights - the inverse of the variance function
     sqrtirls = abs(deta) .* sqrtvarFun(mu, N);
-    sqrtw = sqrt(prior_weights) ./ sqrtirls;
+    sqrtw = sqrt(gam.prior_weights) ./ sqrtirls;
     
     % If the weights have an enormous range, we won't be able to do IRLS very
     % well.  The prior weights may be bad, or the fitted mu's may have too
@@ -142,12 +133,12 @@ for iter = 1:maxIter,
         end
     end
     % Form the augmented matrix for the response and weights
-    fullY = [pseudoData - offset; augmented_y];
+    fullY = [pseudoData - gam.offset; augmented_y];
     fullWeights = [sqrtw; augmented_weights];
     % Solve the weighted fit for beta
     beta = wfit();
     % New linear prediction
-    etaNew = offset + (x * beta);
+    etaNew = gam.offset + (x * beta);
     % Error between current prediction and new prediction
     dz = max(abs(etaCurrent - etaNew));
     
@@ -155,7 +146,7 @@ for iter = 1:maxIter,
     mu = ilinkFun(etaNew);
     
     % Force mean in bounds, in case the link function is a wacky choice
-    switch distr
+    switch gam.distr
         case 'binomial'
             if any(mu < muLims(1) | muLims(2) < mu)
                 mu = max(min(mu,muLims(2)),muLims(1));
@@ -203,8 +194,9 @@ fitInfo.con_beta = beta;
 fitInfo.ilinkFun = ilinkFun;
 fitInfo.N = N;
 fitInfo.edf = edf;
+fitInfo.warned = warned;
 
-beta = constraints * beta;
+beta = gam.constraints * beta;
 
 fitInfo.beta = beta;
 fitInfo.distrFun = distrFun;
@@ -239,7 +231,7 @@ fitInfo.distrFun = distrFun;
 %% Check response
     function [N] = checkResponse()
         N = [];
-        switch distr
+        switch gam.distr
             case 'normal'
             case 'binomial'
                 if size(y,2) == 1
@@ -277,13 +269,13 @@ fitInfo.distrFun = distrFun;
         % Check for NaNs
         wasNaN = isnan(y) | any(isnan(x), 2);
         
-        if ~isempty(offset),
-            wasNaN = wasNan | isnan(offset);
+        if ~isempty(gam.offset),
+            wasNaN = wasNan | isnan(gam.offset);
         end
-        if ~isempty(prior_weights),
-            wasNaN = wasNan | isnan(prior_weights);
+        if ~isempty(gam.prior_weights),
+            wasNaN = wasNan | isnan(gam.prior_weights);
         end
-        if ~isempty(offset),
+        if ~isempty(gam.offset),
             wasNaN = wasNan | isnan(N);
         end
         
@@ -292,13 +284,13 @@ fitInfo.distrFun = distrFun;
             y(wasNaN) = [];
             x(wasNaN, :) = [];
             
-            if ~isempty(offset),
-                offset(wasNaN) = [];
+            if ~isempty(gam.offset),
+                gam.offset(wasNaN) = [];
             end
-            if ~isempty(offset),
-                prior_weights(wasNaN) = [];
+            if ~isempty(gam.offset),
+                gam.prior_weights(wasNaN) = [];
             end
-            if ~isempty(offset),
+            if ~isempty(gam.offset),
                 N(wasNaN) = [];
             end
         end
