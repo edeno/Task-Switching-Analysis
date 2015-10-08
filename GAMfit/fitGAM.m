@@ -1,3 +1,18 @@
+% This function is much like the native glmfit included with Matlab with a
+% few exceptions:
+% 1) The function takes a penalty matrix which is used to penalize the size
+% of the parameters.
+% 2) The maximum number of iterations is 25 instead of 100 because in
+% practice the fitting should converge quickly
+% 3) Some of the functions like removeNaN have been rewritten to be more
+% specific to the functio and nested to avoid memory overhead.
+% 4) The function returns the effective degrees of freedom due to
+% penalization
+% 5) QR factorization is done at each weighted least squares step to check
+% for rank deficiencies. This is in contrast to glmfit where only a check
+% at the beginning is done.
+% Much of the inspiration for this code comes directly from the mgcv
+% R package by Simon Wood for fitting generalized additive models.
 function [beta, fitInfo]= fitGAM(x, y, sqrtPenMatrix, varargin)
 
 %% Parse inputs and set parameters for fitting
