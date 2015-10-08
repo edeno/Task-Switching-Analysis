@@ -1,4 +1,4 @@
-clear variables; close all; clc;
+clear variables; close all; clc; profile off;
 
 % GAMpred parameters
 ridgeLambda = 10.^(-3:1:3);
