@@ -15,7 +15,6 @@ spike_opts.smooth_type = [];
 spike_opts.time_resample = [];
 
 isLocal = true;
-
 %% Loop through Time Periods to Extract Spikes
 for folder_ind = 1:length(validFolders),
     fprintf('Processing Spikes for: %s\n', validFolders{folder_ind});   
