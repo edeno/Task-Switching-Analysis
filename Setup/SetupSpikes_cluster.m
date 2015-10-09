@@ -1,4 +1,4 @@
-function SetupSpikes_cluster(session_name, encode, spike_opts, timePeriod)
+function [data, time, wire_number, unit_number, file_str, animal, eye_pos, opts] = SetupSpikes_cluster(session_name, encode, spike_opts, timePeriod)
 
 %% Extract Cortex Data
 % Find trials file that corresponds to extracted data
