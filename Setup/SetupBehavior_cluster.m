@@ -305,9 +305,10 @@ switc = zeros(1,numtrials);
 switc(find(abs(difference) > 0)+1) = 1;
 behavior.Rule_Cue_Switch = grp2idx(switc);
 
-% Previous Error up to lag 10
+% Previous Error up to lag 5
+numErrorLags = 5;
 behavior.Previous_Error = lagmatrix(grp2idx(behavior.incorrect), 1);
-behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:10);
+behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:numErrorLags);
 behavior.Previous_Error_History(isnan(behavior.Previous_Error_History)) = 1;
 % Distance from Switch
 dist_sw = nan(size(behavior.Switch));
@@ -326,7 +327,8 @@ end
 dist_sw = dist_sw+1;
 behavior.dist_sw = dist_sw;
 
-dist_sw(dist_sw >= 11) = 11;
+numSwitchLags = 11;
+dist_sw(dist_sw >= numSwitchLags) = numSwitchLags;
 
 % Switch up to lag 10
 behavior.Rule_Repetition = dist_sw;
@@ -346,12 +348,11 @@ for err_ind = 1:length(err)+1
     end
 end
 
-dist_err(1:find(behavior.incorrect, 1)-1) = 11;
+dist_err(1:find(behavior.incorrect, 1) - 1) = numErrorLags;
 behavior.dist_err = dist_err;
 
-
 dist_err(dist_err == 0) = NaN;
-dist_err(dist_err >= 11) = 11;
+dist_err(dist_err >= numErrorLags) = numErrorLags;
 
 % non-cumulative version of error history
 behavior.Previous_Error_History_Indicator = dist_err;
