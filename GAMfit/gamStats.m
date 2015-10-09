@@ -37,20 +37,18 @@ if strcmp(distr, 'poisson')
     maxTransformedInterval = cell2mat(cellfun(@(x,y) x(end) - x(y), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
     
     uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
+    uniformRescaledISIs(uniformRescaledISIs > (1 - 1E-6)) = (1 - 1E-6);
     normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
     numSpikes = length(uniformRescaledISIs); % Number of Spikes
     
     if numSpikes > 0
-        %     autoCorr = xcorr(normalRescaledISIs, 'coef');
         sortedKS = sort(uniformRescaledISIs, 'ascend');
         uniformCDFvalues = ([1:numSpikes] - 0.5)' / numSpikes;
         ksStat = max(abs(sortedKS - uniformCDFvalues));
     else
         ksStat = 1;
         uniformCDFvalues = [];
-        % autoCorr = [];
     end
-    
     stats.timeRescale.uniformCDFvalues = uniformCDFvalues;
     stats.timeRescale.sortedKS = sortedKS;
     stats.timeRescale.ksStat = ksStat;
