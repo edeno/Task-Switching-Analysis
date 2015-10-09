@@ -1,7 +1,6 @@
 %% Extract Behavior
 clear variables; clc;
 isLocal = true;
-
 %% Setup
 % Load Common Parameters
 main_dir = getWorkingDir();
@@ -71,9 +70,9 @@ numTotalNeurons = sum(cat(1, behavior.numNeurons));
 numTotalLFPs = sum(cat(1, behavior.numLFPs));
 
 %% Save everything
-fprintf('\nSaving ...\n');
-% Save Behavior
 save_file_name = sprintf('%s/Behavior/behavior.mat', main_dir);
+fprintf('\nSaving to %s...\n', save_file_name);
+% Save Behavior
 save(save_file_name, 'behavior');
 
 % Append Information to ParamSet
