@@ -8,4 +8,4 @@ session_names = cellfun(@(x) regexprep(x, '.sdt', ''), {files.name}, 'UniformOut
 numSessions = length(session_names);
 
 %% Append Information to paramSet
-save(load_file_name, 'session_names', 'numSessions', '-append');
+save(sprintf('%s/paramSet.mat', main_dir), 'session_names', 'numSessions', '-append');
