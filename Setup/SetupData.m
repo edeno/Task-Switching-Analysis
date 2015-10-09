@@ -70,9 +70,8 @@ encode_period = {{trial_info.Start_encode trial_info.FixationOn_encode}; ...
     {trial_info.Start_encode trial_info.End_encode};};
 
 encodeMap = containers.Map(validFolders, encode_period);
-
+numMaxLags = 20;
 %% Save Everything
-
 save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, '*_info', 'monkey_names', 'validPredType', ...
-    'validFolders', 'encodeMap');
+    'validFolders', 'encodeMap', 'numMaxLags', '-append');
