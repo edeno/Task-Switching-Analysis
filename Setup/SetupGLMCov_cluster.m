@@ -1,9 +1,10 @@
 % Constructs GLMCovariates for use with GLMfit
-function [] = SetupGLMCov_cluster(session_name, timePeriod, numLags, varargin)
+function [GLMCov, spikes, sample_on, ...
+    numNeurons, trial_id, trial_time, percent_trials, ...
+    wire_number, unit_number, pfc, isCorrect, isAttempted] = SetupGLMCov_cluster(session_name, timePeriod, numLags, cov_info, behavior, varargin)
 
 %% Load Common Parameters and Parse Inputs
 main_dir = getWorkingDir();
-load(sprintf('%s/paramSet.mat', main_dir), 'cov_info');
 
 inParser = inputParser;
 inParser.addParameter('overwrite', false, @islogical);
@@ -22,10 +23,6 @@ end
 dataSessionFile = sprintf('%s/Processed Data/%s/%s_data.mat', main_dir, timePeriod, session_name);
 fprintf('\nProcessing file %s...\n', session_name);
 load(dataSessionFile);
-
-fprintf('\nLoading behavior...\n');
-behaviorFile = sprintf('%s/Behavior/behavior.mat', main_dir);
-load(behaviorFile);
 
 % Get behavior corresponding to this session
 beh_ind = ismember({behavior.session_name}, session_name);
@@ -176,7 +173,7 @@ else
 end
 
 %% Save Everything
-fprintf('/n Saving.... /n');
+fprintf('\nSaving to %s....\n', save_file_name);
 save_dir = sprintf('%s/Processed Data/%s/GLMCov', main_dir, timePeriod);
 if ~exist(save_dir, 'dir'),
     mkdir(save_dir);
