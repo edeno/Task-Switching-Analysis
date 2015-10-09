@@ -33,7 +33,7 @@ for folder_ind = 1:length(validFolders),
     else
         % Use Cluster
         args = cellfun(@(x) {x;  encodeMap(validFolders{folder_ind}); spike_opts; validFolders{folder_ind}}', session_names, 'UniformOutput', false);
-        spikeJob{session_ind, folder_ind} = TorqueJob('SetupSpikes_cluster', args, ...
+        spikeJob{folder_ind} = TorqueJob('SetupSpikes_cluster', args, ...
             'walltime=1:00:00,mem=16GB');
     end
 end
