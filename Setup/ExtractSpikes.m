@@ -18,12 +18,23 @@ isLocal = true;
 
 %% Loop through Time Periods to Extract Spikes
 for folder_ind = 1:length(validFolders),
-    
+    fprintf('Processing Spikes for: %s\n', validFolders{folder_ind});   
     if any(ismember(validFolders{folder_ind}, {'Entire Trial', 'Intertrial Interval', 'Fixation'})),
         spike_opts.start_off = 0;
     else
         spike_opts.start_off = -175;
     end
+
+    if isLocal,
+        % Run Locally
+        for session_ind = 1:length(session_names),
+            SetupSpikes_cluster(session_names{session_ind}, encodeMap(validFolders{folder_ind}), spike_opts, validFolders{folder_ind});
+        end
+    else
+        % Use Cluster
+        args = cellfun(@(x) {x;  encodeMap(validFolders{folder_ind}); spike_opts; validFolders{folder_ind}}', session_names, 'UniformOutput', false);
+        spikeJob{session_ind, folder_ind} = TorqueJob('SetupSpikes_cluster', args, ...
+            'walltime=1:00:00,mem=16GB');
     end
 end
 
