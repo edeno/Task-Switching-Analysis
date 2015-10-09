@@ -1,4 +1,3 @@
-close all;
 fR = exp(designMatrix * gam.constraints' * [neurons.par_est]) * 1000;
 for neuronInd = 1:length(neurons),
     
