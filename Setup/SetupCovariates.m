@@ -1,7 +1,5 @@
 %% Setup Covariates
-clear variables;
 main_dir = getWorkingDir();
-
 %% Define Covariates
 cov_info(1).name = 'Prep Time';
 cov_info(1).levels = {'1 ms of prep time'};
@@ -123,7 +121,6 @@ cov_info(23).isCategorical = true;
 cov_info(23).baselineLevel = 'Middle';
 
 validCov = {cov_info.name};
-
 %% Append Information to ParamSet
 save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, 'cov_info', '-append');

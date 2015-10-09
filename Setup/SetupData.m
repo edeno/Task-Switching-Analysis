@@ -1,9 +1,6 @@
 %% Setup Data Parameters
-clear variables; clc;
-
 % Define main data directory
 main_dir = getWorkingDir();
-
 % Make main
 if ~exist(main_dir, 'dir')
     mkdir(main_dir);
