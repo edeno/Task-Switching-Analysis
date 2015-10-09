@@ -1,6 +1,5 @@
 %% Extract Behavior
-clear variables; clc;
-isLocal = true;
+function ExtractBehavior(isLocal)
 %% Setup
 % Load Common Parameters
 main_dir = getWorkingDir();
@@ -78,3 +77,4 @@ save(save_file_name, 'behavior');
 % Append Information to ParamSet
 save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, 'numTotalNeurons', 'numTotalLFPs', 'react_bounds', '-append');
+end

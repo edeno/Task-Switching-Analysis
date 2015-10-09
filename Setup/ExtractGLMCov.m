@@ -1,5 +1,5 @@
 %% Extract GLM Covariates
-clear variables; clc;
+function ExtractGLMCov(isLocal)
 %% Setup
 main_dir = getWorkingDir();
 % Load Common Parameters
@@ -8,9 +8,8 @@ load(sprintf('%s/Behavior/behavior.mat', main_dir));
 %% Set Parameters
 % Overwrite?
 isOverwrite = true;
-isLocal = true;
 %% Loop through Time Periods to Extract Spikes
-for folder_ind = 1:length(validFolders),   
+for folder_ind = 1:length(validFolders),
     fprintf('\nProcessing time period: %s ...\n', validFolders{folder_ind});
     if isLocal,
         % Run Locally
@@ -34,4 +33,5 @@ for folder_ind = 1:length(validFolders),
         glmCovJob{folder_ind} = TorqueJob('SetupGLMCov_cluster', args, ...
             'walltime=1:00:00,mem=16GB');
     end
+end
 end
