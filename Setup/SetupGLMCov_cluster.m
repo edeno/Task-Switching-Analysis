@@ -8,7 +8,7 @@ load(sprintf('%s/paramSet.mat', main_dir), ...
 inParser = inputParser;
 inParser.addRequired('session_name', @(x) ismember(x, session_names));
 inParser.addRequired('timePeriod', @(x) any(ismember(x, validFolders)));
-inParser.addParamValue('overwrite', false, @islogical);
+inParser.addParameter('overwrite', false, @islogical);
 
 inParser.parse(session_name, timePeriod, varargin{:});
 
