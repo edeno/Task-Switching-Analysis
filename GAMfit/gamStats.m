@@ -31,10 +31,10 @@ designMatrix(isNan, :) = [];
 
 % Time Rescale
 if strcmp(distr, 'poisson')
-    lambdaInt = accumarray(trial_id, mu, [], @(x) {cumsum(x)}, {NaN}); % Integrated Intensity Function by Trial
-    spikeInd = accumarray(trial_id, y, [], @(x) {find(x == 1)}); % Spike times by Trial
-    rescaledISIs = cell2mat(cellfun(@(x,y) (diff([0; x(y)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
-    maxTransformedInterval = cell2mat(cellfun(@(x,y) x(end) - x(y), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
+    lambdaInt = accumarray(trial_id, mu, [], @(m) {cumsum(m)}, {NaN}); % Integrated Intensity Function by Trial
+    spikeInd = accumarray(trial_id, y, [], @(s) {find(s == 1)}); % Spike times by Trial
+    rescaledISIs = cell2mat(cellfun(@(lI,sI) (diff([0; lI(sI)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
+    maxTransformedInterval = cell2mat(cellfun(@(lI,sI) lI(end) - lI(sI), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
     
     uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
     uniformRescaledISIs(uniformRescaledISIs > (1 - 1E-6)) = (1 - 1E-6);
