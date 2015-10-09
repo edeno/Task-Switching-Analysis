@@ -38,6 +38,7 @@ if strcmp(distr, 'poisson')
     
     uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
     uniformRescaledISIs(uniformRescaledISIs > (1 - 1E-6)) = (1 - 1E-6);
+    uniformRescaledISIs(uniformRescaledISIs == 0) = 1E-6;
     normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
     numSpikes = length(uniformRescaledISIs); % Number of Spikes
     
@@ -56,7 +57,6 @@ if strcmp(distr, 'poisson')
     stats.timeRescale.rescaledISIs = rescaledISIs;
     stats.timeRescale.uniformRescaledISIs = uniformRescaledISIs;
     stats.timeRescale.normalRescaledISIs = normalRescaledISIs;
-    %     stats.autoCorr = autoCorr;
 end
 
 % Deviance
