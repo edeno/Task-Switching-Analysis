@@ -64,14 +64,15 @@
 %               1 Cue3.bmp (w/black)
 %               2 37 x 49 Pink Sq and 26 x 36 Black sq
 
-function [behavior] = SetupBehavior_cluster(session_name, main_dir, react_bounds, session_ind)
+function [behavior] = SetupBehavior_cluster(session_name, react_bounds, session_ind)
 
 % Load Common Parameters
-load(sprintf('%s/paramSet.mat',main_dir), 'data_info', 'trial_info');
+main_dir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', main_dir), 'trial_info');
 
 % Find trials file that corresponds to extracted data
 fprintf('\nProcessing file %s...\n', session_name);
-session_file = sprintf('%s/%s.sdt', data_info.rawData_dir, session_name);
+session_file = sprintf('%s/Raw Data/%s.sdt', main_dir, session_name);
 
 fprintf('\tLoading data...\n');
 load('-mat', session_file, 'trials', 'numtrials', 'cells', 'lfps');
