@@ -19,7 +19,6 @@ isOverwrite = true;
 numMaxLags = 20; % Spiking history lags
 
 %% Loop through Time Periods to Extract Spikes
-
 for folder_ind = 1:length(validFolders),
     
     fprintf('\nProcessing time period: %s ...\n', validFolders{folder_ind});

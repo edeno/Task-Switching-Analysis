@@ -11,8 +11,6 @@ load(sprintf('%s/paramSet.mat', main_dir), 'session_names', 'data_info', 'trial_
 react_bounds = [100 313];
 
 %% Get Behavior
-
-% Create a job to run on the cluster
 behaviorJob = [];
 
 if isLocal,
