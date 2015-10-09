@@ -8,6 +8,7 @@ load(sprintf('%s/Behavior/behavior.mat', main_dir));
 %% Set Parameters
 % Overwrite?
 isOverwrite = true;
+fprintf('\nExtracting GAM Covariates\n');
 %% Loop through Time Periods to Extract Spikes
 for folder_ind = 1:length(validFolders),
     fprintf('\nProcessing time period: %s ...\n', validFolders{folder_ind});

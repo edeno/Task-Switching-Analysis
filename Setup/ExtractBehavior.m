@@ -9,7 +9,7 @@ load(sprintf('%s/paramSet.mat', main_dir), 'session_names', 'data_info', 'trial_
 react_bounds = [100 313];
 %% Get Behavior
 behaviorJob = [];
-
+fprintf('\n\nExtracting Behavior\n');
 if isLocal,
     % Run Locally
     for session_ind = 1:length(session_names),

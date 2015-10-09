@@ -14,7 +14,7 @@ spike_opts.smooth_type = [];
 spike_opts.time_resample = [];
 %% Loop through Time Periods to Extract Spikes
 for folder_ind = 1:length(validFolders),
-    fprintf('Processing Spikes for: %s\n', validFolders{folder_ind});
+    fprintf('\n\nProcessing Spikes for: %s\n', validFolders{folder_ind});
     if any(ismember(validFolders{folder_ind}, {'Entire Trial', 'Intertrial Interval', 'Fixation'})),
         spike_opts.start_off = 0;
     else
@@ -41,6 +41,6 @@ for folder_ind = 1:length(validFolders),
     end
 end
 %% Append Information to ParamSet
-save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
+save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, 'spike_opts', '-append');
 end
