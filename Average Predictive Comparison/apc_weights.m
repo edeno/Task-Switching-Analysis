@@ -19,10 +19,7 @@ parfor cur_data = 1:numData, % Loop through all data points (i)
     x_diff = zeros(numOtherPredictors, numData);
     x_diff(~isCategorical, :) = bsxfun(@minus, other_inputs(cur_data, ~isCategorical), other_inputs(:, ~isCategorical))';
     x_diff(isCategorical, :) = double(bsxfun(@ne, other_inputs(cur_data, isCategorical), other_inputs(:, isCategorical))');
-    weights = 1./(1+nansum(x_diff.*(covx\x_diff)));
-    summed_weights(cur_data) = nansum(weights);
-    
+    weights = 1 ./ (1 + nansum(x_diff .* (covx \ x_diff)));
+    summed_weights(cur_data) = nansum(weights);    
 end
-
-
 end

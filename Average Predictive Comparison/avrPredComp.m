@@ -3,20 +3,27 @@
 % For example, we could compute the average difference between rules when
 % an error has been committed in the previous trial or when the monkey
 % saccades to the left.
-function [avpred] = avrPredComp(session_name, timePeriod, model_name, factor_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp(session_name, apcParams)
 
-% Load covariate fit and model fit information
-load([main_dir, '/paramSet.mat'], 'data_info');
-GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
-load(GLMCov_name, 'GLMCov', 'isCorrect', 'spikes', 'trial_id', 'trial_time')
-GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
+%% Load covariate fit and model fit information
+main_dir = getWorkingDir();
+% Get GLM Covariates
+GLMCov_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, apcParams.timePeriod, session_name);
+load(GLMCov_name, 'GLMCov', 'isCorrect', 'isAttempted', 'spikes', 'trial_time', 'trial_id')
+% Load model list
+modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
+load(modelList_name, 'modelList');
+% Load fitting data
+GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), session_name);
+load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons');
 
+%% Make GLM covariate data like the fit model
 if ~gamParams.includeIncorrect
     spikes(~isCorrect, :) = [];
     trial_time(~isCorrect) = [];
     trial_id(~isCorrect) = [];
     for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
         GLMCov(GLMCov_ind).data(~isCorrect, :) = [];
     end
 end
@@ -27,7 +34,18 @@ if ~gamParams.includeTimeBeforeZero,
     trial_time(isBeforeZero) = [];
     trial_id(isBeforeZero) = [];
     for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
         GLMCov(GLMCov_ind).data(isBeforeZero, :) = [];
+    end
+end
+
+if ~gamParams.includeFixationBreaks
+    spikes(~isAttempted, :) = [];
+    trial_time(~isAttempted) = [];
+    trial_id(~isAttempted) = [];
+    for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
+        GLMCov(GLMCov_ind).data(~isAttempted, :) = [];
     end
 end
 
@@ -35,41 +53,41 @@ end
 [~, unique_trial_ind, ~] = unique(trial_id);
 
 for GLMCov_ind = 1:length(GLMCov),
+    if isempty( GLMCov(GLMCov_ind).data), continue; end
     GLMCov(GLMCov_ind).data = GLMCov(GLMCov_ind).data(unique_trial_ind, :);
 end
-spikes = spikes(unique_trial_ind, :);
 
 % Get the names of the covariates for the current model
-cov_names = strtrim(regexp(regexp(gam.model_str, '+', 'split'), '*', 'split'));
-unique_cov_names = unique([cov_names{:}]);
+model = modelFormula_parse(gamParams.regressionModel_str);
 
 % Size of Design Matrix
 numPredictors = length(neurons(1).par_est);
-numData = size(spikes, 1);
+numData = size(GLMCov(1).data, 1);
 
 % Simulate from posterior
-par_est = nan(numPredictors, numNeurons, numSim);
+par_est = nan(numPredictors, numNeurons, apcParams.numSim);
 
 for neuron_ind = 1:numNeurons,
-    par_est(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).par_est, neurons(neuron_ind).stats.covb, numSim)';
+    par_est(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).par_est, stats(neuron_ind).covb, apcParams.numSim)';
 end
 
 % Cut down on the number of data points by sampling
-if numData <= numSamples,
+if numData <= apcParams.numSamples,
     sample_ind = 1:numData;
 else
-    sample_ind = randi([1, numData], [1 numSamples]);
-    numData = numSamples;
+    sample_ind = randi([1, numData], [1 apcParams.numSamples]);
+    numData = apcParams.numSamples;
 end
 
 % Find the covariate index for the current variable, the variable to be held
 % constant and the other inputs
-factor_ind = ismember({GLMCov.name}, factor_name);
-other_ind = ismember({GLMCov.name}, unique_cov_names) & (~factor_ind);
+factor_ind = ismember({GLMCov.name}, apcParams.type);
+other_ind = ismember({GLMCov.name}, model.terms) & (~factor_ind);
 
 if GLMCov(factor_ind).isCategorical,
     levels = GLMCov(factor_ind).levels;
 else
+    % Assume normalized continuous variable
     levels = [strcat('-',GLMCov(factor_ind).levels), GLMCov(factor_ind).levels];
     levels_id = [-1 1];
 end
@@ -77,13 +95,13 @@ end
 factor_data = GLMCov(factor_ind).data;
 other_data = {GLMCov(other_ind).data};
 
-isCategorical = [GLMCov(other_ind).isCategorical] & ~ismember({GLMCov(other_ind).name}, {'Switch History', 'Previous Error History Indicator'});
+isCategorical = [GLMCov(other_ind).isCategorical] & ~ismember({GLMCov(other_ind).name}, {'Rule Repetition', 'Previous Error History Indicator'});
 
 other_data(isCategorical) = cellfun(@(x) dummyvar(x), other_data(isCategorical), 'UniformOutput', false);
 
 isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data,2)]), num2cell(isCategorical), other_data, 'UniformOutput', false);
 
-numFactors = size(factor_data, 2);
+numHistoryFactors = size(factor_data, 2);
 
 % If the factor is a history variable, then we need to loop over each
 % history variable. If the factor is an ordered categorical variable with
@@ -92,13 +110,13 @@ numFactors = size(factor_data, 2);
 % categorical variables that aren't binary.
 counter_idx = 1;
 
-for factor_id = 1:numFactors,
+for history_ind = 1:numHistoryFactors,
     
     %% Figure out the matrix of other inputs
-    if any(ismember({'Previous Error History', 'Congruency History'}, factor_name)),
-        history = factor_data(:, find(~ismember(1:numFactors, factor_id)));
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
+        history = factor_data(:, ~ismember(1:numHistoryFactors, history_ind));
         history = dummyvar(history);
-        curLevels = reshape(levels, 2, numFactors);
+        curLevels = reshape(levels, 2, numHistoryFactors);
     else
         history = [];
         curLevels = levels';
@@ -111,64 +129,63 @@ for factor_id = 1:numFactors,
     %% Compute covariance matrix used for Mahalanobis distances:
     % Find weights
     other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
-    [summed_weights] = apc_weights(other_inputs, other_isCategorical);
+    if apcParams.isWeighted,
+        [summed_weights] = apc_weights(other_inputs, other_isCategorical);
+    else
+        summed_weights = [];
+    end
     if isempty(summed_weights),
         summed_weights = ones(numData, 1);
     end
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
     if GLMCov(factor_ind).isCategorical,
-        level_data = unique(factor_data(:, ismember(factor_id, 1:numFactors)));
+        level_data = unique(factor_data(:, ismember(history_ind, 1:numHistoryFactors)));
         level_data(isnan(level_data)) = [];
     else
         level_data = [-1 1];
     end
-    % Number of levels to iterate over. Comparing to the last level so
-    % subtracting one.
-    numLevels = length(level_data) - 1;
     
     % Compute the firing rate holding thne last level constant (only need to do this once)
-    lastLevelCov = GLMCov;
-    lastLevelCov(factor_ind).data(:, factor_id) = level_data(end);
-    [lastLevel_design] = gamModelMatrix(gamParams.regressionModel_str, lastLevelCov, spikes(:,1));
-    lastLevel_design = lastLevel_design(sample_ind, :);
-    lastLevel_est = nan(numData, numNeurons, numSim);
-    lastLevelName = curLevels{end, factor_id};
+    baselineCov = GLMCov;
+    baselineCov(factor_ind).data(:, history_ind) = level_data(ismember(baselineCov(factor_ind).levels, baselineCov(factor_ind).baselineLevel));
+    baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, baselineCov, 'level_reference', gam.level_reference);
+    baselineDesignMatrix = baselineDesignMatrix(sample_ind, :);
+    baselineEst = nan(numData, numNeurons, apcParams.numSim);
+    lastLevelName = curLevels{end, history_ind};
     for neuron_ind = 1:numNeurons,
-        lastLevel_est(:, neuron_ind, :) = exp(lastLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+        baselineEst(:, neuron_ind, :) = exp(baselineDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
     end
     
-    for level_id = 1:numLevels,
+    % Number of levels to iterate over.
+    levelID = find(~ismember(baselineCov(factor_ind).levels, baselineCov(factor_ind).baselineLevel));
+    numLevels = length(levelID);
+    
+    for level_ind = 1:numLevels,
         curLevelCov = GLMCov;
-        curLevelCov(factor_ind).data(:, factor_id) = level_data(level_id);
-        [curLevel_design] = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, spikes(:,1));
-        curLevel_design = curLevel_design(sample_ind, :);
-        curLevelName = curLevels{level_id, factor_id};
+        curLevelCov(factor_ind).data(:, history_ind) = level_data(levelID(level_ind));
+        curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, 'level_reference', gam.level_reference);
+        curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :);
+        curLevelName = curLevels{levelID(level_ind), history_ind};
         
-        curLevel_est = nan(numData, numNeurons, numSim);
+        curLevelEst = nan(numData, numNeurons, apcParams.numSim);
         for neuron_ind = 1:numNeurons,
-            curLevel_est(:, neuron_ind, :) = exp(curLevel_design*squeeze(par_est(:, neuron_ind, :)))*1000;
+            curLevelEst(:, neuron_ind, :) = exp(curLevelDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
         end
         
-        if ismember(factor_name, {'Previous Congruency', 'Congruency', 'Previous Error', 'Congruency History', 'Previous Error History'}),
-            % Flip so higher cognitive demand condition is positive
-            diff_est = lastLevel_est - curLevel_est;
-            comparisonNames{counter_idx} = sprintf('%s - %s', lastLevelName, curLevelName);
-        else
-            diff_est = curLevel_est - lastLevel_est;
-            comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
-        end
+        diff_est = curLevelEst - baselineEst;
+        comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
         
-        sum_est = curLevel_est + lastLevel_est;
+        sum_est = curLevelEst + baselineEst;
         
         num = nansum(bsxfun(@times, summed_weights, diff_est));
         abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
-        norm_num = nansum(bsxfun(@times, summed_weights, diff_est./sum_est));
+        norm_num = nansum(bsxfun(@times, summed_weights, diff_est ./ sum_est));
         
         den = nansum(summed_weights);
         
-        apc = num./den;
-        abs_apc = abs_num./den;
-        norm_apc = norm_num./den;
+        apc = num ./ den;
+        abs_apc = abs_num ./ den;
+        norm_apc = norm_num ./ den;
         
         for neuron_ind = 1:numNeurons,
             avpred(neuron_ind).apc(counter_idx,:) = squeeze(apc(:, neuron_ind, :));
@@ -180,26 +197,24 @@ for factor_id = 1:numFactors,
     
 end
 
-[avpred.numSamples] = deal(numSamples);
-[avpred.numSim] = deal(numSim);
+[avpred.numSamples] = deal(apcParams.numSamples);
+[avpred.numSim] = deal(apcParams.numSim);
 [avpred.session_name] = deal(session_name);
-[avpred.model_name] = deal(model_name);
+[avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
 [avpred.wire_number] = deal(neurons.wire_number);
 [avpred.unit_number] = deal(neurons.unit_number);
-[avpred.pfc] = deal(neurons.pfc);
+[avpred.brainArea] = deal(neurons.brainArea);
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
 [avpred.levels] = deal(comparisonNames);
-[avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
+% [avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
 
-save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
-[~, hostname] = system('hostname');
-hostname = strcat(hostname);
-if strcmp(hostname, 'millerlab'),
-    saveMillerlab('edeno', save_file_name, 'avpred');
-else
-    save(save_file_name, 'avpred');
+saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.type);
+if ~exist(saveFolder, 'dir'),
+    mkdir(saveFolder);
 end
+save_file_name = sprintf('%s/%s_APC.mat', saveFolder, session_name);
+save(save_file_name, 'avpred');
 
 end
