@@ -1,21 +1,16 @@
-function [designMatrix, gam] = gamModelMatrix(model_str, GLMCov, response, varargin)
+function [designMatrix, gam] = gamModelMatrix(regressionModel_str, GLMCov, varargin)
 
 inParser = inputParser;
-inParser.addRequired('model_str', @ischar);
-inParser.addRequired('GLMCov', @isstruct);
-inParser.addRequired('response', @isvector);
 inParser.addParameter('level_reference', 'Full', @ischar);
 
-inParser.parse(model_str, GLMCov, response, varargin{:});
+inParser.parse(varargin{:});
 
 gam = inParser.Results;
-gam = rmfield(gam, {'GLMCov', 'response'});
 
-[model] = modelFormula_parse(gam.model_str);
+model = modelFormula_parse(regressionModel_str);
 
 % Now create the design matrix
-
-designMatrix_constant = ones(size(response));
+designMatrix_constant = ones([size(GLMCov(1).data, 1), 1]);
 designMatrix_spline = [];
 
 cov_names_constant = {'(Intercept)'};
@@ -35,7 +30,7 @@ numTerms = length(model.terms);
 
 bsplines = cell(numTerms, 1);
 
-if ~strcmpi(model_str, 'constant'),
+if ~strcmpi(regressionModel_str, 'constant'),
     % For each term
     for curTerm = 1:numTerms,
         
