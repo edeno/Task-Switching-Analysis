@@ -73,7 +73,7 @@ if all(gamParams.ridgeLambda == 0)
 else
     referenceLevel = 'Full';
 end
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, spikes(:,1), 'level_reference', referenceLevel);
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, 'level_reference', referenceLevel);
 
 clear GLMCov;
 
