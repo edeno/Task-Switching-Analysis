@@ -1,7 +1,7 @@
 % This function queues up the code for computing the average predictive
 % comparison between rules (at a specificied level of another covariate) on
 % the cluster
-function computeRuleByAPC(regressionModel_str, timePeriod, type, varargin)
+function [apcJob] = computeRuleByAPC(regressionModel_str, timePeriod, type, varargin)
 
 % Load Common Parameters
 main_dir = getWorkingDir();
