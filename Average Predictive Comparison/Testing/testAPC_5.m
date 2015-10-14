@@ -47,7 +47,7 @@ apcJob = computeRuleByAPC(model, timePeriod, type, 'isLocal', true, 'session_nam
 % Right Response
 
 trueDiffRight = (orientRightRate - colorRightRate) .* ones(size(apcJob{1}.trial_time));
-trueRightRight(apcJob{1}.trial_time > 100) = ((orientRightRate * 2) - colorRightRate);
+trueDiffRight(apcJob{1}.trial_time > 100) = ((orientRightRate * 2) - colorRightRate);
 
 trueSumRight = (orientRightRate + colorRightRate) .* ones(size(apcJob{1}.trial_time));
 trueSumRight(apcJob{1}.trial_time > 100) = ((orientRightRate * 2) + colorRightRate);
