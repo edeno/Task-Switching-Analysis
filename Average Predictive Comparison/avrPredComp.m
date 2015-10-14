@@ -166,10 +166,10 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
         for neuron_ind = 1:numNeurons,
+            curLevelEst = exp(curLevelDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
             parfor sim_ind = 1:apcParams.numSim,
-                curLevelEst = exp(curLevelDesignMatrix * squeeze(par_est(:, neuron_ind, sim_ind))) * 1000;
-                diffEst = curLevelEst - squeeze(baselineLevelEst(:, neuron_ind, sim_ind));
-                sumEst = curLevelEst + squeeze(baselineLevelEst(:, neuron_ind, sim_ind));
+                diffEst = curLevelEst(:, sim_ind) - baselineLevelEst(:, neuron_ind, sim_ind);
+                sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, neuron_ind, sim_ind);
                 num = bsxfun(@times, summed_weights, diffEst);
                 
                 norm_num = accumarray(trial_time, num ./ sumEst);
