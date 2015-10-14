@@ -6,7 +6,7 @@ ridgeLambda = 1E-3;
 smoothLambda = 0;
 
 % Simulate Session
-numTrials = 2000;
+numTrials = 1000;
 [GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
 
 trueRate = nan(size(trial_time));
