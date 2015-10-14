@@ -105,9 +105,7 @@ numHistoryFactors = size(factor_data, 2);
 % other levels and the last level. Currently no support for unordered
 % categorical variables that aren't binary.
 counter_idx = 1;
-[t, s] = ndgrid(grp2idx(trial_time), 1:apcParams.numSim);
-t = t(:);
-s = s(:);
+trial_time = grp2idx(trial_time);
 
 for history_ind = 1:numHistoryFactors,
     
@@ -136,7 +134,7 @@ for history_ind = 1:numHistoryFactors,
     if isempty(summed_weights),
         summed_weights = ones(numData, 1);
     end
-    den = accumarray(grp2idx(trial_time), summed_weights);
+    den = accumarray(trial_time, summed_weights);
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
     if GLMCov(factor_ind).isCategorical,
         level_data = unique(factor_data(:, ismember(history_ind, 1:numHistoryFactors)));
@@ -149,11 +147,11 @@ for history_ind = 1:numHistoryFactors,
     baselineCov = GLMCov;
     baselineCov(factor_ind).data(:, history_ind) = level_data(ismember(baselineCov(factor_ind).levels, baselineCov(factor_ind).baselineLevel));
     baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, baselineCov, 'level_reference', gam.level_reference);
-    baselineDesignMatrix = baselineDesignMatrix(sample_ind, :);
+    baselineDesignMatrix = baselineDesignMatrix(sample_ind, :) * gam.constraints;
     baselineEst = nan(numData, numNeurons, apcParams.numSim);
     lastLevelName = curLevels{end, history_ind};
     for neuron_ind = 1:numNeurons,
-        baselineEst(:, neuron_ind, :) = exp(baselineDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        baselineEst(:, neuron_ind, :) = exp(baselineDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
     end
     
     % Number of levels to iterate over.
@@ -164,40 +162,31 @@ for history_ind = 1:numHistoryFactors,
         curLevelCov = GLMCov;
         curLevelCov(factor_ind).data(:, history_ind) = level_data(levelID(level_ind));
         curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, 'level_reference', gam.level_reference);
-        curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :);
+        curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints;
         curLevelName = curLevels{levelID(level_ind), history_ind};
-        
         for neuron_ind = 1:numNeurons,
-            curLevelEst = exp(curLevelDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
-            diff_est = curLevelEst - squeeze(baselineEst(:, neuron_ind, :));
-            sum_est = curLevelEst + squeeze(baselineEst(:, neuron_ind, :));
-            num = bsxfun(@times, summed_weights, diff_est);
-            num = accumarray(t, num(:));
-            
-            abs_num = abs(num);
-            abs_num = accumarray(t(:), abs_num(:));
+            parfor sim_ind = 1:apcParams.numSim,
+                curLevelEst = exp(curLevelDesignMatrix * squeeze(par_est(:, neuron_ind, sim_ind))) * 1000;
+                diff_est = curLevelEst - squeeze(baselineEst(:, neuron_ind, sim_ind));
+                sum_est = curLevelEst + squeeze(baselineEst(:, neuron_ind, sim_ind));
+                num = bsxfun(@times, summed_weights, diff_est);
+                
+                num = accumarray(trial_time, num);
+                abs_num = abs(num);
+                sum_est = accumarray(trial_time, sum_est);
+                norm_num = num ./ sum_est;
+                
+                apc(:, sim_ind) = num ./ den;
+                abs_apc(:, sim_ind) = abs_num ./ den;
+                norm_apc(:, sim_ind) = norm_num ./ den;
+            end
+            avpred(neuron_ind).apc(counter_idx, :, :) = apc;
+            avpred(neuron_ind).abs_apc(counter_idx, :, :) = abs_apc;
+            avpred(neuron_ind).norm_apc(counter_idx, :, :) = norm_apc;
         end
         
-        diff_est = curLevelEst - baselineEst;
         comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
         
-        sum_est = curLevelEst + baselineEst;
-        
-        num = nansum(bsxfun(@times, summed_weights, diff_est));
-        abs_num = nansum(bsxfun(@times, summed_weights, abs(diff_est)));
-        norm_num = nansum(bsxfun(@times, summed_weights, diff_est ./ sum_est));
-        
-        den = nansum(summed_weights);
-        
-        apc = num ./ den;
-        abs_apc = abs_num ./ den;
-        norm_apc = norm_num ./ den;
-        
-        for neuron_ind = 1:numNeurons,
-            avpred(neuron_ind).apc(counter_idx,:) = squeeze(apc(:, neuron_ind, :));
-            avpred(neuron_ind).abs_apc(counter_idx,:) = squeeze(abs_apc(:, neuron_ind, :));
-            avpred(neuron_ind).norm_apc(counter_idx,:) = squeeze(norm_apc(:, neuron_ind, :));
-        end
         counter_idx = counter_idx + 1;
     end
     
@@ -211,9 +200,10 @@ end
 [avpred.unit_number] = deal(neurons.unit_number);
 [avpred.brainArea] = deal(neurons.brainArea);
 [avpred.monkey] = deal(neurons.monkey);
-baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
+baseline = num2cell(exp(par_est(1, :, :)) * 1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
 [avpred.levels] = deal(comparisonNames);
+[avpred.trial_time] = deal(unique(gam.trial_time));
 % [avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
 
 saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.type);
