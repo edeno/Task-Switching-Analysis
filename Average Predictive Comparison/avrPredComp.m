@@ -145,13 +145,13 @@ for history_ind = 1:numHistoryFactors,
     
     % Compute the firing rate holding thne last level constant (only need to do this once)
     baselineCov = GLMCov;
-    baselineCov(factor_ind).data(:, history_ind) = level_data(ismember(baselineCov(factor_ind).levels, baselineCov(factor_ind).baselineLevel));
+    baselineLevel_ind = ismember(baselineCov(factor_ind).levels, baselineCov(factor_ind).baselineLevel);
+    baselineCov(factor_ind).data(:, history_ind) = level_data(baselineLevel_ind);
     baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, baselineCov, 'level_reference', gam.level_reference);
     baselineDesignMatrix = baselineDesignMatrix(sample_ind, :) * gam.constraints;
     baselineEst = nan(numData, numNeurons, apcParams.numSim);
-    lastLevelName = curLevels{end, history_ind};
     for neuron_ind = 1:numNeurons,
-        baselineEst(:, neuron_ind, :) = exp(baselineDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        baselineLevelEst(:, neuron_ind, :) = exp(baselineDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
     end
     
     % Number of levels to iterate over.
@@ -167,11 +167,11 @@ for history_ind = 1:numHistoryFactors,
         for neuron_ind = 1:numNeurons,
             parfor sim_ind = 1:apcParams.numSim,
                 curLevelEst = exp(curLevelDesignMatrix * squeeze(par_est(:, neuron_ind, sim_ind))) * 1000;
-                diff_est = curLevelEst - squeeze(baselineEst(:, neuron_ind, sim_ind));
-                sum_est = curLevelEst + squeeze(baselineEst(:, neuron_ind, sim_ind));
-                num = bsxfun(@times, summed_weights, diff_est);
+                diffEst = curLevelEst - squeeze(baselineLevelEst(:, neuron_ind, sim_ind));
+                sumEst = curLevelEst + squeeze(baselineLevelEst(:, neuron_ind, sim_ind));
+                num = bsxfun(@times, summed_weights, diffEst);
                 
-                norm_num = accumarray(trial_time, num ./ sum_est);
+                norm_num = accumarray(trial_time, num ./ sumEst);
                 num = accumarray(trial_time, num);
                 abs_num = abs(num);
                 
@@ -184,7 +184,7 @@ for history_ind = 1:numHistoryFactors,
             avpred(neuron_ind).norm_apc(counter_idx, :, :) = norm_apc;
         end
         
-        comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, lastLevelName);
+        comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, baselineLevelName);
         
         counter_idx = counter_idx + 1;
     end
