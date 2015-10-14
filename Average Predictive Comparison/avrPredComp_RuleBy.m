@@ -3,7 +3,7 @@
 % For example, we could compute the average difference between rules when
 % an error has been committed in the previous trial or when the monkey
 % saccades to the left.
-function [avpred] = avrPredComp_RuleBy(session_name, timePeriod, model_name, by_name, numSim, numSamples, save_folder, main_dir)
+function [avpred] = avrPredComp_RuleBy(session_name, apcParams)
 
 
 %% Load covariate fit and model fit information
@@ -79,7 +79,7 @@ end
 % Find the covariate index for the rule variable, the variable to be held
 % constant and the other inputs
 rule_ind = ismember({GLMCov.name}, 'Rule');
-by_ind = ismember({GLMCov.name}, by_name);
+by_ind = ismember({GLMCov.name}, apcParams.type);
 other_ind = ismember({GLMCov.name}, unique_cov_names) & (~rule_ind | ~by_ind);
 
 by_data = GLMCov(by_ind).data;
@@ -104,7 +104,7 @@ end
 for by_id = 1:length(by_levels),
     
     %% Figure out the matrix of other inputs
-    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
         if mod(by_id, 2) == 1,
             history = by_data(:, ~ismember(1:length(by_levels), by_id:by_id+1));
         else
@@ -121,13 +121,19 @@ for by_id = 1:length(by_levels),
     
     % Find weights
     other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
-    [summed_weights] = apc_weights(other_inputs, other_isCategorical);
-    
+    if apcParams.isWeighted,
+        [summed_weights] = apc_weights(other_inputs, other_isCategorical);
+    else
+        summed_weights = [];
+    end
+    if isempty(summed_weights),
+        summed_weights = ones(numData, 1);
+    end
+    den = accumarray(trial_time, summed_weights);
     %% Compute the difference between the two rules
-    
     orientationCov = GLMCov;
     orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
         orientationCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
     elseif by_isCategorical
         orientationCov(by_ind).data(:) = by_id;
@@ -140,7 +146,7 @@ for by_id = 1:length(by_levels),
     
     colorCov = GLMCov;
     colorCov(rule_ind).data(:) = find(ismember(colorCov(rule_ind).levels, 'Color'));
-    if any(ismember({'Previous Error History', 'Congruency History'}, by_name)),
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
         colorCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
     elseif by_isCategorical
         colorCov(by_ind).data(:) = by_id;
@@ -151,8 +157,8 @@ for by_id = 1:length(by_levels),
     colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
     for neuron_ind = 1:numNeurons,
-        colorEst(:, neuron_ind, :) = exp(colorDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
-        orientationEst(:, neuron_ind, :) = exp(orientationDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        colorEst = exp(colorDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        orientationEst = exp(orientationDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
         
         parfor sim_ind = 1:apcParams.numSim,
             diffEst = orientationEst(:, sim_ind) - colorEst(:, sim_ind);
@@ -177,10 +183,10 @@ end
 [avpred.numSamples] = deal(numSamples);
 [avpred.numSim] = deal(numSim);
 [avpred.session_name] = deal(session_name);
-[avpred.model_name] = deal(model_name);
+[avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
 [avpred.wire_number] = deal(neurons.wire_number);
 [avpred.unit_number] = deal(neurons.unit_number);
-[avpred.pfc] = deal(neurons.pfc);
+[avpred.brainArea] = deal(neurons.brainArea);
 [avpred.monkey] = deal(neurons.monkey);
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
