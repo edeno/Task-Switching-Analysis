@@ -49,14 +49,6 @@ if ~gamParams.includeFixationBreaks
     end
 end
 
-% Since we are not considering time, inputs only vary by trial
-[~, unique_trial_ind, ~] = unique(trial_id);
-
-for GLMCov_ind = 1:length(GLMCov),
-    if isempty( GLMCov(GLMCov_ind).data), continue; end
-    GLMCov(GLMCov_ind).data = GLMCov(GLMCov_ind).data(unique_trial_ind, :);
-end
-
 % Get the names of the covariates for the current model
 model = modelFormula_parse(gamParams.regressionModel_str);
 
@@ -113,6 +105,9 @@ numHistoryFactors = size(factor_data, 2);
 % other levels and the last level. Currently no support for unordered
 % categorical variables that aren't binary.
 counter_idx = 1;
+[t, s] = ndgrid(grp2idx(trial_time), 1:apcParams.numSim);
+t = t(:);
+s = s(:);
 
 for history_ind = 1:numHistoryFactors,
     
@@ -141,6 +136,7 @@ for history_ind = 1:numHistoryFactors,
     if isempty(summed_weights),
         summed_weights = ones(numData, 1);
     end
+    den = accumarray(grp2idx(trial_time), summed_weights);
     %% Compute the difference the lowest level and all other levels (doesn't work for unordered categorical variables)
     if GLMCov(factor_ind).isCategorical,
         level_data = unique(factor_data(:, ismember(history_ind, 1:numHistoryFactors)));
@@ -171,9 +167,15 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :);
         curLevelName = curLevels{levelID(level_ind), history_ind};
         
-        curLevelEst = nan(numData, numNeurons, apcParams.numSim);
         for neuron_ind = 1:numNeurons,
-            curLevelEst(:, neuron_ind, :) = exp(curLevelDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
+            curLevelEst = exp(curLevelDesignMatrix * gam.constraints * squeeze(par_est(:, neuron_ind, :))) * 1000;
+            diff_est = curLevelEst - squeeze(baselineEst(:, neuron_ind, :));
+            sum_est = curLevelEst + squeeze(baselineEst(:, neuron_ind, :));
+            num = bsxfun(@times, summed_weights, diff_est);
+            num = accumarray(t, num(:));
+            
+            abs_num = abs(num);
+            abs_num = accumarray(t(:), abs_num(:));
         end
         
         diff_est = curLevelEst - baselineEst;
