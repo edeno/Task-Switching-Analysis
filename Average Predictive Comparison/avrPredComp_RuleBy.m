@@ -5,18 +5,26 @@
 % saccades to the left.
 function [avpred] = avrPredComp_RuleBy(session_name, timePeriod, model_name, by_name, numSim, numSamples, save_folder, main_dir)
 
-% Load covariate fit and model fit information
-load([main_dir, '/paramSet.mat'], 'data_info');
-GLMCov_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, timePeriod, session_name);
-load(GLMCov_name, 'GLMCov', 'isCorrect', 'spikes', 'trial_id', 'trial_time')
-GAMfit_name = sprintf('%s/%s/Models/%s/%s_GAMfit.mat', data_info.processed_dir, timePeriod, model_name, session_name);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'numNeurons');
 
+%% Load covariate fit and model fit information
+main_dir = getWorkingDir();
+% Get GLM Covariates
+GLMCov_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, apcParams.timePeriod, session_name);
+load(GLMCov_name, 'GLMCov', 'isCorrect', 'isAttempted', 'spikes', 'trial_time', 'trial_id')
+% Load model list
+modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
+load(modelList_name, 'modelList');
+% Load fitting data
+GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), session_name);
+load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons');
+
+%% Make GLM covariate data like the fit model
 if ~gamParams.includeIncorrect
     spikes(~isCorrect, :) = [];
     trial_time(~isCorrect) = [];
     trial_id(~isCorrect) = [];
     for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
         GLMCov(GLMCov_ind).data(~isCorrect, :) = [];
     end
 end
@@ -27,39 +35,45 @@ if ~gamParams.includeTimeBeforeZero,
     trial_time(isBeforeZero) = [];
     trial_id(isBeforeZero) = [];
     for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
         GLMCov(GLMCov_ind).data(isBeforeZero, :) = [];
     end
 end
 
-% Since we are not considering time, inputs only vary by trial
-[~, unique_trial_ind, ~] = unique(trial_id);
-
-for GLMCov_ind = 1:length(GLMCov),
-    GLMCov(GLMCov_ind).data = GLMCov(GLMCov_ind).data(unique_trial_ind, :);
+if ~gamParams.includeFixationBreaks
+    spikes(~isAttempted, :) = [];
+    trial_time(~isAttempted) = [];
+    trial_id(~isAttempted) = [];
+    for GLMCov_ind = 1:length(GLMCov),
+        if isempty( GLMCov(GLMCov_ind).data), continue; end
+        GLMCov(GLMCov_ind).data(~isAttempted, :) = [];
+    end
 end
-spikes = spikes(unique_trial_ind, :);
 
 % Get the names of the covariates for the current model
-cov_names = strtrim(regexp(regexp(gam.model_str, '+', 'split'), '*', 'split'));
-unique_cov_names = unique([cov_names{:}]);
+model = modelFormula_parse(gamParams.regressionModel_str);
 
 % Size of Design Matrix
 numPredictors = length(neurons(1).par_est);
-numData = size(spikes, 1);
+numData = size(GLMCov(1).data, 1);
 
 % Simulate from posterior
-par_est = nan(numPredictors, numNeurons, numSim);
+par_est = nan(numPredictors, numNeurons, apcParams.numSim);
 
 for neuron_ind = 1:numNeurons,
-    par_est(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).par_est, neurons(neuron_ind).stats.covb, numSim)';
+    par_est(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).par_est, stats(neuron_ind).covb, apcParams.numSim)';
 end
 
 % Cut down on the number of data points by sampling
-if numData <= numSamples,
-    sample_ind = 1:numData;
+if ~isempty(apcParams.numSamples),
+    if numData <= apcParams.numSamples,
+        sample_ind = 1:numData;
+    else
+        sample_ind = sort(randperm(numData, apcParams.numSamples));
+        numData = apcParams.numSamples;
+    end
 else
-    sample_ind = randi([1, numData], [1 numSamples]);
-    numData = numSamples;
+    sample_ind = 1:numData;
 end
 
 % Find the covariate index for the rule variable, the variable to be held
@@ -121,13 +135,8 @@ for by_id = 1:length(by_levels),
         orientationCov(by_ind).data(:) = by_levels_id(by_id);
     end
     
-    [orientation_design] = gamModelMatrix(gamParams.regressionModel_str, orientationCov, spikes(:,1));
-    orientation_design = orientation_design(sample_ind, :);
-    
-    orientation_est = nan(numData, numNeurons, numSim);
-    for neuron_ind = 1:numNeurons,
-        orientation_est(:, neuron_ind, :) = exp(orientation_design*squeeze(par_est(:, neuron_ind, :)))*1000;
-    end
+    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov);
+    orientationDesignMatrix = orientationDesignMatrix(sample_ind, :) * gam.constraints';
     
     colorCov = GLMCov;
     colorCov(rule_ind).data(:) = find(ismember(colorCov(rule_ind).levels, 'Color'));
@@ -138,31 +147,29 @@ for by_id = 1:length(by_levels),
     else
         colorCov(by_ind).data(:) = by_levels_id(by_id);
     end
-    [color_design] = gamModelMatrix(gamParams.regressionModel_str, colorCov, spikes(:,1));
-    color_design = color_design(sample_ind, :);
-    
-    color_est = nan(numData, numNeurons, numSim);
-    for neuron_ind = 1:numNeurons,
-        color_est(:, neuron_ind, :) = exp(color_design*squeeze(par_est(:, neuron_ind, :)))*1000;
-    end
-    
-    rule_diff_est = orientation_est - color_est;
-    rule_sum_est = orientation_est + color_est;
-    
-    num = nansum(bsxfun(@times, summed_weights, rule_diff_est));
-    abs_num = nansum(bsxfun(@times, summed_weights, abs(rule_diff_est)));
-    norm_num = nansum(bsxfun(@times, summed_weights, rule_diff_est./rule_sum_est));
-    
-    den = nansum(summed_weights);
-    
-    apc = num./den;
-    abs_apc = abs_num./den;
-    norm_apc = norm_num./den;
+    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov);
+    colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
     for neuron_ind = 1:numNeurons,
-        avpred(neuron_ind).apc(by_id,:) = squeeze(apc(:, neuron_ind, :));
-        avpred(neuron_ind).abs_apc(by_id,:) = squeeze(abs_apc(:, neuron_ind, :));
-        avpred(neuron_ind).norm_apc(by_id,:) = squeeze(norm_apc(:, neuron_ind, :));
+        colorEst(:, neuron_ind, :) = exp(colorDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        orientationEst(:, neuron_ind, :) = exp(orientationDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        
+        parfor sim_ind = 1:apcParams.numSim,
+            diffEst = orientationEst(:, sim_ind) - colorEst(:, sim_ind);
+            sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
+            num = bsxfun(@times, summed_weights, diffEst);
+            
+            norm_num = accumarray(trial_time, num ./ sumEst);
+            num = accumarray(trial_time, num);
+            abs_num = abs(num);
+            
+            apc(:, sim_ind) = num ./ den;
+            abs_apc(:, sim_ind) = abs_num ./ den;
+            norm_apc(:, sim_ind) = norm_num ./ den;
+        end
+        avpred(neuron_ind).apc(by_id, :, :) = apc;
+        avpred(neuron_ind).abs_apc(by_id, :, :) = abs_apc;
+        avpred(neuron_ind).norm_apc(by_id, :, :) = norm_apc;
     end
     
 end
@@ -178,15 +185,14 @@ end
 baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
 [avpred.baseline_firing] = deal(baseline{:});
 [avpred.by_levels] = deal(by_levels);
-[avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
+[avpred.trial_time] = deal(unique(gam.trial_time));
+% [avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
 
-save_file_name = sprintf('%s/%s_APC.mat', save_folder, session_name);
-[~, hostname] = system('hostname');
-hostname = strcat(hostname);
-if strcmp(hostname, 'millerlab'),
-    saveMillerlab('edeno', save_file_name, 'avpred');
-else
-    save(save_file_name, 'avpred');
+saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/RuleBy_%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.type);
+if ~exist(saveFolder, 'dir'),
+    mkdir(saveFolder);
 end
+save_file_name = sprintf('%s/%s_APC.mat', saveFolder, session_name);
+save(save_file_name, 'avpred');
 
 end
