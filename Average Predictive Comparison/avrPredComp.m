@@ -171,10 +171,9 @@ for history_ind = 1:numHistoryFactors,
                 sum_est = curLevelEst + squeeze(baselineEst(:, neuron_ind, sim_ind));
                 num = bsxfun(@times, summed_weights, diff_est);
                 
+                norm_num = accumarray(trial_time, num ./ sum_est);
                 num = accumarray(trial_time, num);
                 abs_num = abs(num);
-                sum_est = accumarray(trial_time, sum_est);
-                norm_num = num ./ sum_est;
                 
                 apc(:, sim_ind) = num ./ den;
                 abs_apc(:, sim_ind) = abs_num ./ den;
