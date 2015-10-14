@@ -12,7 +12,7 @@ inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)) || strcmp(x, 'Testing'));
 inParser.addRequired('type',  @ischar);
 inParser.addParameter('numSim', 1000, @(x) isnumeric(x) && x > 0)
-inParser.addParameter('numSamples', 1000, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('numSamples', [], @(x) isnumeric(x))
 inParser.addParameter('isWeighted', false, @islogical)
 inParser.addParameter('isLocal', false, @islogical)
 inParser.addParameter('overwrite', false, @islogical)

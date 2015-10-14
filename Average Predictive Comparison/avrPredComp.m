@@ -72,11 +72,15 @@ for neuron_ind = 1:numNeurons,
 end
 
 % Cut down on the number of data points by sampling
-if numData <= apcParams.numSamples,
-    sample_ind = 1:numData;
+if ~isempty(apcParams.numSamples),
+    if numData <= apcParams.numSamples,
+        sample_ind = 1:numData;
+    else
+        sample_ind = sort(randperm(numData, apcParams.numSamples));
+        numData = apcParams.numSamples;
+    end
 else
-    sample_ind = randi([1, numData], [1 apcParams.numSamples]);
-    numData = apcParams.numSamples;
+    sample_ind = 1:numData;
 end
 
 % Find the covariate index for the current variable, the variable to be held

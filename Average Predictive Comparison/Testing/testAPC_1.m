@@ -31,7 +31,7 @@ testComputeGAMfit_wrapper(model, trueRate, ...
 timePeriod = 'Testing';
 type = 'Rule';
 
-apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'session_names', {'test'}, 'isWeighted', false, 'numSamples', 2000);
+apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'session_names', {'test'}, 'isWeighted', false);
 
 %%
 figure;
