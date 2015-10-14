@@ -80,7 +80,7 @@ end
 % constant and the other inputs
 rule_ind = ismember({GLMCov.name}, 'Rule');
 by_ind = ismember({GLMCov.name}, apcParams.type);
-other_ind = ismember({GLMCov.name}, unique_cov_names) & (~rule_ind | ~by_ind);
+other_ind = ismember({GLMCov.name}, model.terms) & (~rule_ind | ~by_ind);
 
 by_data = GLMCov(by_ind).data;
 other_data = {GLMCov(other_ind).data};
@@ -180,8 +180,8 @@ for by_id = 1:length(by_levels),
     
 end
 
-[avpred.numSamples] = deal(numSamples);
-[avpred.numSim] = deal(numSim);
+[avpred.numSamples] = deal(apcParams.numSamples);
+[avpred.numSim] = deal(apcParams.numSim);
 [avpred.session_name] = deal(session_name);
 [avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
 [avpred.wire_number] = deal(neurons.wire_number);
