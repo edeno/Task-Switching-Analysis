@@ -37,19 +37,19 @@ apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'session_names', {
 figure;
 subplot(1,3,1);
 plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.apc), [0.025 .5 .975],  2), 'b');
-hline(orientRate - colorRate, 'r:');
+hline(orientRate - colorRate, 'r:' , 'True Difference');
 box off;
 title('APC');
 
 subplot(1,3,2);
 plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.abs_apc), [0.025 .5 .975],  2), 'b');
-hline(abs(orientRate - colorRate), 'r:');
+hline(abs(orientRate - colorRate), 'r:' , 'True Difference');
 box off;
 title('Abs APC');
 
 subplot(1,3,3);
 plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.norm_apc), [0.025 .5 .975],  2), 'b');
-hline((orientRate - colorRate) / (orientRate + colorRate), 'r:');
+hline((orientRate - colorRate) / (orientRate + colorRate), 'r:', 'True Difference');
 box off;
 title('Norm APC');
 
