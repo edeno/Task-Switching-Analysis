@@ -53,6 +53,9 @@ title('Abs APC');
 
 subplot(1,3,3);
 hist(apcJob{1}.norm_apc, 50)
+vline((orientRate - colorRate) / (orientRate + colorRate), 'r:');
+vline(mean(apcJob{1}.norm_apc), 'g', 'Estimated Mean Diff.');
+vline(quantile(apcJob{1}.norm_apc, [0.025, 0.975]), 'g');
 box off;
 title('Norm APC');
 
