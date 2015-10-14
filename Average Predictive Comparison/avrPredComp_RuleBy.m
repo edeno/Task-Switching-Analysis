@@ -141,7 +141,7 @@ for by_id = 1:length(by_levels),
         orientationCov(by_ind).data(:) = by_levels_id(by_id);
     end
     
-    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov);
+    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov, 'level_reference', gam.level_reference);
     orientationDesignMatrix = orientationDesignMatrix(sample_ind, :) * gam.constraints';
     
     colorCov = GLMCov;
@@ -153,7 +153,7 @@ for by_id = 1:length(by_levels),
     else
         colorCov(by_ind).data(:) = by_levels_id(by_id);
     end
-    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov);
+    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov, 'level_reference', gam.level_reference);
     colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
     for neuron_ind = 1:numNeurons,
