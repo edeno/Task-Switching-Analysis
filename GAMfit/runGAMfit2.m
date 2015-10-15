@@ -18,7 +18,7 @@ main_dir = getWorkingDir();
 for time_ind = 1:length(timePeriods),
     
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
-    timePeriod_dir = sprintf('%s/Processed Data/%s/', main_dir, gamParams.timePeriod);
+    timePeriod_dir = sprintf('%s/Processed Data/%s/', main_dir, timePeriods{time_ind});
     
     for model_ind = 1:length(model)
         %% Run the model
