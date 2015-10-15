@@ -192,12 +192,12 @@ save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', '-v7.3');
 
-if ~gamParams.isLocal,
-    neurons = [];
-    stats = [];
-    gam = [];
-    designMatrix = [];
-end
+% if ~gamParams.isLocal,
+%     neurons = [];
+%     stats = [];
+%     gam = [];
+%     designMatrix = [];
+% end
 
 end
 
