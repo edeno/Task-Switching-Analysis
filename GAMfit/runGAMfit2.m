@@ -46,13 +46,13 @@ for time_ind = 1:length(timePeriods),
         if ~exist(modelDir, 'dir'),
             mkdir(modelDir);
         end
-        saveDir = sprintf('%s/Models/%s/Collected/', timePeriod_dir, modelList(model{model_ind}));
+        saveDir = sprintf('%s/Models/%s/Collected GAMfit/', timePeriod_dir, modelList(model{model_ind}));
         if ~exist(saveDir, 'dir'),
             mkdir(saveDir);
         end
         
         %% Save to file
-        fprintf('\nSaving GAMs ...\n');
+        fprintf('Saving GAMs ...\n');
         save(sprintf('%s/neurons.mat', saveDir), 'neurons', 'gam', '-v7.3');
         save(sprintf('%s/stats.mat', saveDir), 'stats', '-v7.3');
         save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
