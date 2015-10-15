@@ -58,7 +58,7 @@ for time_ind = 1:length(timePeriods),
         save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
         save(sprintf('%s/designMatrix.mat', saveDir), 'designMatrix', '-v7.3');
         
-        clear neurons stats gam designMatrix modelList
+        clear neurons stats gam designMatrix
     end
     % Save model list
     save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
