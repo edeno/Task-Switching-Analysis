@@ -1,4 +1,4 @@
-clear all; close all; clc;
+clear variables; close all; clc; profile off;
 
 % GAMpred parameters
 isOverwrite = true;
@@ -33,7 +33,7 @@ trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Lef
 
 %%
 model = 's(Rule * Response Direction, Trial Time)';
-[neurons, stats, gam, designMatrix, spikes, model_dir, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
+[neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false);
 

@@ -1,4 +1,4 @@
-clear all; close all; clc;
+clear variables; close all; clc; profile off;
 
 % GAMpred parameters
 ridgeLambda = 10.^(-3:1:3);
@@ -25,13 +25,13 @@ Rate(level_ind('Rule', 'Orientation')) = orientRate;
 
 % Correct Model
 model = 'Rule';
-[neurons, stats, gam, designMatrix, spikes, model_dir, gamParams] = testComputeGAMfit_wrapper(model, Rate, ...
+[neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, Rate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, ...
     'isPrediction', true);
 
 % Misspecified Model
 model = 'Response Direction';
-[neurons_misspecified, stats_misspecified, gam_misspecified, designMatrix_misspecified, spikes_misspecified, model_dir, gamParams_misspecified] = testComputeGAMfit_wrapper(model, Rate, ...
+[neurons_misspecified, stats_misspecified, gam_misspecified, designMatrix_misspecified, spikes_misspecified, gamParams_misspecified] = testComputeGAMfit_wrapper(model, Rate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, ...
     'isPrediction', true, 'spikes', spikes);
 

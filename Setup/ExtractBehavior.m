@@ -1,43 +1,38 @@
 %% Extract Behavior
-clear all; close all; clc;
-
+function ExtractBehavior(isLocal)
 %% Setup
-main_dir = getenv('MAIN_DIR');
-cd(main_dir);
-
-% Find Cluster
-jobMan = parcluster();
-cleanupClusterJob(jobMan, 'edeno', 'finished');
-
 % Load Common Parameters
-load('paramSet.mat', 'session_names', 'data_info', 'trial_info', 'numSessions');
+main_dir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', main_dir), 'session_names', 'data_info', 'trial_info', 'numSessions');
 
 % Set Acceptable Reaction Times
 react_bounds = [100 313];
-
 %% Get Behavior
-
-% Create a job to run on the cluster
-behaviorJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir});
-
-% Loop through Raw Data Directories
-for session_ind = 1:numSessions,
-    fprintf('\nProcessing session: %s ...\n', session_names{session_ind});
-    createTask(behaviorJob, @SetupBehavior_cluster, 1, ...
-        {session_names{session_ind}, main_dir, react_bounds, session_ind});
-    
-end  % End Raw Data Directories
-
-submit(behaviorJob);
-
-% Make sure the job has finished
-fprintf('\nWaiting for sessions to finish ...\n');
-wait(behaviorJob);
-
-% Fetch Outputs from the jobs
-tempOutputs = fetchOutputs(behaviorJob);
-behavior = [tempOutputs{:}];
-
+behaviorJob = [];
+fprintf('\n\nExtracting Behavior\n');
+if isLocal,
+    % Run Locally
+    for session_ind = 1:length(session_names),
+        behaviorJob{session_ind} = SetupBehavior_cluster(session_names{session_ind}, ...
+            react_bounds, ...
+            session_ind, ...
+            trial_info);
+    end
+    behavior = [behaviorJob{:}];
+else
+    % Use Cluster
+    args = cellfun(@(x) {x; ...
+        react_bounds; ...
+        find(ismember(session_names, x)), ...
+        trial_info}', ...
+        session_names, 'UniformOutput', false);
+    behaviorJob = TorqueJob('SetupBehavior_cluster', args, ...
+        'walltime=1:00:00,mem=16GB');
+    % Make sure the job has finished
+    waitMatorqueJob(behaviorJob);
+    % Fetch Outputs from the jobs
+    behavior = cellfun(@(x) x.output, behaviorJob.tasks);
+end
 %% Compute normalized preparatory period
 prep = cat(1, behavior.Prep_Time);
 norm_prep = nan(size(prep));
@@ -74,13 +69,12 @@ numTotalNeurons = sum(cat(1, behavior.numNeurons));
 numTotalLFPs = sum(cat(1, behavior.numLFPs));
 
 %% Save everything
-fprintf('\nSaving ...\n');
+save_file_name = sprintf('%s/Behavior/behavior.mat', main_dir);
+fprintf('\nSaving to %s...\n', save_file_name);
 % Save Behavior
-save_file_name = sprintf('%s/behavior.mat', data_info.behavior_dir);
 save(save_file_name, 'behavior');
 
 % Append Information to ParamSet
-save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
+save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, 'numTotalNeurons', 'numTotalLFPs', 'react_bounds', '-append');
-
-
+end

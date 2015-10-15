@@ -1,13 +1,12 @@
-function SetupSpikes_cluster(session_name, encode, spike_opts, save_dir)
+function [data, time, wire_number, unit_number, file_str, animal, eye_pos, opts] = SetupSpikes_cluster(session_name, encode, spike_opts, timePeriod)
 
 %% Extract Cortex Data
-cd(spike_opts.data_dir)
 % Find trials file that corresponds to extracted data
 fprintf('\nProcessing file %s...\n', session_name);
-session_file = sprintf('%s/%s.sdt', spike_opts.data_dir, session_name);
+main_dir = getWorkingDir();
+session_file = sprintf('%s/Raw Data/%s.sdt', main_dir, session_name);
 
 fprintf('\tLoading data...\n');
-
 load('-mat', session_file, 'cells', 'trials');
 
 wire_number = nan(length(cells), 1);
@@ -27,12 +26,9 @@ end
     'EndEncode', encode(2), 'EndOffset', spike_opts.end_off, ...
     'SmoothType', spike_opts.smooth_type, 'SmoothParam', spike_opts.smooth_param, 'TimeResample', spike_opts.time_resample);
 
-save_file_name = sprintf('%s/%s_data.mat', save_dir, session_name);
-[~, hostname] = system('hostname');
-if strcmp(hostname, 'millerlab')
-    saveMillerlab('edeno', save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
-else
-    save(save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
-end
+save_file_name = sprintf('%s/Processed Data/%s/%s_data.mat', main_dir, timePeriod, session_name);
+
+save(save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
+
 
 end

@@ -1,7 +1,6 @@
 % Queues average preditive comparison between rules at each level of
 % another covariate for each time period and model run.
-clear all; close all; clc;
-main_dir = '/data/home/edeno/Task Switching Analysis';
+clear variables; clc;
 numSim = 5000;
 numSamples = 1000;
 overwrite = true;
@@ -21,7 +20,7 @@ for model_ind = 1:length(model)
         fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
         for type_ind = 1:length(type),
             fprintf('\t\t Covariate: %s\n', type{type_ind});
-            computeAPC(model{model_ind}, timePeriods{time_ind}, main_dir, type{type_ind}, 'numSim', numSim, ...
+            computeAPC(model{model_ind}, timePeriods{time_ind}, type{type_ind}, 'numSim', numSim, ...
                 'numSamples', numSamples, 'overwrite', overwrite)
         end
     end
@@ -42,7 +41,7 @@ for model_ind = 1:length(model)
         fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
         for type_ind = 1:length(type),
             fprintf('\t\t Covariate: %s\n', type{type_ind});
-            computeAPC(model{model_ind}, timePeriods{time_ind}, main_dir, type{type_ind}, 'numSim', numSim, ...
+            computeAPC(model{model_ind}, timePeriods{time_ind}, type{type_ind}, 'numSim', numSim, ...
                 'numSamples', numSamples, 'overwrite', overwrite)
         end
     end

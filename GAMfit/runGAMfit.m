@@ -1,6 +1,4 @@
-clear all; close all; clc;
-setMainDir;
-main_dir = getenv('MAIN_DIR');
+clear variables; clc;
 ridgeLambda = 0;
 numFolds = 1;
 isOverwrite = true;
@@ -21,8 +19,7 @@ model = {...
 for time_ind = 1:length(timePeriods),
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
     for model_ind = 1:length(model)
-        fprintf('\n Model: %s\n', model{model_ind});
-        GAMcluster(model{model_ind}, timePeriods{time_ind}, main_dir, ...
+        GAMcluster(model{model_ind}, timePeriods{time_ind}, ...
             'numFolds', numFolds, 'overwrite', isOverwrite, ...
             'ridgeLambda', ridgeLambda, 'isPrediction', false);
     end
@@ -47,7 +44,7 @@ for time_ind = 1:length(timePeriods),
     fprintf('\n\t Time Period: %s\n', timePeriods{time_ind});
     for model_ind = 1:length(model)
         fprintf('\n Model: %s\n', model{model_ind});
-        GAMcluster(model{model_ind}, timePeriods{time_ind}, main_dir, ...
+        GAMcluster(model{model_ind}, timePeriods{time_ind}, ...
             'numFolds', numFolds, 'overwrite', isOverwrite, ...
             'ridgeLambda', ridgeLambda, 'isPrediction', false);
     end

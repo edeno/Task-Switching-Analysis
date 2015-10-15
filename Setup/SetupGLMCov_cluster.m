@@ -1,42 +1,33 @@
 % Constructs GLMCovariates for use with GLMfit
-function [] = SetupGLMCov_cluster(session_name, timePeriod, main_dir, numLags, varargin)
+function [GLMCov, spikes, sample_on, ...
+    numNeurons, trial_id, trial_time, percent_trials, ...
+    wire_number, unit_number, pfc, isCorrect, isAttempted] = SetupGLMCov_cluster(session_name, timePeriod, numLags, cov_info, behavior, varargin)
 
 %% Load Common Parameters and Parse Inputs
-load(sprintf('%s/paramSet.mat', main_dir), ...
-    'data_info', 'cov_info', 'validFolders', 'session_names');
+main_dir = getWorkingDir();
 
 inParser = inputParser;
-inParser.addRequired('session_name', @(x) ismember(x, session_names));
-inParser.addRequired('timePeriod', @(x) any(ismember(x, validFolders)));
-inParser.addParamValue('overwrite', false, @islogical);
+inParser.addParameter('overwrite', false, @islogical);
 
-inParser.parse(session_name, timePeriod, varargin{:});
+inParser.parse(varargin{:});
 
 glmCovParams = inParser.Results;
 
 %% Check if File Exists Already
-
-save_file_name = sprintf('%s/%s/GLMCov/%s_GLMCov.mat', data_info.processed_dir, glmCovParams.timePeriod, session_name);
-
+save_file_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, timePeriod, session_name);
 if (exist(save_file_name, 'file') && ~glmCovParams.overwrite),
     fprintf('File %s already exists. Skipping.\n', save_file_name);
     return;
 end
-
 %% Load Data and Behavior File
-data_session_file = sprintf('%s/%s/%s_data.mat', data_info.processed_dir, glmCovParams.timePeriod, session_name);
+dataSessionFile = sprintf('%s/Processed Data/%s/%s_data.mat', main_dir, timePeriod, session_name);
 fprintf('\nProcessing file %s...\n', session_name);
-load(data_session_file);
-
-fprintf('\nLoading behavior...\n');
-beh_file = sprintf('%s/behavior.mat', data_info.behavior_dir);
-load(beh_file);
+load(dataSessionFile);
 
 % Get behavior corresponding to this session
 beh_ind = ismember({behavior.session_name}, session_name);
 behavior = behavior(beh_ind);
 %% Setup Covariates
-
 isAttempted = [behavior.attempted];
 isCorrect = [behavior.correct];
 
@@ -64,19 +55,16 @@ Session_Time = behavior.Session_Time;
 
 time = time(:)';
 data = data(:)';
-
 %% Do some organizing
 spikes = cat(1, data{:});
 trial_time = cat(2, time{:})';
 
 numNeurons = size(spikes, 2);
-
 %% What trial does each time correspond to?
 trial_id = num2cell(1:size(time, 2));
 
 trial_id = cellfun(@(x,y) x(ones(size(y))), trial_id, time, 'UniformOutput', false);
 trial_id = cat(2, trial_id{:})';
-
 %% Label each trial time point with the appropriate covariate
 isAttempted = isAttempted(trial_id);
 isCorrect = isCorrect(trial_id);
@@ -160,14 +148,13 @@ for time_ind = 1:length(table(:,1))
 end
 
 %% Compute the spiking history
-
 % The function lag matrix takes up too much memory if given a large amount
 % of memory so break up the data into smaller bits
 spike_hist = spalloc(size(spikes, 1), numNeurons*numLags, nansum(nansum(spikes))*numLags);
 
 parts_quant = unique(floor(quantile(1:(numLags+1), [0:0.1:1])));
 
-for parts_ind = 1:(length(parts_quant)-1),   
+for parts_ind = 1:(length(parts_quant)-1),
     curLags = parts_quant(parts_ind):(parts_quant(parts_ind+1)-1);
     part_hist = lagmatrix(spikes, curLags);
     part_hist(isnan(part_hist)) = 0;
@@ -186,15 +173,14 @@ else
 end
 
 %% Save Everything
-[~, hostname] = system('hostname');
-if strcmp(hostname, 'millerlab')
-    saveMillerlab('edeno', save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
-        'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-        'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
-else
-    save(save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
-        'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-        'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
+fprintf('\nSaving to %s....\n', save_file_name);
+save_dir = sprintf('%s/Processed Data/%s/GLMCov', main_dir, timePeriod);
+if ~exist(save_dir, 'dir'),
+    mkdir(save_dir);
 end
+
+save(save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
+    'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
+    'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
 
 end

@@ -1,21 +1,18 @@
 %% Setup Data Parameters
-clear all; close all; clc;
-
 % Define main data directory
-data_info.main_dir = getenv('MAIN_DIR');
-
+main_dir = getWorkingDir();
 % Make main
-if ~exist(data_info.main_dir, 'dir')
-    mkdir(data_info.main_dir);
+if ~exist(main_dir, 'dir')
+    mkdir(main_dir);
 end
 
 % Define sub-directories
-data_info.script_dir = sprintf('%s/Matlab Scripts', data_info.main_dir);
-data_info.processed_dir = sprintf('%s/Processed Data', data_info.main_dir);
-data_info.behavior_dir = sprintf('%s/Behavior', data_info.main_dir);
-data_info.manuscript_dir = sprintf('%s/Manuscript', data_info.main_dir);
-data_info.figure_dir = sprintf('%s/Figures', data_info.main_dir);
-data_info.rawData_dir = sprintf('%s/Raw Data', data_info.main_dir);
+data_info.script_dir = sprintf('%s/Matlab Scripts', main_dir);
+data_info.processed_dir = sprintf('%s/Processed Data', main_dir);
+data_info.behavior_dir = sprintf('%s/Behavior', main_dir);
+data_info.manuscript_dir = sprintf('%s/Manuscript', main_dir);
+data_info.figure_dir = sprintf('%s/Figures', main_dir);
+data_info.rawData_dir = sprintf('%s/Raw Data', main_dir);
 
 % Make sub-directories
 data_fieldNames = fieldnames(data_info);
@@ -59,8 +56,19 @@ trial_info.FixationBreak = [3 4];
 
 monkey_names = {'CC', 'CH', 'ISA'};
 validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Response', 'Rule Response', 'Saccade', 'Reward', 'Entire Trial'};
+encode_period = {{trial_info.Start_encode trial_info.FixationOn_encode}; ...
+    {trial_info.FixationAccquired_encode trial_info.RuleOn_encode}; ...
+    {trial_info.RuleOn_encode trial_info.SampleOn_encode}; ...
+    {trial_info.SampleOn_encode trial_info.SaccadeStart_encode}; ...
+    {trial_info.RuleOn_encode trial_info.SaccadeStart_encode}; ...
+    {trial_info.SaccadeStart_encode trial_info.RewardStart_encode}; ...
+    {trial_info.RewardStart_encode trial_info.End_encode}; ...
+    {trial_info.Start_encode trial_info.End_encode};};
 
+encodeMap = containers.Map(validFolders, encode_period);
+numMaxLags = 20;
 %% Save Everything
-
-save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
-save(save_file_name, '*_info', 'monkey_names', 'validPredType');
+save_file_name = sprintf('%s/paramSet.mat', main_dir);
+save(save_file_name, '*_info', 'monkey_names', 'validPredType', ...
+    'validFolders', 'encodeMap', 'numMaxLags', '-append');

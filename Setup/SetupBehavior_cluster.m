@@ -64,14 +64,14 @@
 %               1 Cue3.bmp (w/black)
 %               2 37 x 49 Pink Sq and 26 x 36 Black sq
 
-function [behavior] = SetupBehavior_cluster(session_name, main_dir, react_bounds, session_ind)
+function [behavior] = SetupBehavior_cluster(session_name, react_bounds, session_ind, trial_info)
 
 % Load Common Parameters
-load(sprintf('%s/paramSet.mat',main_dir), 'data_info', 'trial_info');
+main_dir = getWorkingDir();
 
 % Find trials file that corresponds to extracted data
 fprintf('\nProcessing file %s...\n', session_name);
-session_file = sprintf('%s/%s.sdt', data_info.rawData_dir, session_name);
+session_file = sprintf('%s/Raw Data/%s.sdt', main_dir, session_name);
 
 fprintf('\tLoading data...\n');
 load('-mat', session_file, 'trials', 'numtrials', 'cells', 'lfps');
@@ -304,9 +304,10 @@ switc = zeros(1,numtrials);
 switc(find(abs(difference) > 0)+1) = 1;
 behavior.Rule_Cue_Switch = grp2idx(switc);
 
-% Previous Error up to lag 10
+% Previous Error up to lag 5
+numErrorLags = 5;
 behavior.Previous_Error = lagmatrix(grp2idx(behavior.incorrect), 1);
-behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:10);
+behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:numErrorLags);
 behavior.Previous_Error_History(isnan(behavior.Previous_Error_History)) = 1;
 % Distance from Switch
 dist_sw = nan(size(behavior.Switch));
@@ -325,7 +326,8 @@ end
 dist_sw = dist_sw+1;
 behavior.dist_sw = dist_sw;
 
-dist_sw(dist_sw >= 11) = 11;
+numSwitchLags = 11;
+dist_sw(dist_sw >= numSwitchLags) = numSwitchLags;
 
 % Switch up to lag 10
 behavior.Rule_Repetition = dist_sw;
@@ -345,12 +347,11 @@ for err_ind = 1:length(err)+1
     end
 end
 
-dist_err(1:find(behavior.incorrect, 1)-1) = 11;
+dist_err(1:find(behavior.incorrect, 1) - 1) = numErrorLags;
 behavior.dist_err = dist_err;
 
-
 dist_err(dist_err == 0) = NaN;
-dist_err(dist_err >= 11) = 11;
+dist_err(dist_err >= numErrorLags) = numErrorLags;
 
 % non-cumulative version of error history
 behavior.Previous_Error_History_Indicator = dist_err;

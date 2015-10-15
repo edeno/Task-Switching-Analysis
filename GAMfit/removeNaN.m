@@ -37,6 +37,6 @@ if (any(wasnan))
    t = ~wasnan;
    for j=1:nargin
       y = varargout{j};
-      if (length(y)>0), varargout{j} = y(t,:); end
+      if ~isempty(y), varargout{j} = y(t,:); end
    end
 end
