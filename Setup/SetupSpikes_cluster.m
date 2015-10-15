@@ -26,9 +26,12 @@ end
     'EndEncode', encode(2), 'EndOffset', spike_opts.end_off, ...
     'SmoothType', spike_opts.smooth_type, 'SmoothParam', spike_opts.smooth_param, 'TimeResample', spike_opts.time_resample);
 
-save_file_name = sprintf('%s/Processed Data/%s/%s_data.mat', main_dir, timePeriod, session_name);
+saveFolder = sprintf('%s/Processed Data/%s/', main_dir, timePeriod);
+if ~exist(saveFolder, 'dir')
+    mkdir(saveFolder);
+end
+saveFileName = sprintf('%s/%s_data.mat', saveFolder, session_name);
 
-save(save_file_name, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
-
+save(saveFileName, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
 
 end
