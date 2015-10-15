@@ -1,4 +1,4 @@
-function [neurons, stats, gam, designMatrix] = ComputeGAMfit(sessionName, gamParams)
+function [neurons, stats, gam, designMatrix, modelList] = ComputeGAMfit(sessionName, gamParams)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
