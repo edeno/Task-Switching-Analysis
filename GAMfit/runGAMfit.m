@@ -1,17 +1,3 @@
-clear variables; clc;
-ridgeLambda = 1;
-smoothLambda = 10^(-3:3);
-numFolds = 5;
-isOverwrite = true;
-timePeriods = {'Rule Response'};
-model = {...
-    's(Previous Error History Indicator, Trial Time) + s(Response Direction, Trial Time)', ...
-    's(Previous Error History Indicator, Trial Time) + s(Response Direction, Trial Time) + s(Rule Repetition, Trial Time)', ...
-    's(Previous Error History Indicator, Trial Time) + s(Response Direction, Trial Time) + s(Indicator Prep Time, Trial Time)', ...
-    's(Previous Error History Indicator, Trial Time) + s(Response Direction, Trial Time) + s(Congruency History, Trial Time)', ...
-    's(Previous Error History Indicator, Trial Time) + s(Response Direction, Trial Time) + s(Rule, Trial Time)', ...
-    };
-
 main_dir = getWorkingDir();
 
 for time_ind = 1:length(timePeriods),
@@ -53,7 +39,8 @@ for time_ind = 1:length(timePeriods),
         
         %% Save to file
         fprintf('Saving GAMs ...\n');
-        save(sprintf('%s/neurons.mat', saveDir), 'neurons', 'gam', '-v7.3');
+        save(sprintf('%s/neurons.mat', saveDir), 'neurons', 'gamParams', '-v7.3');
+        save(sprintf('%s/gam.mat', saveDir), 'gam', '-v7.3');
         save(sprintf('%s/stats.mat', saveDir), 'stats', '-v7.3');
         save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
         save(sprintf('%s/designMatrix.mat', saveDir), 'designMatrix', '-v7.3');
