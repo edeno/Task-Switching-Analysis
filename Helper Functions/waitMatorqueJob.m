@@ -3,10 +3,13 @@ function waitMatorqueJob(job, varargin)
 inParser = inputParser;
 inParser.addRequired('job', @isobject);
 inParser.addParameter('timeout', inf, @(x) x > 0 && isnumeric(x)); % in seconds
+inParser.addParameter('pauseTime', 60, @(x) x > 0 && isnumeric(x)); % in seconds
 
 inParser.parse(job, varargin{:});
 
 timeout = inParser.Results.timeout;
+pauseTime = inParser.Results.pauseTime;
+
 try
     startTime = tic;
     fprintf('Waiting for %s to finish...\n', job.dir);
@@ -20,7 +23,7 @@ try
              break;
              fprintf('\tJob exceeded timeout, %d!\n', timeout);
         end
-        pause(60);
+        pause(pauseTime);
     end
 catch err
     % The job object might become invalid during the waitForEvent. Only

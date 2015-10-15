@@ -56,7 +56,11 @@ if gamParams.isLocal,
         ComputeGAMfit(session_names{session_ind}, gamParams);
     end
 else
+    fprintf('Updating model list...\n');
+    modelListJob = TorqueJob('updateModelList', {{gamParams}}); 
+    waitMatorqueJob(modelListJob, 'pauseTime', 10);
     % Use Cluster
+    fprintf('Fitting model....\n');
     args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
         'walltime=24:00:00,mem=90GB');
