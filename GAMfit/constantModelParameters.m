@@ -3,6 +3,7 @@ ridgeLambda = 1;
 smoothLambda = 0;
 numFolds = 1;
 isOverwrite = true;
+includeTimeBeforeZero = false;
 timePeriods = {'Rule Response'};
 model = {...
     'Constant', ...
