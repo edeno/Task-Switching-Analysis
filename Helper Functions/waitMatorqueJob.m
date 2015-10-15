@@ -20,7 +20,7 @@ try
              break;
              fprintf('\tJob exceeded timeout, %d!\n', timeout);
         end
-        pause(1);
+        pause(60);
     end
 catch err
     % The job object might become invalid during the waitForEvent. Only
