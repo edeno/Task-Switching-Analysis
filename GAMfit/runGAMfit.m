@@ -30,13 +30,13 @@ for time_ind = 1:length(timePeriods),
             'isLocal', false);
         
         waitMatorqueJob(gamJob); % Wait for job to finish running
-        out = gatherMatorqueOutput(gamJob); % Get the outputs
+        [out, diaryLog] = gatherMatorqueOutput(gamJob); % Get the outputs
         
         %% Name the outputs
         neurons = [out{:,1}];
         stats = [out{:, 2}];
         gam = [out{:, 3}];
-        designMatrix  = out{:, 4};
+        designMatrix  = out(:, 4);
         modelList = [out{end, 5}];
         
         %% Create corresponding local directories
@@ -49,14 +49,15 @@ for time_ind = 1:length(timePeriods),
         if ~exist(saveDir, 'dir'),
             mkdir(saveDir);
         end
-        saveFileName = sprintf('%s/neurons.mat', saveDir);
         
         %% Save to file
         fprintf('\nSaving GAMs ...\n');
-        save(saveFileName, 'neurons', 'stats', ...
-            'gam', 'designMatrix', '-v7.3');
+        save(sprintf('%s/neurons.mat', saveDir), 'neurons', 'gam', '-v7.3');
+        save(sprintf('%s/stats.mat', saveDir), 'stats', '-v7.3');
+        save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
+        save(sprintf('%s/designMatrix.mat', saveDir), 'designMatrix', '-v7.3');
         
-        clear neurons stats gam
+        clear neurons stats gam designMatrix modelList
     end
     % Save model list
     save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
