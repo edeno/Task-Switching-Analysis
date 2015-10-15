@@ -38,6 +38,7 @@ for time_ind = 1:length(timePeriods),
         gam = [out{:, 3}];
         designMatrix  = out(:, 4);
         modelList = [out{end, 5}];
+        gamParams = [out{end, 6}];
         
         %% Create corresponding local directories
         modelDir = sprintf('%s/Models/', timePeriod_dir);
