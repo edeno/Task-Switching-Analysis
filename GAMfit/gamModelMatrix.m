@@ -233,6 +233,14 @@ if isempty(factor.data)
 else
     data = [ones(size(by.smoothingFactor.data)) by.factor.data];
     levels = [{by.smoothingFactor.name} by.factor.levels];
+    %% Hacky crap that alters the number of knots so that we get a specific spacing ************************
+    if strcmp(by.smoothingFactor.name, 'Trial Time'),
+        desiredTimeDiff = 75; % ms between knots
+        knot_range = diff(quantile(by.smoothingFactor.data, [0 1]));
+        knot_range = [min(by.smoothingFactor.data) - (knot_range * 0.001), max(by.smoothingFactor.data) + (knot_range * 0.001)];
+        numKnots = ceil((diff(knot_range) / desiredTimeDiff) + (by.basis_degree - 1));
+        by.basis_dim = numKnots;
+    end
 end
 
 numLevels = size(data, 2);
