@@ -308,6 +308,9 @@ behavior.Rule_Cue_Switch = grp2idx(switc);
 numErrorLags = 5;
 behavior.Previous_Error = lagmatrix(grp2idx(behavior.incorrect), 1);
 behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:numErrorLags);
+
+% If it is NaN, set to correct
+behavior.Previous_Error(isnan(behavior.Previous_Error)) = 1;
 behavior.Previous_Error_History(isnan(behavior.Previous_Error_History)) = 1;
 % Distance from Switch
 dist_sw = nan(size(behavior.Switch));
