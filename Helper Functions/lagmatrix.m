@@ -57,7 +57,7 @@ end
 % it's a univariate series and ensure a column vector.
 %
 
-if prod(size(x)) == length(x)             % check for a vector.
+if numel(x) == length(x)             % check for a vector.
    x  =  x(:);
 end
 
@@ -65,7 +65,7 @@ end
 % Ensure LAGS is a vector of integers. 
 %
 
-if prod(size(lags)) ~= length(lags)       % check for a non-vector.
+if numel(lags) ~= length(lags)       % check for a non-vector.
    error(' ''Lags'' must be a vector.');
 end
 
@@ -75,7 +75,7 @@ if any(round(lags) - lags)
    error(' All elements of ''Lags'' must be integers.')
 end
 
-missingValue  =  0;  % Assign default missing value. modified Aug/7/2002
+missingValue  =  NaN;  % Assign default missing value. modified Aug/7/2002
 
 %
 % Cycle through the LAGS vector and shift the input time series. Positive 
