@@ -9,7 +9,6 @@ load(sprintf('%s/Behavior/behavior.mat', main_dir));
 % Overwrite?
 isOverwrite = true;
 fprintf('\nExtracting GAM Covariates\n');
-glmCovJob = cell(1, length(validFolders));
 diaryLog = cell(1, length(validFolders));
 %% Loop through Time Periods to Extract Spikes
 for folder_ind = 1:length(validFolders),
@@ -33,10 +32,10 @@ for folder_ind = 1:length(validFolders),
             behavior; ...
             'overwrite'; isOverwrite}', ...
             session_names, 'UniformOutput', false);
-        glmCovJob{folder_ind} = TorqueJob('SetupGLMCov_cluster', args, ...
+        glmCovJob = TorqueJob('SetupGLMCov_cluster', args, ...
             'walltime=0:30:00,mem=90GB');
-        waitMatorqueJob(glmCovJob{folder_ind});
-        [out, diaryLog{folder_ind}] = gatherMatorqueOutput(glmCovJob{folder_ind}); % Get the outputs
+        waitMatorqueJob(glmCovJob);
+        [out, diaryLog{folder_ind}] = gatherMatorqueOutput(glmCovJob); % Get the outputs
         for session_ind = 1:length(session_names),
             save_file_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, validFolders{folder_ind}, session_names{session_ind});
 
@@ -62,9 +61,6 @@ for folder_ind = 1:length(validFolders),
             save(save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
                 'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
                 'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
-             clear('GLMCov', 'spikes', 'sample_on', ...
-                'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-                'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', 'out');
         end
     end
 end
