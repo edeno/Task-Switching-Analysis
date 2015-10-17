@@ -31,7 +31,8 @@ else
     % Make sure the job has finished
     waitMatorqueJob(behaviorJob);
     % Fetch Outputs from the jobs
-    behavior = cellfun(@(x) x.output, behaviorJob.tasks);
+    behavior = gatherMatorqueOutput(behaviorJob);
+    behavior = [behavior{:}];
 end
 %% Compute normalized preparatory period
 prep = cat(1, behavior.Prep_Time);
