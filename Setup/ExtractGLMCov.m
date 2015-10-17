@@ -40,17 +40,17 @@ for folder_ind = 1:length(validFolders),
             save_file_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, validFolders{folder_ind}, session_names{session_ind});
 
             GLMCov = out{session_ind, 1};
-            spikes = out{session_ind, 1};
-            sample_on = out{session_ind, 1};
-            numNeurons = out{session_ind, 1};
-            trial_id = out{session_ind, 1};
-            trial_time = out{session_ind, 1};
-            percent_trials = out{session_ind, 1};
-            wire_number = out{session_ind, 1};
-            unit_number = out{session_ind, 1};
-            pfc = out{session_ind, 1};
-            isCorrect = out{session_ind, 1};
-            isAttempted = out{session_ind, 1};
+            spikes = out{session_ind, 2};
+            sample_on = out{session_ind, 3};
+            numNeurons = out{session_ind, 4};
+            trial_id = out{session_ind, 5};
+            trial_time = out{session_ind, 6};
+            percent_trials = out{session_ind, 7};
+            wire_number = out{session_ind, 8};
+            unit_number = out{session_ind, 9};
+            pfc = out{session_ind, 10};
+            isCorrect = out{session_ind, 11};
+            isAttempted = out{session_ind, 12};
             
             fprintf('\nSaving to %s....\n', save_file_name);
             save_dir = sprintf('%s/Processed Data/%s/GLMCov', main_dir, validFolders{folder_ind});
