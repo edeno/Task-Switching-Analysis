@@ -22,7 +22,6 @@ for time_ind = 1:length(timePeriods),
         neurons = [out{:,1}];
         stats = [out{:, 2}];
         gam = [out{:, 3}];
-        designMatrix  = out(:, 4);
         modelList = [out{end, 5}];
         gamParams = [out{end, 6}];        
         %% Create corresponding local directories
@@ -41,7 +40,6 @@ for time_ind = 1:length(timePeriods),
         save(sprintf('%s/gam.mat', saveDir), 'gam', '-v7.3');
         save(sprintf('%s/stats.mat', saveDir), 'stats', '-v7.3');
         save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
-        save(sprintf('%s/designMatrix.mat', saveDir), 'designMatrix', '-v7.3');
     end
     % Save model list
     fprintf('Saving model list...\n');

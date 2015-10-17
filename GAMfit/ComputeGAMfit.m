@@ -192,12 +192,11 @@ save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', '-v7.3');
 
-% if ~gamParams.isLocal,
-%     neurons = [];
-%     stats = [];
-%     gam = [];
-%     designMatrix = [];
-% end
+fprintf('\nFinished: %s', datestr(now));
+
+if ~gamParams.isLocal,
+    designMatrix = [];
+end
 
 end
 
