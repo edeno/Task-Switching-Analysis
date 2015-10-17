@@ -63,7 +63,7 @@ else
     fprintf('Fitting model....\n');
     args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
-        'walltime=24:00:00,mem=90GB');
+        'walltime=24:00:00,mem=108GB,nodes=1:ppn=12');
 end
 
 end
