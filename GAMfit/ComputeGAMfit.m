@@ -68,6 +68,7 @@ monkey_name = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
 monkey_name = monkey_name{:};
 
 %% Setup Design Matrix
+fprintf('\nConstructing model design matrix...\n');
 if all(gamParams.ridgeLambda == 0)
     referenceLevel = 'Reference';
 else
@@ -192,7 +193,7 @@ save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', '-v7.3');
 
-fprintf('\nFinished: %s', datestr(now));
+fprintf('\nFinished: %s\n', datestr(now));
 
 if ~gamParams.isLocal,
     designMatrix = [];
