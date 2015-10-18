@@ -1,6 +1,6 @@
 clear variables; clc;
 ridgeLambda = 1;
-smoothLambda = 10.^(-3:3);
+smoothLambda = 10.^(-3:4);
 numFolds = 5;
 isOverwrite = true;
 timePeriods = {'Rule Response'};
