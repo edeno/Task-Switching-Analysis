@@ -175,11 +175,10 @@ spikes = spikes(~wasNaN, :);
 % tI.Value = trial_id(~wasNaN, :);
 
 parfor curNeuron = 1:numNeurons,
-    fprintf('\nNeuron %d \n', curNeuron);
     if isPrediction,
-        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value);
+        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value, curNeuron);
     else
-        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value);
+        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value, curNeuron);
     end
 end % End Neuron Loop
 
@@ -212,7 +211,7 @@ end
 end
 
 %%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
-function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id)
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id, neuron_ind)
 
 %% Pick a Lambda if there's more than one, unless there's one specified
 
@@ -237,8 +236,8 @@ lambdaVec(gam.constant_ind) = ridgeLambdaGrid(bestLambda_ind);
 lambdaVec(~gam.constant_ind) = smoothLambdaGrid(bestLambda_ind);
 lambdaVec(1) = 0;
 
-fprintf('Fitting Best Model: Ridge %d, Smooth %d\n', ...
-    ridgeLambdaGrid(bestLambda_ind), smoothLambdaGrid(bestLambda_ind));
+fprintf('Fitting Best Model for Neuron #%d: Ridge %d, Smooth %d\n', ...
+    neuron_ind, ridgeLambdaGrid(bestLambda_ind), smoothLambdaGrid(bestLambda_ind));
 [neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, gam.sqrtPen, ...
     'lambda', lambdaVec, 'distr', 'poisson', 'constant', const, ...
     'constraints', gam.constraints);
@@ -272,7 +271,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
             % cross validation
             for curLambda = 1:numLambda,
                 
-                fprintf('\t\t Lambda Selection: Fold #%d, Lambda %d\n', curFold, curLambda);
+                fprintf('\t\t Lambda Selection: Neuron #%d, Fold #%d, Lambda %d\n', neuron_ind, curFold, curLambda);
                 pickLambdaVec = nan([1 size(designMatrix, 2)]);
                 pickLambdaVec(gam.constant_ind) = ridgeLambdaGrid(curLambda);
                 pickLambdaVec(~gam.constant_ind) = smoothLambdaGrid(curLambda);
@@ -313,7 +312,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
 end
 
 %%%%%%%%%%%%%%%% Function to return only predictions of GAM %%%%%%%%%%%%%%%
-function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id)
+function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id, neuron_ind)
 
 neuron.Dev = nan(1, gamParams.numFolds);
 neuron.AUC = nan(1, gamParams.numFolds);
@@ -335,7 +334,7 @@ for curFold = 1:gamParams.numFolds,
     end
     
     %% Estimate Model
-    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam, gamParams, trial_id(trainingIdx));
+    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam, gamParams, trial_id(trainingIdx), neuron_ind);
     
     [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
         'Compact', true);
