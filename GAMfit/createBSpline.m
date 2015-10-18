@@ -5,7 +5,7 @@ inParser.addRequired('time', @isvector);
 inParser.addParameter('basis_dim', 10, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('basis_degree', 3, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('penalty_degree', 2, @(x) isnumeric(x) && x >= 0);
-inParser.addParameter('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('ridgeLambda', 1E-1, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('knots', [], @ismatrix);
 
 inParser.parse(time, varargin{:});
@@ -18,8 +18,8 @@ t = unique(time);
 
 if isempty(bsplines.knots),
     knot_range = diff(quantile(t, [0 1]));
-    knot_range = [min(t) - knot_range*0.001 max(t) + knot_range*0.001];
-    knots_diff = diff(knot_range)/(basis_rank - 1);
+    knot_range = [min(t) - (knot_range * 0.001), max(t) + (knot_range * 0.001)];
+    knots_diff = diff(knot_range) / (basis_rank - 1);
     knots = linspace(knot_range(1) - (knots_diff * bsplines.basis_degree), knot_range(2) + (knots_diff * bsplines.basis_degree), bsplines.basis_dim + (2 * basis_order));
 else
     knots = bsplines.knots;
@@ -100,7 +100,7 @@ else
     z0(isinf(z0) | isnan(z0)) = 0;
     z1 = (knots(cur_basis + order + 2) - t)/ (knots(cur_basis + order + 2) - knots(cur_basis + 1));
     z1(isinf(z1) | isnan(z1)) = 0;
-    res = z0.*bspline_basis(t, knots, cur_basis, order - 1) + z1.*bspline_basis(t, knots, cur_basis + 1, order - 1);
+    res = z0 .* bspline_basis(t, knots, cur_basis, order - 1) + z1 .* bspline_basis(t, knots, cur_basis + 1, order - 1);
 end
 
 end
