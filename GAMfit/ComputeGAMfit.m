@@ -74,12 +74,12 @@ if all(gamParams.ridgeLambda == 0)
 else
     referenceLevel = 'Full';
 end
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, 'level_reference', referenceLevel);
-
-clear GLMCov;
 
 if ~gamParams.includeIncorrect
-    designMatrix(~isCorrect, :) = [];
+    for cov_ind = 1:length(GLMCov),
+        if isempty(GLMCov(cov_ind).data), continue; end;
+        GLMCov(cov_ind).data(~isCorrect, :) = [];
+    end
     spikes(~isCorrect, :) = [];
     trial_time(~isCorrect) = [];
     trial_id(~isCorrect) = [];
@@ -90,7 +90,10 @@ end
 
 if ~gamParams.includeTimeBeforeZero,
     isBeforeZero = trial_time < 0;
-    designMatrix(isBeforeZero, :) = [];
+    for cov_ind = 1:length(GLMCov),
+        if isempty(GLMCov(cov_ind).data), continue; end;
+        GLMCov(cov_ind).data(isBeforeZero, :) = [];
+    end
     spikes(isBeforeZero, :) = [];
     trial_time(isBeforeZero) = [];
     trial_id(isBeforeZero) = [];
@@ -100,13 +103,20 @@ if ~gamParams.includeTimeBeforeZero,
 end
 
 if ~gamParams.includeFixationBreaks
-    designMatrix(~isAttempted, :) = [];
+    for cov_ind = 1:length(GLMCov),
+        if isempty(GLMCov(cov_ind).data), continue; end;
+        GLMCov(cov_ind).data(~isAttempted, :) = [];
+    end
     spikes(~isAttempted, :) = [];
     trial_time(~isAttempted) = [];
     trial_id(~isAttempted) = [];
     sample_on(~isAttempted) = [];
     percent_trials(~isAttempted) = [];
 end
+
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, 'level_reference', referenceLevel);
+
+clear GLMCov;
 
 % Make sure covariates are of class double
 designMatrix = double(designMatrix);
