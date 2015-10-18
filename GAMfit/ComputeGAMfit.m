@@ -53,7 +53,6 @@ if exist(saveFileName, 'file') && ~gamParams.overwrite,
     fprintf('File %s already exists. Skipping.\n', saveFileName);
     return;
 end
-
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
 data_file_name = sprintf('%s/GLMCov/%s_GLMCov.mat', timePeriod_dir, sessionName);
@@ -66,7 +65,6 @@ pfc = logical(pfc);
 
 monkey_name = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
 monkey_name = monkey_name{:};
-
 %% Setup Design Matrix
 fprintf('\nConstructing model design matrix...\n');
 if all(gamParams.ridgeLambda == 0)
@@ -143,42 +141,39 @@ neurons = cell([1 numNeurons]);
 isPrediction = gamParams.isPrediction;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
-
-% % Parallel Pool Configuration
-% poolobj = gcp('nocreate');
-% if isempty(poolobj),
-%     minWorkers = 2;
-%     maxWorkers = 12;
-%     parpool([minWorkers, maxWorkers], 'SpmdEnabled', false);
-% end
-
 % Remove NaNs beforehand to avoid the memory cost of removing them in fitGaM
 wasNaN = any(isnan(spikes), 2) | any(isnan(designMatrix), 2);
 
 %Transfer static assets to each worker only once
 if verLessThan('matlab', '8.6'),
     dM = WorkerObjWrapper(designMatrix(~wasNaN, :));
-    g = WorkerObjWrapper(gam);
     gP = WorkerObjWrapper(gamParams);
+    cI = WorkerObjWrapper(gam.constant_ind);
+    sP = WorkerObjWrapper(gam.sqrtPen);
+    con = WorkerObjWrapper(gam.constraints);
     tI = WorkerObjWrapper(trial_id(~wasNaN, :));
 else
     dM = parallel.pool.Constant(designMatrix(~wasNaN, :));
-    g = parallel.pool.Constant(gam);
+    cI = parallel.pool.Constant(gam.constant_ind);
+    sP = parallel.pool.Constant(gam.sqrtPen);
+    con = parallel.pool.Constant(gam.constraints);
     gP = parallel.pool.Constant(gamParams);
     tI = parallel.pool.Constant(trial_id(~wasNaN, :));
 end
 
 spikes = spikes(~wasNaN, :);
 % dM.Value = designMatrix(~wasNaN, :);
-% g.Value = gam;
+% cI.Value = gam.constant_ind;
+% sP.Value = gam.sqrtPen;
+% con.Value = gam.constraints;
 % gP.Value = gamParams;
 % tI.Value = trial_id(~wasNaN, :);
 
 parfor curNeuron = 1:numNeurons,
     if isPrediction,
-        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value, curNeuron);
+        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), cI.Value, sP.Value, con.Value, gP.Value, tI.Value, curNeuron);
     else
-        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), g.Value, gP.Value, tI.Value, curNeuron);
+        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), cI.Value, sP.Value, con.Value, gP.Value, tI.Value, curNeuron);
     end
 end % End Neuron Loop
 
@@ -195,7 +190,6 @@ stats = [stats{:}];
 
 gam.trial_id = trial_id;
 gam.trial_time = trial_time;
-
 %% Save to file
 fprintf('\nSaving GAMs ...\n');
 save(saveFileName, 'neurons', 'stats', ...
@@ -211,7 +205,7 @@ end
 end
 
 %%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
-function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, gam, gamParams, trial_id, neuron_ind)
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trial_id, neuron_ind)
 
 %% Pick a Lambda if there's more than one, unless there's one specified
 
@@ -232,22 +226,22 @@ end
 
 %% Fit the best model
 lambdaVec = nan([1 size(designMatrix, 2)]);
-lambdaVec(gam.constant_ind) = ridgeLambdaGrid(bestLambda_ind);
-lambdaVec(~gam.constant_ind) = smoothLambdaGrid(bestLambda_ind);
+lambdaVec(constant_ind) = ridgeLambdaGrid(bestLambda_ind);
+lambdaVec(~constant_ind) = smoothLambdaGrid(bestLambda_ind);
 lambdaVec(1) = 0;
 
 fprintf('Fitting Best Model for Neuron #%d: Ridge %d, Smooth %d\n', ...
     neuron_ind, ridgeLambdaGrid(bestLambda_ind), smoothLambdaGrid(bestLambda_ind));
-[neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, gam.sqrtPen, ...
+[neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, sqrtPen, ...
     'lambda', lambdaVec, 'distr', 'poisson', 'constant', const, ...
-    'constraints', gam.constraints);
+    'constraints', constraints);
 
 stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
     'Compact', false);
 
 %%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
     function [bestLambda_ind] = pickLambda()
-        %         numParam = size(gam.constraints, 1);
+        %         numParam = size(constraints, 1);
         trials = unique(trial_id);
         
         % Cross validate the model on each lambda and choose the best
@@ -273,13 +267,13 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
                 
                 fprintf('\t\t Lambda Selection: Neuron #%d, Fold #%d, Lambda %d\n', neuron_ind, curFold, curLambda);
                 pickLambdaVec = nan([1 size(designMatrix, 2)]);
-                pickLambdaVec(gam.constant_ind) = ridgeLambdaGrid(curLambda);
-                pickLambdaVec(~gam.constant_ind) = smoothLambdaGrid(curLambda);
+                pickLambdaVec(constant_ind) = ridgeLambdaGrid(curLambda);
+                pickLambdaVec(~constant_ind) = smoothLambdaGrid(curLambda);
                 pickLambdaVec(1) = 0;
                 
-                [~, pickLambdaFitInfo] = fitGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam.sqrtPen, ...
+                [~, pickLambdaFitInfo] = fitGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), sqrtPen, ...
                     'lambda', pickLambdaVec, 'distr', 'poisson', 'constant', const, ...
-                    'constraints', gam.constraints);
+                    'constraints', constraints);
                 
                 %                 edf(curLambda, curFold) = fitInfo.edf;
                 
@@ -312,7 +306,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
 end
 
 %%%%%%%%%%%%%%%% Function to return only predictions of GAM %%%%%%%%%%%%%%%
-function [neuron] = predictGAM(designMatrix, spikes, gam, gamParams, trial_id, neuron_ind)
+function [neuron] = predictGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trial_id, neuron_ind)
 
 neuron.Dev = nan(1, gamParams.numFolds);
 neuron.AUC = nan(1, gamParams.numFolds);
@@ -334,7 +328,7 @@ for curFold = 1:gamParams.numFolds,
     end
     
     %% Estimate Model
-    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), gam, gamParams, trial_id(trainingIdx), neuron_ind);
+    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), constant_ind, sqrtPen, constraints, gamParams, trial_id(trainingIdx), neuron_ind);
     
     [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
         'Compact', true);
