@@ -141,7 +141,7 @@ end
 GLMCov(ismember({cov_info.name}, 'Trial Time')).data = trial_time;
 
 %% Save Simulated Session
-GLMCov_dir = sprintf('%s/Testing/GLMCov', data_info.processed_dir);
+GLMCov_dir = sprintf('%s/Processed Data/Testing/GLMCov', main_dir);
 if ~exist(GLMCov_dir, 'dir'),
     mkdir(GLMCov_dir);
 end
