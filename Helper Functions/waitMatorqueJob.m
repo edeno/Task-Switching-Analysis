@@ -3,7 +3,7 @@ function waitMatorqueJob(job, varargin)
 inParser = inputParser;
 inParser.addRequired('job', @isobject);
 inParser.addParameter('timeout', inf, @(x) x > 0 && isnumeric(x)); % in seconds
-inParser.addParameter('pauseTime', 60, @(x) x > 0 && isnumeric(x)); % in seconds
+inParser.addParameter('pauseTime', 1800, @(x) x > 0 && isnumeric(x)); % in seconds
 
 inParser.parse(job, varargin{:});
 
