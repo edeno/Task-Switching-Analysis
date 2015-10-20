@@ -1,5 +1,30 @@
 brainArea = 'ACC';
-model1 = 'Previous Error + Response Direction';
-model2 = 'Constant';
+timePeriod = 'Rule Response';
 
-plot_CompareModelTimeRescale(model1, model2, brainArea)
+plotType = 'Q-Q Plot';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Difference';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Stat';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Stat Difference';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+%%
+brainArea = 'dlPFC';
+timePeriod = 'Rule Response';
+
+plotType = 'Q-Q Plot';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Difference';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Stat';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
+
+plotType = 'KS Stat Difference';
+plot_CompareModelTimeRescale(brainArea, timePeriod, plotType);
