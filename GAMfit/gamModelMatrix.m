@@ -1,4 +1,4 @@
-function [designMatrix, gam] = gamModelMatrix(regressionModel_str, GLMCov, varargin)
+function [designMatrix, gam] = gamModelMatrix(regressionModel_str, CovariateInfo, varargin)
 
 inParser = inputParser;
 inParser.addParameter('level_reference', 'Full', @ischar);
@@ -10,7 +10,7 @@ gam = inParser.Results;
 model = modelFormula_parse(regressionModel_str);
 
 % Now create the design matrix
-designMatrix_constant = ones([size(GLMCov(1).data, 1), 1]);
+designMatrix_constant = ones([size(CovariateInfo(1).data, 1), 1]);
 designMatrix_spline = [];
 
 cov_names_constant = {'(Intercept)'};
@@ -35,19 +35,19 @@ if ~strcmpi(regressionModel_str, 'constant'),
     for curTerm = 1:numTerms,
         
         term_names = regexp(model.terms{curTerm}, ':', 'split');
-        data_ind = find(ismember({GLMCov.name}, term_names));
+        data_ind = find(ismember({CovariateInfo.name}, term_names));
         
         if isempty(data_ind),
             fprint('%s not found, skipping...\n', model.terms{curTerm});
             continue;
         end
         
-        data = {GLMCov(data_ind).data};
-        levels = {GLMCov(data_ind).levels};
+        data = {CovariateInfo(data_ind).data};
+        levels = {CovariateInfo(data_ind).levels};
         
         % Convert to indicator variables if categorical
-        isCategorical = [GLMCov(data_ind).isCategorical];
-        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {GLMCov(data_ind).baselineLevel});
+        isCategorical = [CovariateInfo(data_ind).isCategorical];
+        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {CovariateInfo(data_ind).baselineLevel});
         numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
         
         % Figure out all the relevant interactions
@@ -110,7 +110,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
                 smoothingFactor.name = [];
                 smoothParams{2} = smoothingFactor;
             else
-                smoothingFactor.data = GLMCov(ismember({GLMCov.name}, model.smoothingTerm{curTerm})).data;
+                smoothingFactor.data = CovariateInfo(ismember({CovariateInfo.name}, model.smoothingTerm{curTerm})).data;
                 smoothingFactor.name = model.smoothingTerm{curTerm};
                 smoothParams{2} = smoothingFactor;
             end
