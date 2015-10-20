@@ -56,6 +56,7 @@ trial_info.FixationBreak = [3 4];
 
 monkey_names = {'CC', 'CH', 'ISA'};
 validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+
 validFolders = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Reward', 'Rule Response', 'Saccade', 'Reward', 'Entire Trial'};
 encode_period = {{trial_info.Start_encode trial_info.FixationOn_encode}; ...
     {trial_info.FixationAccquired_encode trial_info.RuleOn_encode}; ...
@@ -65,10 +66,14 @@ encode_period = {{trial_info.Start_encode trial_info.FixationOn_encode}; ...
     {trial_info.SaccadeStart_encode trial_info.RewardStart_encode}; ...
     {trial_info.RewardStart_encode trial_info.End_encode}; ...
     {trial_info.Start_encode trial_info.End_encode};};
-
 encodeMap = containers.Map(validFolders, encode_period);
-numMaxLags = 20;
+
+numSpikeLags = 20;
+numErrorLags = 5;
+numRepetitionLags = 5;
+% Set Acceptable Reaction Times
+react_bounds = [100 313]; % ms
 %% Save Everything
 save_file_name = sprintf('%s/paramSet.mat', main_dir);
 save(save_file_name, '*_info', 'monkey_names', 'validPredType', ...
-    'validFolders', 'encodeMap', 'numMaxLags', '-append');
+    'validFolders', 'encodeMap', 'num*', 'react_bounds');
