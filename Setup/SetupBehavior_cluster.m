@@ -64,7 +64,8 @@
 %               1 Cue3.bmp (w/black)
 %               2 37 x 49 Pink Sq and 26 x 36 Black sq
 
-function [behavior] = SetupBehavior_cluster(session_name, react_bounds, session_ind, trial_info)
+function [behavior] = SetupBehavior_cluster(session_name, react_bounds, ...
+    session_ind, trial_info, numErrorLags, numRepetitionLags)
 
 % Load Common Parameters
 main_dir = getWorkingDir();
@@ -304,8 +305,7 @@ switc = zeros(1,numtrials);
 switc(find(abs(difference) > 0)+1) = 1;
 behavior.Rule_Cue_Switch = grp2idx(switc);
 
-% Previous Error up to lag 5
-numErrorLags = 5;
+% Previous Error
 behavior.Previous_Error = lagmatrix(grp2idx(behavior.incorrect), 1);
 behavior.Previous_Error_History = lagmatrix(grp2idx(behavior.incorrect), 1:numErrorLags);
 
@@ -326,11 +326,10 @@ for sw_ind = 1:length(sw)+1
         dist_sw(sw(sw_ind-1):end) = 0:(length(dist_sw) - sw(sw_ind-1));
     end
 end
-dist_sw = dist_sw+1;
+dist_sw = dist_sw + 1;
 behavior.dist_sw = dist_sw;
 
-numSwitchLags = 11;
-dist_sw(dist_sw >= numSwitchLags) = numSwitchLags;
+dist_sw(dist_sw >= numRepetitionLags) = numRepetitionLags;
 
 % Switch up to lag 10
 behavior.Rule_Repetition = dist_sw;
@@ -375,7 +374,4 @@ behavior.Congruency_History = lagmatrix(behavior.Congruency, 0:1);
 
 % Previous Congruency
 behavior.Previous_Congruency = lagmatrix(behavior.Congruency, 1);
-
 end
-
-

@@ -1,5 +1,3 @@
-%% Setup Covariates
-main_dir = getWorkingDir();
 %% Define Covariates
 cov_info(1).name = 'Prep Time';
 cov_info(1).levels = {'1 ms of prep time'};
@@ -68,7 +66,7 @@ cov_info(13).isCategorical = true;
 cov_info(13).baselineLevel = cov_info(13).levels(1:2:end);
 
 cov_info(14).name = 'Rule Repetition';
-switch_hist_names = [strseq('Repetition', 1:5); 'Repetition5+']';
+switch_hist_names = [strseq('Repetition', 1:numRepetitionLags); sprintf('Repetition%d+', numRepetitionLags)]';
 cov_info(14).levels = switch_hist_names;
 cov_info(14).isCategorical = true;
 cov_info(14).baselineLevel = 'Repetition5+';
@@ -104,13 +102,13 @@ cov_info(20).isCategorical = true;
 cov_info(20).baselineLevel = 'Previous Congruent';
 
 cov_info(21).name = 'Spike History';
-spike_names = [strseq('No Previous Spike', 1:20) strseq('Previous Spike', 1:20)]';
+spike_names = [strseq('No Previous Spike', 1:numSpikeLags) strseq('Previous Spike', 1:numSpikeLags)]';
 cov_info(21).levels = spike_names(:)';
 cov_info(21).isCategorical = true;
 cov_info(21).baselineLevel = cov_info(21).levels(1:2:end);
 
 cov_info(22).name = 'Previous Error History Indicator';
-error_hist_names = [strseq('Previous Error', 1:5); 'Previous Error5+']';
+error_hist_names = ['Error'; strseq('Previous Error', 1:(numErrorLags-1)); sprintf('Previous Error%d+', numErrorLags)]';
 cov_info(22).levels = error_hist_names;
 cov_info(22).isCategorical = true;
 cov_info(22).baselineLevel = 'Previous Error5+';
