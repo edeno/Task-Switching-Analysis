@@ -104,7 +104,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
                 smoothingFactor.name = [];
                 smoothParams{2} = smoothingFactor;
             else
-                smoothingFactor.data = covariateData(ismember({covariateData.name}, model.smoothingTerm{curTerm})).data;
+                smoothingFactor.data = covariateData(model.smoothingTerm{curTerm}).data;
                 smoothingFactor.name = model.smoothingTerm{curTerm};
                 smoothParams{2} = smoothingFactor;
             end
