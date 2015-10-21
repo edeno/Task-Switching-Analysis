@@ -1,10 +1,10 @@
-function [data, time, wire_number, unit_number, file_str, animal, eye_pos, opts] = SetupSpikes_cluster(session_name, encode, spike_opts, timePeriod)
+function [data, time, wire_number, unit_number, file_str, animal, eye_pos, opts] = ExtractSpikesBySession(sessionName, encode, spike_opts, timePeriod)
 
 %% Extract Cortex Data
 % Find trials file that corresponds to extracted data
-fprintf('\nProcessing file %s...\n', session_name);
+fprintf('\nProcessing file %s...\n', sessionName);
 main_dir = getWorkingDir();
-session_file = sprintf('%s/Raw Data/%s.sdt', main_dir, session_name);
+session_file = sprintf('%s/Raw Data/%s.sdt', main_dir, sessionName);
 
 fprintf('\tLoading data...\n');
 load('-mat', session_file, 'cells', 'trials');
@@ -17,8 +17,8 @@ animal = cell(length(cells), 1);
 for i = 1:length(cells),
     wire_number(i) = cells(i).WireNumber;
     unit_number(i) = cells(i).UnitNumber;
-    file_str{i} = session_name;
-    animal{i} = upper(regexprep(session_name, '\d+', ''));
+    file_str{i} = sessionName;
+    animal{i} = upper(regexprep(sessionName, '\d+', ''));
 end
 
 [data, time, eye_pos, opts] = ExtractTimePeriod_Cortex(cells, trials, ...
@@ -30,8 +30,7 @@ saveFolder = sprintf('%s/Processed Data/%s/', main_dir, timePeriod);
 if ~exist(saveFolder, 'dir')
     mkdir(saveFolder);
 end
-saveFileName = sprintf('%s/%s_data.mat', saveFolder, session_name);
 
+saveFileName = sprintf('%s/%s_data.mat', saveFolder, sessionName);
 save(saveFileName, 'data', 'time', 'wire_number', 'unit_number', 'file_str', 'animal', 'eye_pos', 'opts');
-
 end

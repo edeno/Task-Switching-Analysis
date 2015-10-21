@@ -1,7 +1,7 @@
-% Constructs GLMCovariates for use with GLMfit
-function [GLMCov, spikes, sample_on, ...
+% Constructs SpikeCovariates for use with GLMfit
+function [SpikeCov, spikes, sample_on, ...
     numNeurons, trial_id, trial_time, percent_trials, ...
-    wire_number, unit_number, pfc, isCorrect, isAttempted] = SetupGLMCov_cluster(session_name, timePeriod, numLags, cov_info, behavior, varargin)
+    wire_number, unit_number, pfc, isCorrect, isAttempted] = ExtractSpikeCovariatesBySession(session_name, timePeriod, numLags, cov_info, behavior, varargin)
 
 %% Load Common Parameters and Parse Inputs
 main_dir = getWorkingDir();
@@ -11,11 +11,11 @@ inParser.addParameter('overwrite', false, @islogical);
 
 inParser.parse(varargin{:});
 
-glmCovParams = inParser.Results;
+SpikeCovParams = inParser.Results;
 
 %% Check if File Exists Already
-save_file_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, timePeriod, session_name);
-if (exist(save_file_name, 'file') && ~glmCovParams.overwrite),
+save_file_name = sprintf('%s/Processed Data/%s/SpikeCov/%s_SpikeCov.mat', main_dir, timePeriod, session_name);
+if (exist(save_file_name, 'file') && ~SpikeCovParams.overwrite),
     fprintf('File %s already exists. Skipping.\n', save_file_name);
     return;
 end
@@ -68,74 +68,74 @@ trial_id = cat(2, trial_id{:})';
 %% Label each trial time point with the appropriate covariate
 isAttempted = isAttempted(trial_id);
 isCorrect = isCorrect(trial_id);
-GLMCov = cov_info;
+SpikeCov = cov_info;
 
 % 1. Prep Time
 Prep_Time = Prep_Time(trial_id);
-GLMCov(ismember({cov_info.name}, 'Prep Time')).data =  Prep_Time;
+SpikeCov(ismember({cov_info.name}, 'Prep Time')).data =  Prep_Time;
 
 % 2. Rule
-GLMCov(ismember({cov_info.name}, 'Rule')).data =  Rule(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Rule')).data =  Rule(trial_id);
 
 % 3. Switch
-GLMCov(ismember({cov_info.name}, 'Switch')).data = Rule_Switch(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Switch')).data = Rule_Switch(trial_id);
 
 % 4. Congruency
-GLMCov(ismember({cov_info.name}, 'Congruency')).data = Congruency(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Congruency')).data = Congruency(trial_id);
 
 % 5. Test Stimulus
-GLMCov(ismember({cov_info.name}, 'Test Stimulus')).data = Test_Stimulus(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Test Stimulus')).data = Test_Stimulus(trial_id);
 
 % 6. Rule Cues
-GLMCov(ismember({cov_info.name}, 'Rule Cues')).data = Rule_Cues(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Rule Cues')).data = Rule_Cues(trial_id);
 
 % 7. Rule Cue Switch
-GLMCov(ismember({cov_info.name}, 'Rule Cue Switch')).data = Rule_Cue_Switch(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Rule Cue Switch')).data = Rule_Cue_Switch(trial_id);
 
 % 8. Test Stimulus Color
-GLMCov(ismember({cov_info.name}, 'Test Stimulus Color')).data = Test_Stimulus_Color(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Test Stimulus Color')).data = Test_Stimulus_Color(trial_id);
 
 % 9. Test Stimulus Orientation
-GLMCov(ismember({cov_info.name}, 'Test Stimulus Orientation')).data = Test_Stimulus_Orientation(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Test Stimulus Orientation')).data = Test_Stimulus_Orientation(trial_id);
 
 % 10. Normalized Prep Time
-GLMCov(ismember({cov_info.name}, 'Normalized Prep Time')).data = Normalized_Prep_Time(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Normalized Prep Time')).data = Normalized_Prep_Time(trial_id);
 
 % 11. Response Direction
-GLMCov(ismember({cov_info.name}, 'Response Direction')).data = Response_Direction(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Response Direction')).data = Response_Direction(trial_id);
 
 % 12. Previous Error
-GLMCov(ismember({cov_info.name}, 'Previous Error')).data = Previous_Error(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Previous Error')).data = Previous_Error(trial_id);
 
 % 13. Previous Error History
-GLMCov(ismember({cov_info.name}, 'Previous Error History')).data = Previous_Error_History(trial_id, :);
+SpikeCov(ismember({cov_info.name}, 'Previous Error History')).data = Previous_Error_History(trial_id, :);
 
 % 14. Rule Repetition
-GLMCov(ismember({cov_info.name}, 'Rule Repetition')).data = Rule_Repetition(trial_id, :);
+SpikeCov(ismember({cov_info.name}, 'Rule Repetition')).data = Rule_Repetition(trial_id, :);
 
 % 15. Trial Time
-GLMCov(ismember({cov_info.name}, 'Trial Time')).data = trial_time;
+SpikeCov(ismember({cov_info.name}, 'Trial Time')).data = trial_time;
 
 % 16. Switch Distance
-GLMCov(ismember({cov_info.name}, 'Switch Distance')).data = dist_sw(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Switch Distance')).data = dist_sw(trial_id);
 
 % 17. Error Distance
-GLMCov(ismember({cov_info.name}, 'Error Distance')).data = dist_err(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Error Distance')).data = dist_err(trial_id);
 
 % 18. Congruency History
-GLMCov(ismember({cov_info.name}, 'Congruency History')).data = Congruency_History(trial_id, :);
+SpikeCov(ismember({cov_info.name}, 'Congruency History')).data = Congruency_History(trial_id, :);
 
 % 19. Indicator Prep Time
-GLMCov(ismember({cov_info.name}, 'Indicator Prep Time')).data = Indicator_Prep_Time(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Indicator Prep Time')).data = Indicator_Prep_Time(trial_id);
 
 % 20. Previous Congruency
-GLMCov(ismember({cov_info.name}, 'Previous Congruency')).data = Previous_Congruency(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Previous Congruency')).data = Previous_Congruency(trial_id);
 
 % 22. Previous Error History Indicator - non-cumulative errors
-GLMCov(ismember({cov_info.name}, 'Previous Error History Indicator')).data = Previous_Error_History_Indicator(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Previous Error History Indicator')).data = Previous_Error_History_Indicator(trial_id);
 
 % 23. Session Time
-GLMCov(ismember({cov_info.name}, 'Session Time')).data = Session_Time(trial_id);
+SpikeCov(ismember({cov_info.name}, 'Session Time')).data = Session_Time(trial_id);
 
 % Indicator function for when the test stimulus is on
 sample_on = trial_time >= Prep_Time;
@@ -162,7 +162,7 @@ for parts_ind = 1:(length(parts_quant)-1),
 end
 
 % 21. Spike History
-GLMCov(ismember({cov_info.name}, 'Spike History')).data = spike_hist;
+SpikeCov(ismember({cov_info.name}, 'Spike History')).data = spike_hist;
 
 %% Find which areas correspond to PFC
 % isa5 is a special case
@@ -174,12 +174,12 @@ end
 
 %% Save Everything
 fprintf('\nSaving to %s....\n', save_file_name);
-save_dir = sprintf('%s/Processed Data/%s/GLMCov', main_dir, timePeriod);
+save_dir = sprintf('%s/Processed Data/%s/SpikeCov', main_dir, timePeriod);
 if ~exist(save_dir, 'dir'),
     mkdir(save_dir);
 end
 
-save(save_file_name, 'GLMCov', 'spikes', 'sample_on', ...
+save(save_file_name, 'SpikeCov', 'spikes', 'sample_on', ...
     'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
     'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
 

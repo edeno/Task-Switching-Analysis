@@ -10,4 +10,4 @@ SetupSessionNames; % Sets up data names
 ExtractBehavior(isLocal); % Extracts behavior
 %% Extract Spikes
 ExtractSpikes(isLocal);
-ExtractGLMCov(isLocal);
+ExtractSpikeCovariates(isLocal);
