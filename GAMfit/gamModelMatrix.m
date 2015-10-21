@@ -212,7 +212,7 @@ inParser.addParameter('bsplines', [], @isstruct);
 inParser.addParameter('basis_dim', 10, @isnumeric);
 inParser.addParameter('basis_degree', 3, @isnumeric);
 inParser.addParameter('penalty_degree', 2, @isnumeric);
-inParser.addParameter('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('knots', [], @isvector);
 
 inParser.parse(factor, varargin{:});
