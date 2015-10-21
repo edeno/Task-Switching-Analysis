@@ -35,10 +35,14 @@ bsplines = cell(numTerms, 1);
 if ~strcmpi(regressionModel_str, 'constant'),
     % For each term
     for curTerm = 1:numTerms,
-        data = {covariateData(model.terms{curTerm}).data};
-        levels = {covariateInfo(model.terms{curTerm}).levels};
-        baselineLevel = covariateInfo(model.terms{curTerm}).baselineLevel;
-        isCategorical = covariateInfo(model.terms{curTerm}).isCategorical;
+        
+        term_names = regexp(model.terms{curTerm}, ':', 'split');
+        
+        data = cellfun(@(x) covariateData(x).data, term_names, 'UniformOutput', false);
+        levels = cellfun(@(x) covariateInfo(x).levels, term_names, 'UniformOutput', false);
+        baselineLevel = cellfun(@(x) covariateInfo(x).baselineLevel, term_names, 'UniformOutput', false);
+        isCategorical = cellfun(@(x) covariateInfo(x).isCategorical, term_names, 'UniformOutput', false);
+        isCategorical = [isCategorical{:}];
         
         % Convert to indicator variables if categorical
         [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {baselineLevel});
