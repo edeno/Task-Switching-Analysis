@@ -10,9 +10,8 @@ smoothLambda = 0;
 numTrials = 2000;
 [SpikeCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
 
-mainDir = getWorkingDir();
-
 % Load Common Parameters
+mainDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 %% Binary Categorical Covariate - Rule
 trueRate = nan(size(trial_time));

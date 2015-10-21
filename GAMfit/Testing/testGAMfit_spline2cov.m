@@ -8,13 +8,16 @@ smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 2000;
-[GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
+[SpikeCov, trial_time, isCorrect, isAttempted, trialID] = simSession(numTrials);
+
+% Load Common Parameters
+mainDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 %%
 trueRate = nan(size(trial_time));
 
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
 colorRate = 1;
 orientRate = 5;
@@ -25,7 +28,6 @@ trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation') & trial_time <= 100) = orientRate;
 trueRate(level_ind('Rule', 'Orientation') & trial_time > 100) = orientRate * 2;
 trueRate(level_ind('Response Direction', 'Left')) = trueRate(level_ind('Response Direction', 'Left')) * leftResponseMultiplier ;
-
 %%
 model = 's(Rule, Trial Time) + s(Response Direction, Trial Time)';
 [neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
@@ -35,17 +37,15 @@ model = 's(Rule, Trial Time) + s(Response Direction, Trial Time)';
 adjustedTrueRate = trueRate;
 adjustedTrueRate((~gamParams.includeIncorrect .* ~isCorrect) | (~gamParams.includeFixationBreaks .* ~isAttempted)) = [];
 
-est = exp(designMatrix * (neurons.par_est' * gam.constraints)') * 1000;
-
+est = exp(designMatrix * (neurons.parEst' * gam.constraints)') * 1000;
 %%
-
-fittedLevel_ind = @(level_name) logical(designMatrix(:, strcmp(gam.level_names, level_name)));
+fittedLevel_ind = @(level_name) logical(designMatrix(:, strcmp(gam.levelNames, level_name)));
 figure;
 
 subplot(3,2,1:2)
-plot(adjustedTrueRate(ismember(gam.trial_id, [1:70])), 'r');
+plot(adjustedTrueRate(ismember(gam.trialID, [1:70])), 'r');
 hold all;
-plot(est(ismember(gam.trial_id, [1:70])), 'b')
+plot(est(ismember(gam.trialID, [1:70])), 'b')
 ylabel('Firing Rate (Hz)')
 legend('True Rate', 'Model Fit');
 box off;
