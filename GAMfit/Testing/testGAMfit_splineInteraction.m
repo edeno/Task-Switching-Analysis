@@ -3,18 +3,21 @@ clear variables; close all; clc; profile off;
 % GAMpred parameters
 isOverwrite = true;
 numFolds = 5;
-ridgeLambda = 0;
+ridgeLambda = 1;
 smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 2000;
-[GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
-%%
-trueRate = nan(size(trial_time));
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
+% Load Common Parameters
+mainDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
+%%
+trueRate = nan(size(trialTime));
+
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
 colorLeftRate = 1;
 colorRightRate = 3;
@@ -24,11 +27,11 @@ orientRightRate = 7;
 trueRate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Right')) = colorRightRate;
 trueRate(level_ind('Rule', 'Color') & level_ind('Response Direction', 'Left')) = colorLeftRate;
 
-trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Right') & trial_time <= 100) = orientRightRate;
-trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Right') & trial_time > 100) = orientRightRate * 2;
+trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Right') & trialTime <= 100) = orientRightRate;
+trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Right') & trialTime > 100) = orientRightRate * 2;
 
-trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trial_time <= 100) = orientLeftRate;
-trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trial_time > 100) = orientLeftRate * 2;
+trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trialTime <= 100) = orientLeftRate;
+trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trialTime > 100) = orientLeftRate * 2;
 
 
 %%
@@ -40,26 +43,25 @@ model = 's(Rule * Response Direction, Trial Time)';
 adjustedTrueRate = trueRate;
 adjustedTrueRate((~gamParams.includeIncorrect .* ~isCorrect) | (~gamParams.includeFixationBreaks .* ~isAttempted)) = [];
 
-est = exp(designMatrix * (neurons.par_est' * gam.constraints)') * 1000;
-
+est = exp(designMatrix * (neurons.parEst' * gam.constraints)') * 1000;
 %%
 
-fittedLevel_ind = @(level_name) logical(designMatrix(:, strcmp(gam.level_names, level_name)));
+fittedLevel_ind = @(level_name) logical(designMatrix(:, strcmp(gam.levelNames, level_name)));
 figure;
 
 subplot(3,2,1:2)
-plot(adjustedTrueRate(ismember(gam.trial_id, [1:70])), 'r');
+plot(adjustedTrueRate(ismember(gam.trialID, [1:70])), 'r');
 hold all;
-plot(est(ismember(gam.trial_id, [1:70])), 'b')
+plot(est(ismember(gam.trialID, [1:70])), 'b')
 ylabel('Firing Rate (Hz)')
 legend('True Rate', 'Model Fit');
 box off;
 
 subplot(3,2,3);
 trial_ind = ~fittedLevel_ind('Orientation') & ~fittedLevel_ind('Left');
-plot(gam.trial_time(trial_ind), adjustedTrueRate(trial_ind), 'r.')
+plot(gam.trialTime(trial_ind), adjustedTrueRate(trial_ind), 'r.')
 hold all;
-plot(gam.trial_time(trial_ind), est(trial_ind), 'b.');
+plot(gam.trialTime(trial_ind), est(trial_ind), 'b.');
 ylim([0 max(adjustedTrueRate) + 5]);
 title('Color-Right Trials');
 box off;
@@ -68,9 +70,9 @@ xlabel('Time (ms)')
 
 subplot(3,2,4);
 trial_ind = ~fittedLevel_ind('Orientation') & fittedLevel_ind('Left');
-plot(gam.trial_time(trial_ind), adjustedTrueRate(trial_ind), 'r.')
+plot(gam.trialTime(trial_ind), adjustedTrueRate(trial_ind), 'r.')
 hold all;
-plot(gam.trial_time(trial_ind), est(trial_ind), 'b.');
+plot(gam.trialTime(trial_ind), est(trial_ind), 'b.');
 ylim([0 max(adjustedTrueRate) + 5]);
 title('Color-Left Trials');
 box off;
@@ -79,9 +81,9 @@ xlabel('Time (ms)')
 
 subplot(3,2,5);
 trial_ind = fittedLevel_ind('Orientation') & ~fittedLevel_ind('Left');
-plot(gam.trial_time(trial_ind), adjustedTrueRate(trial_ind), 'r.')
+plot(gam.trialTime(trial_ind), adjustedTrueRate(trial_ind), 'r.')
 hold all;
-plot(gam.trial_time(trial_ind), est(trial_ind), 'b.');
+plot(gam.trialTime(trial_ind), est(trial_ind), 'b.');
 ylim([0 max(adjustedTrueRate) + 5]);
 title('Orientation-Right Trials');
 box off;
@@ -90,9 +92,9 @@ xlabel('Time (ms)')
 
 subplot(3,2,6);
 trial_ind = fittedLevel_ind('Orientation') & fittedLevel_ind('Left');
-plot(gam.trial_time(trial_ind), adjustedTrueRate(trial_ind), 'r.')
+plot(gam.trialTime(trial_ind), adjustedTrueRate(trial_ind), 'r.')
 hold all;
-plot(gam.trial_time(trial_ind), est(trial_ind), 'b.');
+plot(gam.trialTime(trial_ind), est(trial_ind), 'b.');
 ylim([0 max(adjustedTrueRate) + 5]);
 title('Orientation-Left Trials');
 box off;
@@ -130,7 +132,7 @@ title('Consecutive Intervals of Uniform ISIs');
 
 subplot(1,2,2);
 CI = 1.96 / sqrt(numSpikes);
-[coef, lags] = xcorr(stats.timeRescale.normalRescaledISIs(~isinf(stats.timeRescale.normalRescaledISIs)), 'coeff');
+[coef, lags] = xcorr(stats.timeRescale.normalRescaledISIs, 'coeff');
 hline([-CI CI], 'k--');
 hline(0, 'k-');
 plot(lags, coef, '.');
