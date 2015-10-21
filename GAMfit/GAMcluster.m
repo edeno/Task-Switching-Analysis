@@ -23,12 +23,12 @@ main_dir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', main_dir), ...
-    'data_info', 'cov_info', 'validFolders', 'session_names', ...
-    'monkey_names', 'validPredType');
+    'covInfo', 'timePeriodNames', 'sessionNames', ...
+    'monkeyNames', 'validPredType');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
-inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
+inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
 inParser.addParameter('numFolds', 10, @(x) isnumeric(x) && x > 0)
 inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
 inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
@@ -51,17 +51,17 @@ gamJob = [];
 
 if gamParams.isLocal,
     % Run Locally
-    for session_ind = 1:length(session_names),
-        fprintf('\t...Session: %s\n', session_names{session_ind});
-        ComputeGAMfit(session_names{session_ind}, gamParams);
+    for session_ind = 1:length(sessionNames),
+        fprintf('\t...Session: %s\n', sessionNames{session_ind});
+        ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
     end
 else
     fprintf('Updating model list...\n');
     modelListJob = TorqueJob('updateModelList', {{gamParams}}); 
-    waitMatorqueJob(modelListJob, 'pauseTime', 10);
+    waitMatorqueJob(modelListJob, 'pauseTime', 60);
     % Use Cluster
     fprintf('Fitting model....\n');
-    args = cellfun(@(x) {x; gamParams}', session_names, 'UniformOutput', false);
+    args = cellfun(@(x) {x; gamParams; covInfo}', sessionNames, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
         'walltime=24:00:00,mem=120GB,nodes=1:ppn=12');
 end

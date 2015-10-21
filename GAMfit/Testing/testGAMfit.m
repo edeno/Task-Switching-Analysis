@@ -8,14 +8,17 @@ smoothLambda = 0;
 
 % Simulate Session
 numTrials = 2000;
-[GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
+[SpikeCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
 
+mainDir = getWorkingDir();
+
+% Load Common Parameters
+load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 %% Binary Categorical Covariate - Rule
 trueRate = nan(size(trial_time));
 
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
 colorRate = 1;
 orientRate = 5;
@@ -65,8 +68,8 @@ hline(0, 'k-')
 %% PSTH Correlation
 adjustedTrueRate = trueRate;
 adjustedTrueRate((~gamParams.includeIncorrect .* ~isCorrect) | (~gamParams.includeFixationBreaks .* ~isAttempted)) = [];
-modelRate = exp(designMatrix * neurons.par_est) * 1000;
-misspecifiedModelRate = exp(designMatrix_misspecified * neurons_misspecified.par_est) * 1000;
+modelRate = exp(designMatrix * neurons.parEst) * 1000;
+misspecifiedModelRate = exp(designMatrix_misspecified * neurons_misspecified.parEst) * 1000;
 
 figure;
 subplot(2,1,1);

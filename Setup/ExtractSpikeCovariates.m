@@ -1,10 +1,10 @@
 %% Extract GLM Covariates
 function [diaryLog] = ExtractSpikeCovariates(isLocal)
 %% Setup
-main_dir = getWorkingDir();
+mainDir = getWorkingDir();
 % Load Common Parameters
-load(sprintf('%s/paramSet.mat', main_dir), 'sessionNames', 'numSessions', 'timePeriodNames', 'numMaxLags', 'covInfo');
-load(sprintf('%s/Behavior/behavior.mat', main_dir));
+load(sprintf('%s/paramSet.mat', mainDir), 'sessionNames', 'numSessions', 'timePeriodNames', 'numSpikeLags', 'covInfo');
+load(sprintf('%s/Behavior/behavior.mat', mainDir));
 %% Set Parameters
 % Overwrite?
 isOverwrite = true;
@@ -18,7 +18,7 @@ for timePeriod_ind = 1:length(timePeriodNames),
         for session_ind = 1:length(sessionNames),
             ExtractSpikeCovariatesBySession(sessionNames{session_ind}, ...
                 timePeriodNames{timePeriod_ind}, ...
-                numMaxLags, ...
+                numSpikeLags, ...
                 covInfo, ...
                 behavior{session_ind}, ...
                 'overwrite', isOverwrite);
@@ -27,7 +27,7 @@ for timePeriod_ind = 1:length(timePeriodNames),
         % Use Cluster
         args = cellfun(@(session, beh) {session; ...
             timePeriodNames{timePeriod_ind}; ...
-            numMaxLags; ...
+            numSpikeLags; ...
             covInfo; ...
             beh; ...
             'overwrite'; isOverwrite}', ...
@@ -37,29 +37,29 @@ for timePeriod_ind = 1:length(timePeriodNames),
         waitMatorqueJob(SpikeCovJob);
         [out, diaryLog{timePeriod_ind}] = gatherMatorqueOutput(SpikeCovJob); % Get the outputs
         for session_ind = 1:length(sessionNames),
-            save_file_name = sprintf('%s/Processed Data/%s/SpikeCov/%s_SpikeCov.mat', main_dir, timePeriodNames{timePeriod_ind}, sessionNames{session_ind});
+            saveFileName = sprintf('%s/Processed Data/%s/SpikeCov/%s_SpikeCov.mat', mainDir, timePeriodNames{timePeriod_ind}, sessionNames{session_ind});
 
             SpikeCov = out{session_ind, 1};
             spikes = out{session_ind, 2};
             numNeurons = out{session_ind, 3};
-            trial_id = out{session_ind, 4};
-            trial_time = out{session_ind, 5};
-            percent_trials = out{session_ind, 6};
+            trialID = out{session_ind, 4};
+            trialTime = out{session_ind, 5};
+            percentTrials = out{session_ind, 6};
             wire_number = out{session_ind, 7};
             unit_number = out{session_ind, 8};
-            pfc = out{session_ind, 9};
+            neuronBrainArea = out{session_ind, 9};
             isCorrect = out{session_ind, 10};
             isAttempted = out{session_ind, 11};
             
-            fprintf('\nSaving to %s....\n', save_file_name);
-            save_dir = sprintf('%s/Processed Data/%s/SpikeCov/', main_dir, timePeriodNames{timePeriod_ind});
-            if ~exist(save_dir, 'dir'),
-                mkdir(save_dir);
+            fprintf('\nSaving to %s....\n', saveFileName);
+            saveDir = sprintf('%s/Processed Data/%s/SpikeCov/', mainDir, timePeriodNames{timePeriod_ind});
+            if ~exist(saveDir, 'dir'),
+                mkdir(saveDir);
             end
             
-            save(save_file_name, 'SpikeCov', 'spikes', 'sample_on', ...
-                'numNeurons', 'trial_id', 'trial_time', 'percent_trials', ...
-                'wire_number', 'unit_number', 'pfc', 'isCorrect', 'isAttempted', '-v7.3');
+            save(saveFileName, 'SpikeCov', 'spikes', ...
+                'numNeurons', 'trialID', 'trialTime', 'percentTrials', ...
+                'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
         end
     end
 end

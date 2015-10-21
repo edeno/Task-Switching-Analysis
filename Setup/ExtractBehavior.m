@@ -40,7 +40,7 @@ else
 end
 %% Compute normalized preparatory period
 sessionPrepTime = cellfun(@(x) x('Preparation Time').data, behaviorJob, 'UniformOutput', false);
-prepAll = [sessionPrepTime{:}];
+prepAll = cat(1, sessionPrepTime{:});
 
 monkey = cellfun(@(x) x('Monkey').data, behaviorJob, 'UniformOutput', false);
 [monkey_ind, monkeyNames] = grp2idx([monkey{:}]);
@@ -56,12 +56,6 @@ for k = 1:length(behavior),
 end
 clear cov;
 %% Split prep period into thirds
-sessionPrepTime = cellfun(@(x) x('Preparation Time').data, behaviorJob, 'UniformOutput', false);
-prepAll = [sessionPrepTime{:}];
-
-monkey = cellfun(@(x) x('Monkey').data, behaviorJob, 'UniformOutput', false);
-[monkey_ind, monkeyNames] = grp2idx([monkey{:}]);
-
 for k = 1:length(monkeyNames),
     quantByMonkey{k} = quantile(prepAll(monkey_ind == k), [0 (1/3) (2/3) 1]);
     quantByMonkey{k}(1) = quantByMonkey{k}(1) - 1;

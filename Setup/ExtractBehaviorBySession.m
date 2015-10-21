@@ -109,7 +109,7 @@ for cur_trial = 1:numtrials,
     numPossibleTrials = length(surroundingTrials_ind);
     
     % find the reaction time
-    surroundingReact = behaviorData('Reaction Time').data(surroundingTrials_ind);
+    surroundingReact = behaviorData('Reaction Time').data(surroundingTrials_ind)';
     
     % Throwout trials in which the monkey guesses based on reaction time
     % bounds defined by the user (eliminates outliers from reaction time
@@ -127,7 +127,7 @@ for cur_trial = 1:numtrials,
 end
 
 % Consistent
-cov.data = consistent';
+cov.data = consistent;
 behaviorData('Consistent') = cov;
 clear cov;
 %% Condition
@@ -196,7 +196,7 @@ cov.data = ismember([trials.ResponseError], trialInfo('Incorrect'))';
 behaviorData('Incorrect') = cov;
 clear cov;
 %% Attempted Trials
-cov.data = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')]) ...
+cov.data = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')])' ...
     & behaviorData('Reaction Time').data > reactBounds(1) ...
     & behaviorData('Reaction Time').data < reactBounds(2);
 behaviorData('Attempted') = cov;
@@ -346,6 +346,6 @@ clear cov;
         time = findTimeInteval_AllTrials(desiredEncodes);
         empt = cellfun(@(x) x == 0, time);
         time(empt) = {NaN};
-        cov.data = [time{:}];
+        cov.data = [time{:}]';
     end
 end
