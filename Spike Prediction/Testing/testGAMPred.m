@@ -7,14 +7,16 @@ isOverwrite = true;
 
 % Simulate Session
 numTrials = 2000;
-[GLMCov, trial_time] = simSession(numTrials);
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
+% Load Common Parameters
+mainDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 %% Binary Categorical Covariate - Rule
-Rate = nan(size(trial_time));
+Rate = nan(size(trialTime));
 
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
 colorRate = 1;
 orientRate = 5;
@@ -64,4 +66,3 @@ plot(1:2, meanPredError)
 set(gca, 'XTick', 1:2)
 set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
 title('Deviance (Smaller is Better)')
-
