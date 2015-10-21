@@ -20,18 +20,18 @@ for timePeriod_ind = 1:length(timePeriodNames),
                 timePeriodNames{timePeriod_ind}, ...
                 numMaxLags, ...
                 covInfo, ...
-                behavior, ...
+                behavior{session_ind}, ...
                 'overwrite', isOverwrite);
         end
     else
         % Use Cluster
-        args = cellfun(@(x) {x; ...
+        args = cellfun(@(session, beh) {session; ...
             timePeriodNames{timePeriod_ind}; ...
             numMaxLags; ...
             covInfo; ...
-            behavior; ...
+            beh; ...
             'overwrite'; isOverwrite}', ...
-            sessionNames, 'UniformOutput', false);
+            sessionNames, behavior, 'UniformOutput', false);
         SpikeCovJob = TorqueJob('ExtractSpikeCovariatesBySession', args, ...
             'walltime=0:30:00,mem=90GB');
         waitMatorqueJob(SpikeCovJob);
@@ -41,16 +41,15 @@ for timePeriod_ind = 1:length(timePeriodNames),
 
             SpikeCov = out{session_ind, 1};
             spikes = out{session_ind, 2};
-            sample_on = out{session_ind, 3};
-            numNeurons = out{session_ind, 4};
-            trial_id = out{session_ind, 5};
-            trial_time = out{session_ind, 6};
-            percent_trials = out{session_ind, 7};
-            wire_number = out{session_ind, 8};
-            unit_number = out{session_ind, 9};
-            pfc = out{session_ind, 10};
-            isCorrect = out{session_ind, 11};
-            isAttempted = out{session_ind, 12};
+            numNeurons = out{session_ind, 3};
+            trial_id = out{session_ind, 4};
+            trial_time = out{session_ind, 5};
+            percent_trials = out{session_ind, 6};
+            wire_number = out{session_ind, 7};
+            unit_number = out{session_ind, 8};
+            pfc = out{session_ind, 9};
+            isCorrect = out{session_ind, 10};
+            isAttempted = out{session_ind, 11};
             
             fprintf('\nSaving to %s....\n', save_file_name);
             save_dir = sprintf('%s/Processed Data/%s/SpikeCov/', main_dir, timePeriodNames{timePeriod_ind});
