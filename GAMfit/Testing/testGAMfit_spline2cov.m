@@ -8,13 +8,13 @@ smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 2000;
-[SpikeCov, trial_time, isCorrect, isAttempted, trialID] = simSession(numTrials);
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
 % Load Common Parameters
 mainDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 %%
-trueRate = nan(size(trial_time));
+trueRate = nan(size(trialTime));
 
 cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
 level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
@@ -25,8 +25,8 @@ leftResponseMultiplier = 1.5;
 ruleRatio = orientRate / colorRate;
 
 trueRate(level_ind('Rule', 'Color')) = colorRate;
-trueRate(level_ind('Rule', 'Orientation') & trial_time <= 100) = orientRate;
-trueRate(level_ind('Rule', 'Orientation') & trial_time > 100) = orientRate * 2;
+trueRate(level_ind('Rule', 'Orientation') & trialTime <= 100) = orientRate;
+trueRate(level_ind('Rule', 'Orientation') & trialTime > 100) = orientRate * 2;
 trueRate(level_ind('Response Direction', 'Left')) = trueRate(level_ind('Response Direction', 'Left')) * leftResponseMultiplier ;
 %%
 model = 's(Rule, Trial Time) + s(Response Direction, Trial Time)';
@@ -51,9 +51,9 @@ legend('True Rate', 'Model Fit');
 box off;
 
 subplot(3,2,3);
-plot(gam.trial_time(~fittedLevel_ind('Orientation')), adjustedTrueRate(~fittedLevel_ind('Orientation')), 'r.')
+plot(gam.trialTime(~fittedLevel_ind('Orientation')), adjustedTrueRate(~fittedLevel_ind('Orientation')), 'r.')
 hold all;
-plot(gam.trial_time(~fittedLevel_ind('Orientation')), est(~fittedLevel_ind('Orientation')), 'b.');
+plot(gam.trialTime(~fittedLevel_ind('Orientation')), est(~fittedLevel_ind('Orientation')), 'b.');
 ylim([0 max(adjustedTrueRate) + 5]);
 title('Color Trials');
 box off;
@@ -61,9 +61,9 @@ ylabel('Firing Rate (Hz)')
 xlabel('Time (ms)')
 
 subplot(3,2,4);
-plot(gam.trial_time(fittedLevel_ind('Orientation')), adjustedTrueRate(fittedLevel_ind('Orientation')), 'r.')
+plot(gam.trialTime(fittedLevel_ind('Orientation')), adjustedTrueRate(fittedLevel_ind('Orientation')), 'r.')
 hold all;
-plot(gam.trial_time(fittedLevel_ind('Orientation')), est(fittedLevel_ind('Orientation')), 'b.')
+plot(gam.trialTime(fittedLevel_ind('Orientation')), est(fittedLevel_ind('Orientation')), 'b.')
 title('Orientation Trials');
 ylim([0 max(adjustedTrueRate) + 5]);
 ylabel('Firing Rate (Hz)')
@@ -71,9 +71,9 @@ xlabel('Time (ms)')
 box off;
 
 subplot(3,2,5);
-plot(gam.trial_time(~fittedLevel_ind('Left')), adjustedTrueRate(~fittedLevel_ind('Left')), 'r.')
+plot(gam.trialTime(~fittedLevel_ind('Left')), adjustedTrueRate(~fittedLevel_ind('Left')), 'r.')
 hold all;
-plot(gam.trial_time(~fittedLevel_ind('Left')), est(~fittedLevel_ind('Left')), 'b.')
+plot(gam.trialTime(~fittedLevel_ind('Left')), est(~fittedLevel_ind('Left')), 'b.')
 title('Left Response Trials');
 ylim([0 max(adjustedTrueRate) + 5]);
 ylabel('Firing Rate (Hz)')
@@ -81,9 +81,9 @@ xlabel('Time (ms)')
 box off;
 
 subplot(3,2,6);
-plot(gam.trial_time(fittedLevel_ind('Left')), adjustedTrueRate(fittedLevel_ind('Left')), 'r.')
+plot(gam.trialTime(fittedLevel_ind('Left')), adjustedTrueRate(fittedLevel_ind('Left')), 'r.')
 hold all;
-plot(gam.trial_time(fittedLevel_ind('Left')), est(fittedLevel_ind('Left')), 'b.')
+plot(gam.trialTime(fittedLevel_ind('Left')), est(fittedLevel_ind('Left')), 'b.')
 title('Left Response Trials');
 ylim([0 max(adjustedTrueRate) + 5]);
 ylabel('Firing Rate (Hz)')
