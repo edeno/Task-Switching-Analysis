@@ -3,7 +3,7 @@ clear variables; close all; clc; profile off;
 % GAMpred parameters
 isOverwrite = true;
 numFolds = 5;
-ridgeLambda = 0;
+ridgeLambda = 1;
 smoothLambda = 10.^(-3:3);
 
 % Simulate Session
@@ -121,7 +121,7 @@ title('Consecutive Intervals of Uniform ISIs');
 
 subplot(1,2,2);
 CI = 1.96 / sqrt(numSpikes);
-[coef, lags] = xcorr(stats.timeRescale.normalRescaledISIs(~isinf(stats.timeRescale.normalRescaledISIs)), 'coeff');
+[coef, lags] = xcorr(stats.timeRescale.normalRescaledISIs, 'coeff');
 hline([-CI CI], 'k--');
 hline(0, 'k-');
 plot(lags, coef, '.');
