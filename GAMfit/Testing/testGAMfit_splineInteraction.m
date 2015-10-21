@@ -32,8 +32,6 @@ trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Rig
 
 trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trialTime <= 100) = orientLeftRate;
 trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trialTime > 100) = orientLeftRate * 2;
-
-
 %%
 model = 's(Rule * Response Direction, Trial Time)';
 [neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
