@@ -35,27 +35,26 @@ timePeriod = 'Testing';
 type = 'Response Direction';
 
 apcJob = computeRuleByAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
-
 %%
-for level_ind = 1:length(apcJob{1}.by_levels),
+for level_ind = 1:length(apcJob{1}.byLevels),
     figure;
     subplot(1,3,1);
-    plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
+    plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline(orientRate - colorRate, 'r:' , 'True Difference');
     box off;
     title('APC');
     
     subplot(1,3,2);
-    plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.abs_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
+    plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.abs_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline(abs(orientRate - colorRate), 'r:' , 'True Difference');
     box off;
     title('Abs APC');
     
     subplot(1,3,3);
-    plot(apcJob{1}.trial_time, quantile(squeeze(apcJob{1}.norm_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
+    plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.norm_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline((orientRate - colorRate) / (orientRate + colorRate), 'r:', 'True Difference');
     box off;
     title('Norm APC');
     
-    suptitle(sprintf('%s: %s', type, apcJob{1}.by_levels{level_ind}));
+    suptitle(sprintf('%s: %s', type, apcJob{1}.byLevels{level_ind}));
 end

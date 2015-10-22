@@ -3,65 +3,28 @@
 % For example, we could compute the average difference between rules when
 % an error has been committed in the previous trial or when the monkey
 % saccades to the left.
-function [avpred] = avrPredComp_RuleBy(session_name, apcParams)
-
-
+function [avpred] = avrPredComp_RuleBy(sessionName, apcParams, covInfo)
 %% Load covariate fit and model fit information
 main_dir = getWorkingDir();
-% Get GLM Covariates
-GLMCov_name = sprintf('%s/Processed Data/%s/GLMCov/%s_GLMCov.mat', main_dir, apcParams.timePeriod, session_name);
-load(GLMCov_name, 'GLMCov', 'isCorrect', 'isAttempted', 'spikes', 'trial_time', 'trial_id')
-% Load model list
 modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
 load(modelList_name, 'modelList');
 % Load fitting data
-GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), session_name);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons');
-
-%% Make GLM covariate data like the fit model
-if ~gamParams.includeIncorrect
-    spikes(~isCorrect, :) = [];
-    trial_time(~isCorrect) = [];
-    trial_id(~isCorrect) = [];
-    for GLMCov_ind = 1:length(GLMCov),
-        if isempty( GLMCov(GLMCov_ind).data), continue; end
-        GLMCov(GLMCov_ind).data(~isCorrect, :) = [];
-    end
-end
-
-if ~gamParams.includeTimeBeforeZero,
-    isBeforeZero = trial_time < 0;
-    spikes(isBeforeZero, :) = [];
-    trial_time(isBeforeZero) = [];
-    trial_id(isBeforeZero) = [];
-    for GLMCov_ind = 1:length(GLMCov),
-        if isempty( GLMCov(GLMCov_ind).data), continue; end
-        GLMCov(GLMCov_ind).data(isBeforeZero, :) = [];
-    end
-end
-
-if ~gamParams.includeFixationBreaks
-    spikes(~isAttempted, :) = [];
-    trial_time(~isAttempted) = [];
-    trial_id(~isAttempted) = [];
-    for GLMCov_ind = 1:length(GLMCov),
-        if isempty( GLMCov(GLMCov_ind).data), continue; end
-        GLMCov(GLMCov_ind).data(~isAttempted, :) = [];
-    end
-end
+GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), sessionName);
+load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'SpikeCov');
 
 % Get the names of the covariates for the current model
 model = modelFormula_parse(gamParams.regressionModel_str);
+covNames = SpikeCov.keys;
 
 % Size of Design Matrix
-numPredictors = length(neurons(1).par_est);
-numData = size(GLMCov(1).data, 1);
+numPredictors = length(neurons(1).parEst);
+numData = size(SpikeCov(covNames{1}).data, 1);
 
 % Simulate from posterior
-par_est = nan(numPredictors, numNeurons, apcParams.numSim);
+parEst = nan(numPredictors, numNeurons, apcParams.numSim);
 
 for neuron_ind = 1:numNeurons,
-    par_est(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).par_est, stats(neuron_ind).covb, apcParams.numSim)';
+    parEst(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).parEst, stats(neuron_ind).covb, apcParams.numSim)';
 end
 
 % Cut down on the number of data points by sampling
@@ -78,47 +41,56 @@ end
 
 % Find the covariate index for the rule variable, the variable to be held
 % constant and the other inputs
-rule_ind = ismember({GLMCov.name}, 'Rule');
-by_ind = ismember({GLMCov.name}, apcParams.type);
-other_ind = ismember({GLMCov.name}, model.terms) & (~rule_ind | ~by_ind);
+otherNames = covNames(ismember(covNames, model.terms) ...
+    & ~ismember(covNames, apcParams.factorOfInterest) ...
+    & ~ismember(covNames, 'Rule'));
 
-by_data = GLMCov(by_ind).data;
-other_data = {GLMCov(other_ind).data};
-
-isCategorical = [GLMCov(other_ind).isCategorical] & ~ismember({GLMCov(other_ind).name}, {'Switch History', 'Previous Error History Indicator'});
-
-other_data(isCategorical) = cellfun(@(x) dummyvar(x), other_data(isCategorical), 'UniformOutput', false);
-
-isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data,2)]), num2cell(isCategorical), other_data, 'UniformOutput', false);
-
-by_isCategorical = GLMCov(by_ind).isCategorical;
-if by_isCategorical,
-    by_levels = GLMCov(by_ind).levels;
-    by_data = dummyvar(by_data);
+if ~isempty(otherNames),
+    otherData = cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false);
+    
+    isCategorical = cell2mat(cellfun(@(x) covInfo(x).isCategorical, otherNames, 'UniformOutput', false));
+    isCategorical(ismember(otherNames, {'Rule Repetition', 'Previous Error History Indicator'})) = false;
+    
+    otherData(isCategorical) = cellfun(@(x) dummyvar(x), otherData(isCategorical), 'UniformOutput', false);
+    
+    isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data, 2)]), num2cell(isCategorical), otherData, 'UniformOutput', false);
 else
-    by_levels = [strcat('-',GLMCov(by_ind).levels), GLMCov(by_ind).levels];
-    by_levels_id = [-1 1];
+    isCategorical = {};
+    otherData = {};
 end
 
+byData = SpikeCov(apcParams.factorOfInterest).data;
+byIsCategorical = covInfo(apcParams.factorOfInterest).isCategorical;
+if byIsCategorical,
+    byLevels = covInfo(apcParams.factorOfInterest).levels;
+    byData = dummyvar(byData);
+else
+    % Assume normalized continuous variable
+    byLevels = [strcat('-', covInfo(apcParams.factorOfInterest).levels), covInfo(apcParams.factorOfInterest).levels];
+    byLevelsID = [-1 1];
+end
+
+trialTime = grp2idx(gam.trialTime);
+
 % Loop over each level of the by variable
-for by_id = 1:length(by_levels),
+for by_id = 1:length(byLevels),
     
     %% Figure out the matrix of other inputs
-    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.factorOfInterest)),
         if mod(by_id, 2) == 1,
-            history = by_data(:, ~ismember(1:length(by_levels), by_id:by_id+1));
+            history = byData(:, ~ismember(1:length(byLevels), by_id:by_id+1));
         else
-            history = by_data(:, ~ismember(1:length(by_levels), by_id-1:by_id));
+            history = byData(:, ~ismember(1:length(byLevels), by_id-1:by_id));
         end
     else
         history = [];
     end
     
-    other_inputs = [other_data{:} history];
-    other_inputs = other_inputs(sample_ind, :);
-    
+    other_inputs = [otherData{:} history];
+    if ~isempty(other_inputs),
+        other_inputs = other_inputs(sample_ind, :);
+    end
     %% Compute covariance matrix used for Mahalanobis distances:
-    
     % Find weights
     other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
     if apcParams.isWeighted,
@@ -129,44 +101,59 @@ for by_id = 1:length(by_levels),
     if isempty(summed_weights),
         summed_weights = ones(numData, 1);
     end
-    den = accumarray(trial_time, summed_weights);
-    %% Compute the difference between the two rules
-    orientationCov = GLMCov;
-    orientationCov(rule_ind).data(:) = find(ismember(orientationCov(rule_ind).levels, 'Orientation'));
-    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
-        orientationCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
-    elseif by_isCategorical
-        orientationCov(by_ind).data(:) = by_id;
-    else
-        orientationCov(by_ind).data(:) = by_levels_id(by_id);
-    end
+    den = accumarray(trialTime, summed_weights);
+    %% Compute the difference between the two rules at a specified level of the factor of interest
     
-    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov, 'level_reference', gam.level_reference);
+    % Set all trials to the orientation rule
+    orientationCov = SpikeCov;
+    cov.data = SpikeCov('Rule').data;
+    cov.data(:) = find(ismember(covInfo('Rule').levels, 'Orientation'));
+    orientationCov('Rule') = cov;
+    
+    % Set all trials to one of the levels of the factor of interest
+    cov.data = SpikeCov(apcParams.factorOfInterest).data;
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.factorOfInterest)),
+        cov.data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
+    elseif byIsCategorical
+        cov.data(:) = by_id;
+    else
+        cov.data(:) = byLevelsID(by_id);
+    end
+    orientationCov(apcParams.factorOfInterest) = cov;
+    
+    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov, covInfo, 'level_reference', gam.level_reference);
     orientationDesignMatrix = orientationDesignMatrix(sample_ind, :) * gam.constraints';
     
-    colorCov = GLMCov;
-    colorCov(rule_ind).data(:) = find(ismember(colorCov(rule_ind).levels, 'Color'));
-    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.type)),
-        colorCov(by_ind).data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
-    elseif by_isCategorical
-        colorCov(by_ind).data(:) = by_id;
+    % Set all trials to the color rule
+    colorCov = SpikeCov;
+    cov.data = SpikeCov('Rule').data;
+    cov.data(:) = find(ismember(covInfo('Rule').levels, 'Color'));
+    colorCov('Rule') = cov;
+    
+    % Set all trials to one of the levels of the factor of interest
+    cov.data = SpikeCov(apcParams.factorOfInterest).data;
+    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.factorOfInterest)),
+        cov.data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
+    elseif byIsCategorical
+        cov.data(:) = by_id;
     else
-        colorCov(by_ind).data(:) = by_levels_id(by_id);
+        cov.data(:) = byLevelsID(by_id);
     end
-    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov, 'level_reference', gam.level_reference);
+    colorCov(apcParams.factorOfInterest) = cov;
+    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov, covInfo, 'level_reference', gam.level_reference);
     colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
     for neuron_ind = 1:numNeurons,
-        colorEst = exp(colorDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
-        orientationEst = exp(orientationDesignMatrix * squeeze(par_est(:, neuron_ind, :))) * 1000;
+        colorEst = exp(colorDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
+        orientationEst = exp(orientationDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
         
         parfor sim_ind = 1:apcParams.numSim,
             diffEst = orientationEst(:, sim_ind) - colorEst(:, sim_ind);
             sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
             num = bsxfun(@times, summed_weights, diffEst);
             
-            norm_num = accumarray(trial_time, num ./ sumEst);
-            num = accumarray(trial_time, num);
+            norm_num = accumarray(trialTime, num ./ sumEst);
+            num = accumarray(trialTime, num);
             abs_num = abs(num);
             
             apc(:, sim_ind) = num ./ den;
@@ -182,23 +169,21 @@ end
 
 [avpred.numSamples] = deal(apcParams.numSamples);
 [avpred.numSim] = deal(apcParams.numSim);
-[avpred.session_name] = deal(session_name);
+[avpred.sessionName] = deal(sessionName);
 [avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
-[avpred.wire_number] = deal(neurons.wire_number);
-[avpred.unit_number] = deal(neurons.unit_number);
+[avpred.wireNumber] = deal(neurons.wireNumber);
+[avpred.unitNumber] = deal(neurons.unitNumber);
 [avpred.brainArea] = deal(neurons.brainArea);
-[avpred.monkey] = deal(neurons.monkey);
-baseline = num2cell(exp(par_est(1, :, :))*1000, 3);
-[avpred.baseline_firing] = deal(baseline{:});
-[avpred.by_levels] = deal(by_levels);
-[avpred.trial_time] = deal(unique(gam.trial_time));
-% [avpred.numTrialsByLevel] = deal(gam.numTrialsByLevel);
+[avpred.monkeyNames] = deal(neurons.monkeyName);
+baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
+[avpred.baselineFiringRate] = deal(baseline{:});
+[avpred.byLevels] = deal(byLevels);
+[avpred.trialTime] = deal(unique(gam.trialTime));
 
-saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/RuleBy_%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.type);
+saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/RuleBy_%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
 if ~exist(saveFolder, 'dir'),
     mkdir(saveFolder);
 end
-save_file_name = sprintf('%s/%s_APC.mat', saveFolder, session_name);
+save_file_name = sprintf('%s/%s_APC.mat', saveFolder, sessionName);
 save(save_file_name, 'avpred');
-
 end
