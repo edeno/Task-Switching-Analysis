@@ -57,12 +57,12 @@ factorData = SpikeCov(apcParams.factorOfInterest).data;
 if ~isempty(otherNames),
     otherData = cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false);
     
-    isCategorical = cell2mat(cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false));
+    isCategorical = cell2mat(cellfun(@(x) covInfo(x).isCategorical, otherNames, 'UniformOutput', false));
     isCategorical(ismember(otherNames, {'Rule Repetition', 'Previous Error History Indicator'})) = false;
     
-    otherData(cell2mat(isCategorical)) = cellfun(@(x) dummyvar(x), otherData(cell2mat(isCategorical)), 'UniformOutput', false);
+    otherData(isCategorical) = cellfun(@(x) dummyvar(x), otherData(isCategorical), 'UniformOutput', false);
     
-    isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data,2)]), isCategorical, otherData, 'UniformOutput', false);
+    isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data, 2)]), num2cell(isCategorical), otherData, 'UniformOutput', false);
 else
     isCategorical = {};
     otherData = {};
