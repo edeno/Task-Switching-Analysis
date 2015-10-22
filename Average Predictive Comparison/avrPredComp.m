@@ -15,7 +15,6 @@ load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'SpikeCo
 
 % Get the names of the covariates for the current model
 model = modelFormula_parse(gamParams.regressionModel_str);
-
 covNames = SpikeCov.keys;
 
 % Size of Design Matrix
@@ -45,14 +44,6 @@ end
 % constant and the other inputs
 otherNames = covNames(ismember(covNames, model.terms) & ~ismember(covNames, apcParams.factorOfInterest));
 
-if covInfo(apcParams.factorOfInterest).isCategorical,
-    levels = covInfo(apcParams.factorOfInterest).levels;
-else
-    % Assume normalized continuous variable
-    levels = [strcat('-', covInfo(apcParams.factorOfInterest).levels), covInfo(apcParams.factorOfInterest).levels];
-    levelsID = [-1 1];
-end
-
 factorData = SpikeCov(apcParams.factorOfInterest).data;
 if ~isempty(otherNames),
     otherData = cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false);
@@ -66,6 +57,14 @@ if ~isempty(otherNames),
 else
     isCategorical = {};
     otherData = {};
+end
+
+if covInfo(apcParams.factorOfInterest).isCategorical,
+    levels = covInfo(apcParams.factorOfInterest).levels;
+else
+    % Assume normalized continuous variable
+    levels = [strcat('-', covInfo(apcParams.factorOfInterest).levels), covInfo(apcParams.factorOfInterest).levels];
+    levelsID = [-1 1];
 end
 
 numHistoryFactors = size(factorData, 2);
