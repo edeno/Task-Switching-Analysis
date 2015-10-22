@@ -6,7 +6,7 @@ ridgeLambda = 1E-3;
 smoothLambda = 0;
 
 % Simulate Session
-numTrials = 2000;
+numTrials = 1000;
 [SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
 % Load Common Parameters
@@ -55,4 +55,4 @@ hline((orientRate - colorRate) / (orientRate + colorRate), 'r:', 'True Differenc
 box off;
 title('Norm APC');
 
-suptitle(sprintf('%s: %s', factorOfInterest, apcJob{1}.levels{1}));
+suptitle(sprintf('%s: %s', factorOfInterest, apcJob{1}.comparisonNames{1}));

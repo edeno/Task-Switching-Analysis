@@ -7,13 +7,16 @@ smoothLambda = 0;
 
 % Simulate Session
 numTrials = 1000;
-[GLMCov, trial_time, isCorrect, isAttempted, trial_id] = simSession(numTrials);
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
-trueRate = nan(size(trial_time));
+% Load Common Parameters
+mainDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
+%%
+trueRate = nan(size(trialTime));
 
-cov_ind = @(cov_name) ismember({GLMCov.name}, cov_name);
-cov_id = @(cov_name, level_name) find(ismember(GLMCov(cov_ind(cov_name)).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(GLMCov(cov_ind(cov_name)).data, cov_id(cov_name, level_name));
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
 colorRate = 1;
 orientRate = 5;
@@ -31,7 +34,7 @@ testComputeGAMfit_wrapper(model, trueRate, ...
 timePeriod = 'Testing';
 type = 'Response Direction';
 
-apcJob = computeRuleByAPC(model, timePeriod, type, 'isLocal', true, 'session_names', {'test'}, 'isWeighted', false);
+apcJob = computeRuleByAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
 
 %%
 for level_ind = 1:length(apcJob{1}.by_levels),
