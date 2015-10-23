@@ -148,16 +148,13 @@ for by_id = 1:length(byLevels),
         orientationEst = exp(orientationDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
         
         parfor sim_ind = 1:apcParams.numSim,
-            diffEst = orientationEst(:, sim_ind) - colorEst(:, sim_ind);
+            diffEst = bsxfun(@times, summed_weights, orientationEst(:, sim_ind) - colorEst(:, sim_ind));
             sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
-            num = bsxfun(@times, summed_weights, diffEst);
-            
-            norm_num = accumarray(trialTime, num ./ sumEst);
-            num = accumarray(trialTime, num);
-            abs_num = abs(num);
+            num = accumarray(trialTime, diffEst);
+            norm_num = accumarray(trialTime, diffEst ./ sumEst);
             
             apc(:, sim_ind) = num ./ den;
-            abs_apc(:, sim_ind) = abs_num ./ den;
+            abs_apc(:, sim_ind) = abs(num) ./ den;
             norm_apc(:, sim_ind) = norm_num ./ den;
         end
         avpred(neuron_ind).apc(by_id, :, :) = apc;
