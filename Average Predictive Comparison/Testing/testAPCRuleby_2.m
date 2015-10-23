@@ -19,6 +19,7 @@ trueRate = nan(size(trialTime));
 cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
 level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
 
+
 colorLeftRate = 1;
 colorRightRate = 3;
 orientLeftRate = 5;
@@ -72,7 +73,7 @@ plot(apcJob{1}.trialTime, trueDiffRight ./ trueSumRight, 'r.' );
 box off;
 title('Norm APC');
 
-suptitle(sprintf('%s: %s', type, apcJob{1}.by_levels{1}));
+suptitle(sprintf('%s: %s', type, apcJob{1}.byLevels{1}));
 
 % Left Response
 trueDiffLeft = (orientLeftRate - colorLeftRate) .* ones(size(apcJob{1}.trialTime));
@@ -103,5 +104,5 @@ plot(apcJob{1}.trialTime, trueDiffLeft ./ trueSumLeft, 'r.' );
 box off;
 title('Norm APC');
 
-suptitle(sprintf('%s: %s', type, apcJob{1}.by_levels{2}));
+suptitle(sprintf('%s: %s', type, apcJob{1}.byLevels{2}));
 
