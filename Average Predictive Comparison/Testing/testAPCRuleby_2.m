@@ -8,7 +8,7 @@ smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 1000;
-[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials);
 
 % Load Common Parameters
 mainDir = getWorkingDir();
