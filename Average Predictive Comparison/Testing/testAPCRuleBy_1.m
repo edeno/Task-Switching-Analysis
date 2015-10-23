@@ -2,12 +2,12 @@ clear variables; close all; clc; profile off;
 %% Make sure we know the model and GLM covariates
 numFolds = 1;
 isOverwrite = true;
-ridgeLambda = 1E-3;
+ridgeLambda = 1;
 smoothLambda = 0;
 
 % Simulate Session
 numTrials = 1000;
-[SpikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials);
+[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
 % Load Common Parameters
 mainDir = getWorkingDir();
@@ -32,29 +32,34 @@ testComputeGAMfit_wrapper(model, trueRate, ...
     'isPrediction', false);
 %%
 timePeriod = 'Testing';
-type = 'Response Direction';
+factorOfInterest = 'Response Direction';
 
-apcJob = computeRuleByAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+profile -memory on;
+apcJob = computeRuleByAPC(model, timePeriod, factorOfInterest, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+profile viewer;
 %%
-for level_ind = 1:length(apcJob{1}.byLevels),
-    figure;
-    subplot(1,3,1);
+figure;
+numLevels = length(apcJob{1}.byLevels);
+plot_ind = @ (x, level_ind) sub2ind([3, numLevels], x, level_ind);
+
+for level_ind = 1:numLevels, 
+    subplot(numLevels, 3, plot_ind(1, level_ind));
     plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline(orientRate - colorRate, 'r:' , 'True Difference');
     box off;
-    title('APC');
+    title(sprintf('APC %s: %s', factorOfInterest, apcJob{1}.byLevels{level_ind}));
     
-    subplot(1,3,2);
+    subplot(numLevels, 3, plot_ind(2, level_ind));
     plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.abs_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline(abs(orientRate - colorRate), 'r:' , 'True Difference');
     box off;
-    title('Abs APC');
+   title(sprintf('Abs APC %s: %s', factorOfInterest, apcJob{1}.byLevels{level_ind}));
     
-    subplot(1,3,3);
+   subplot(numLevels, 3, plot_ind(3, level_ind));
     plot(apcJob{1}.trialTime, quantile(squeeze(apcJob{1}.norm_apc(level_ind, :, :)), [0.025 .5 .975],  2), 'b');
     hline((orientRate - colorRate) / (orientRate + colorRate), 'r:', 'True Difference');
     box off;
-    title('Norm APC');
-    
-    suptitle(sprintf('%s: %s', type, apcJob{1}.byLevels{level_ind}));
+    title(sprintf('Norm %s: %s', factorOfInterest, apcJob{1}.byLevels{level_ind}));
 end
+
+    
