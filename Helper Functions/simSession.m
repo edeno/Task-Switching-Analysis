@@ -1,4 +1,4 @@
-function [SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials)
+function [SpikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials)
 
 mainDir = getWorkingDir();
 
