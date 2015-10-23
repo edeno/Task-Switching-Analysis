@@ -45,7 +45,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
         isCategorical = [isCategorical{:}];
         
         % Convert to indicator variables if categorical
-        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {baselineLevel});
+        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, baselineLevel);
         numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
         
         % Figure out all the relevant interactions
