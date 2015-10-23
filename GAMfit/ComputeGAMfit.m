@@ -1,4 +1,4 @@
-function [neurons, stats, gam, designMatrix, modelList, gamParams] = ComputeGAMfit(sessionName, gamParams)
+function [neurons, stats, gam, designMatrix, modelList, gamParams, SpikeCov] = ComputeGAMfit(sessionName, gamParams, covInfo)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
@@ -14,36 +14,35 @@ fprintf('\t includeIncorrect: %d\n', gamParams.includeIncorrect);
 fprintf('\t includeTimeBeforeZero: %d\n', gamParams.includeTimeBeforeZero);
 fprintf('\t isPrediction: %d\n', gamParams.isPrediction);
 %% Get directories
-main_dir = getWorkingDir();
-timePeriod_dir = sprintf('%s/Processed Data/%s/', main_dir, gamParams.timePeriod);
+mainDir = getWorkingDir();
+timePeriodDir = sprintf('%s/Processed Data/%s/', mainDir, gamParams.timePeriod);
 %% Create Model Directory
-model_dir = sprintf('%s/Models/', timePeriod_dir);
+modelDir = sprintf('%s/Models/', timePeriodDir);
 
-if ~exist(model_dir, 'dir'),
-    mkdir(model_dir);
+if ~exist(modelDir, 'dir'),
+    mkdir(modelDir);
 end
 
-if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
-    load(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+if exist(sprintf('%s/Models/modelList.mat', timePeriodDir), 'file'),
+    load(sprintf('%s/Models/modelList.mat', timePeriodDir), 'modelList');
     if ~modelList.isKey(gamParams.regressionModel_str)
         modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
     end
 else
     modelList = containers.Map(gamParams.regressionModel_str, 'M1');
 end
-save(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
+save(sprintf('%s/Models/modelList.mat', timePeriodDir), 'modelList');
 
-save_dir = sprintf('%s/Models/%s', timePeriod_dir, modelList(gamParams.regressionModel_str));
+saveDir = sprintf('%s/Models/%s', timePeriodDir, modelList(gamParams.regressionModel_str));
 
-if ~exist(save_dir, 'dir'),
-    mkdir(save_dir);
+if ~exist(saveDir, 'dir'),
+    mkdir(saveDir);
 end
-
 %% Setup Save File
 if gamParams.isPrediction,
-    saveFileName = sprintf('%s/%s_GAMpred.mat', save_dir, sessionName);
+    saveFileName = sprintf('%s/%s_GAMpred.mat', saveDir, sessionName);
 else
-    saveFileName = sprintf('%s/%s_GAMfit.mat', save_dir, sessionName);
+    saveFileName = sprintf('%s/%s_GAMfit.mat', saveDir, sessionName);
 end
 
 if exist(saveFileName, 'file') && ~gamParams.overwrite,
@@ -55,16 +54,15 @@ if exist(saveFileName, 'file') && ~gamParams.overwrite,
 end
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
-data_file_name = sprintf('%s/GLMCov/%s_GLMCov.mat', timePeriod_dir, sessionName);
-load(data_file_name);
+dataFileName = sprintf('%s/SpikeCov/%s_SpikeCov.mat', timePeriodDir, sessionName);
+load(dataFileName);
 
 % For some reason, matlab freaks out if you don't do this
-wire_number = double(wire_number);
-unit_number = double(unit_number);
-pfc = logical(pfc);
+wireNumber = double(wire_number);
+unitNumber = double(unit_number);
 
-monkey_name = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
-monkey_name = monkey_name{:};
+monkeyName = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
+monkeyName = monkeyName{:};
 %% Setup Design Matrix
 fprintf('\nConstructing model design matrix...\n');
 if all(gamParams.ridgeLambda == 0)
@@ -73,69 +71,58 @@ else
     referenceLevel = 'Full';
 end
 
+covNames = SpikeCov.keys;
+
 if ~gamParams.includeIncorrect
-    for cov_ind = 1:length(GLMCov),
-        if isempty(GLMCov(cov_ind).data), continue; end;
-        GLMCov(cov_ind).data(~isCorrect, :) = [];
+    for cov_ind = 1:length(covNames),
+        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov.data = SpikeCov(covNames{cov_ind}).data(isCorrect, :);
+        SpikeCov(covNames{cov_ind}) = cov;
     end
     spikes(~isCorrect, :) = [];
-    trial_time(~isCorrect) = [];
-    trial_id(~isCorrect) = [];
-    sample_on(~isCorrect) = [];
-    percent_trials(~isCorrect) = [];
+    trialTime(~isCorrect) = [];
+    trialID(~isCorrect) = [];
+    percentTrials(~isCorrect) = [];
     isAttempted(~isCorrect) = [];
 end
 
 if ~gamParams.includeTimeBeforeZero,
-    isBeforeZero = trial_time < 0;
-    for cov_ind = 1:length(GLMCov),
-        if isempty(GLMCov(cov_ind).data), continue; end;
-        GLMCov(cov_ind).data(isBeforeZero, :) = [];
+    isBeforeZero = trialTime < 0;
+    for cov_ind = 1:length(covNames),
+        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov.data = SpikeCov(covNames{cov_ind}).data(~isBeforeZero, :);
+        SpikeCov(covNames{cov_ind}) = cov;
     end
     spikes(isBeforeZero, :) = [];
-    trial_time(isBeforeZero) = [];
-    trial_id(isBeforeZero) = [];
-    sample_on(isBeforeZero) = [];
-    percent_trials(isBeforeZero) = [];
+    trialTime(isBeforeZero) = [];
+    trialID(isBeforeZero) = [];
+    percentTrials(isBeforeZero) = [];
     isAttempted(isBeforeZero) = [];
 end
 
 if ~gamParams.includeFixationBreaks
-    for cov_ind = 1:length(GLMCov),
-        if isempty(GLMCov(cov_ind).data), continue; end;
-        GLMCov(cov_ind).data(~isAttempted, :) = [];
+    for cov_ind = 1:length(covNames),
+        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov.data = SpikeCov(covNames{cov_ind}).data(isAttempted, :);
+        SpikeCov(covNames{cov_ind}) = cov;
     end
     spikes(~isAttempted, :) = [];
-    trial_time(~isAttempted) = [];
-    trial_id(~isAttempted) = [];
-    sample_on(~isAttempted) = [];
-    percent_trials(~isAttempted) = [];
+    trialTime(~isAttempted) = [];
+    trialID(~isAttempted) = [];
+    percentTrials(~isAttempted) = [];
 end
 
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, GLMCov, 'level_reference', referenceLevel);
-
-clear GLMCov;
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, SpikeCov, covInfo, 'level_reference', referenceLevel);
 
 % Make sure covariates are of class double
 designMatrix = double(designMatrix);
 
-numTrials = length(unique(trial_id));
-numPFC = sum(pfc);
-numACC = sum(~pfc);
+numTrials = length(unique(trialID));
+numPFC = sum(ismember(neuronBrainArea, 'dlPFC'));
+numACC = sum(ismember(neuronBrainArea, 'ACC'));
 
-% % Number of trials for each level
-% trialIdByDesignMatrix = bsxfun(@times, designMatrix, ones(size(trial_id)));
-% trialIdByDesignMatrix = bsxfun(@times, trialIdByDesignMatrix, trial_id);
-% trialIdByDesignMatrix(trialIdByDesignMatrix == 0) = NaN;
-%
-% for k = 1:size(designMatrix, 2),
-%     gam.numTrialsByLevel(k) = sum(~isnan(unique(trialIdByDesignMatrix(:, k))));
-% end
-
-wire_number = num2cell(wire_number);
-unit_number = num2cell(unit_number);
-pfc = num2cell(pfc);
-brainAreas = {'ACC', 'dlPFC'};
+wireNumber = num2cell(wireNumber);
+unitNumber = num2cell(unitNumber);
 stats = cell([1 numNeurons]);
 neurons = cell([1 numNeurons]);
 isPrediction = gamParams.isPrediction;
@@ -151,14 +138,14 @@ if verLessThan('matlab', '8.6'),
     cI = WorkerObjWrapper(gam.constant_ind);
     sP = WorkerObjWrapper(gam.sqrtPen);
     con = WorkerObjWrapper(gam.constraints);
-    tI = WorkerObjWrapper(trial_id(~wasNaN, :));
+    tI = WorkerObjWrapper(trialID(~wasNaN, :));
 else
     dM = parallel.pool.Constant(designMatrix(~wasNaN, :));
     cI = parallel.pool.Constant(gam.constant_ind);
     sP = parallel.pool.Constant(gam.sqrtPen);
     con = parallel.pool.Constant(gam.constraints);
     gP = parallel.pool.Constant(gamParams);
-    tI = parallel.pool.Constant(trial_id(~wasNaN, :));
+    tI = parallel.pool.Constant(trialID(~wasNaN, :));
 end
 
 spikes = spikes(~wasNaN, :);
@@ -167,7 +154,7 @@ spikes = spikes(~wasNaN, :);
 % sP.Value = gam.sqrtPen;
 % con.Value = gam.constraints;
 % gP.Value = gamParams;
-% tI.Value = trial_id(~wasNaN, :);
+% tI.Value = trialID(~wasNaN, :);
 
 parfor curNeuron = 1:numNeurons,
     if isPrediction,
@@ -178,34 +165,34 @@ parfor curNeuron = 1:numNeurons,
 end % End Neuron Loop
 
 for curNeuron = 1:numNeurons,
-    neurons{curNeuron}.wire_number = wire_number{curNeuron};
-    neurons{curNeuron}.unit_number = unit_number{curNeuron};
-    neurons{curNeuron}.session_name = sessionName;
-    neurons{curNeuron}.monkey = monkey_name;
-    neurons{curNeuron}.brainArea = brainAreas{pfc{curNeuron} + 1};
+    neurons{curNeuron}.wireNumber = wireNumber{curNeuron};
+    neurons{curNeuron}.unitNumber = unitNumber{curNeuron};
+    neurons{curNeuron}.sessionName = sessionName;
+    neurons{curNeuron}.monkeyName = monkeyName;
+    neurons{curNeuron}.brainArea = neuronBrainArea{curNeuron};
 end
 
 neurons = [neurons{:}];
 stats = [stats{:}];
 
-gam.trial_id = trial_id;
-gam.trial_time = trial_time;
+gam.trialID = trialID;
+gam.trialTime = trialTime;
 %% Save to file
 fprintf('\nSaving GAMs ...\n');
 save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
-    'designMatrix', '-v7.3');
+    'designMatrix', 'SpikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
 
 if ~gamParams.isLocal,
     designMatrix = [];
+    SpikeCov = [];
 end
-
 end
 
 %%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
-function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trial_id, neuron_ind)
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trialID, neuron_ind)
 
 %% Pick a Lambda if there's more than one, unless there's one specified
 
@@ -232,17 +219,17 @@ lambdaVec(1) = 0;
 
 fprintf('Fitting Best Model for Neuron #%d: Ridge %d, Smooth %d\n', ...
     neuron_ind, ridgeLambdaGrid(bestLambda_ind), smoothLambdaGrid(bestLambda_ind));
-[neuron.par_est, fitInfo] = fitGAM(designMatrix, spikes, sqrtPen, ...
+[neuron.parEst, fitInfo] = fitGAM(designMatrix, spikes, sqrtPen, ...
     'lambda', lambdaVec, 'distr', 'poisson', 'constant', const, ...
     'constraints', constraints);
 
-stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
+stats = gamStats(designMatrix, spikes, fitInfo, trialID, ...
     'Compact', false);
 
 %%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
     function [bestLambda_ind] = pickLambda()
         %         numParam = size(constraints, 1);
-        trials = unique(trial_id);
+        trials = unique(trialID);
         
         % Cross validate the model on each lambda and choose the best
         % one
@@ -254,8 +241,8 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
         
         for curFold = 1:gamParams.numFolds,
             if gamParams.numFolds > 1
-                trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
-                testIdx = ismember(trial_id, trials(CVO.test(curFold)));
+                trainingIdx = ismember(trialID, trials(CVO.training(curFold)));
+                testIdx = ismember(trialID, trials(CVO.test(curFold)));
             else
                 trainingIdx = true(size(designMatrix, 1), 1);
                 testIdx = true(size(designMatrix, 1), 1);
@@ -277,7 +264,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
                 
                 %                 edf(curLambda, curFold) = fitInfo.edf;
                 
-                [pickLambdaStats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), pickLambdaFitInfo, trial_id(testIdx),...
+                [pickLambdaStats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), pickLambdaFitInfo, trialID(testIdx),...
                     'Compact', true);
                 
                 % Store prediction error
@@ -306,12 +293,12 @@ stats = gamStats(designMatrix, spikes, fitInfo, trial_id, ...
 end
 
 %%%%%%%%%%%%%%%% Function to return only predictions of GAM %%%%%%%%%%%%%%%
-function [neuron] = predictGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trial_id, neuron_ind)
+function [neuron] = predictGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trialID, neuron_ind)
 
 neuron.Dev = nan(1, gamParams.numFolds);
 neuron.AUC = nan(1, gamParams.numFolds);
 neuron.mutualInformation = nan(1, gamParams.numFolds);
-trials = unique(trial_id);
+trials = unique(trialID);
 
 if gamParams.numFolds > 1
     CVO = cvpartition(length(trials), 'Kfold', gamParams.numFolds);
@@ -320,17 +307,17 @@ end
 for curFold = 1:gamParams.numFolds,
     fprintf('\t Prediction: Fold #%d\n', curFold);
     if gamParams.numFolds > 1
-        trainingIdx = ismember(trial_id, trials(CVO.training(curFold)));
-        testIdx = ismember(trial_id, trials(CVO.test(curFold)));
+        trainingIdx = ismember(trialID, trials(CVO.training(curFold)));
+        testIdx = ismember(trialID, trials(CVO.test(curFold)));
     else
         trainingIdx = true(size(designMatrix, 1), 1);
         testIdx = true(size(designMatrix, 1), 1);
     end
     
     %% Estimate Model
-    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), constant_ind, sqrtPen, constraints, gamParams, trial_id(trainingIdx), neuron_ind);
+    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), constant_ind, sqrtPen, constraints, gamParams, trialID(trainingIdx), neuron_ind);
     
-    [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trial_id(testIdx),...
+    [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trialID(testIdx),...
         'Compact', true);
     %% Store a prediction on the test set
     neuron.Dev(curFold) = stats.Dev;

@@ -1,4 +1,4 @@
-function [designMatrix, gam] = gamModelMatrix(regressionModel_str, CovariateInfo, varargin)
+function [designMatrix, gam] = gamModelMatrix(regressionModel_str, covariateData, covariateInfo, varargin)
 
 inParser = inputParser;
 inParser.addParameter('level_reference', 'Full', @ischar);
@@ -9,17 +9,19 @@ gam = inParser.Results;
 
 model = modelFormula_parse(regressionModel_str);
 
+validCov = covariateData.keys;
+
 % Now create the design matrix
-designMatrix_constant = ones([size(CovariateInfo(1).data, 1), 1]);
+designMatrix_constant = ones([size(covariateData(validCov{1}).data, 1), 1]);
 designMatrix_spline = [];
 
-cov_names_constant = {'(Intercept)'};
+covNames_constant = {'(Intercept)'};
 sqrtPen_constant = {0};
 constraints_constant = {1};
 constraintLevel_constant = {'(Intercept)'};
 penalty_constant = {0};
 
-cov_names_spline = [];
+covNames_spline = [];
 sqrtPen_spline = [];
 constraints_spline = [];
 constraintLevel_spline = [];
@@ -35,19 +37,15 @@ if ~strcmpi(regressionModel_str, 'constant'),
     for curTerm = 1:numTerms,
         
         term_names = regexp(model.terms{curTerm}, ':', 'split');
-        data_ind = find(ismember({CovariateInfo.name}, term_names));
         
-        if isempty(data_ind),
-            fprint('%s not found, skipping...\n', model.terms{curTerm});
-            continue;
-        end
-        
-        data = {CovariateInfo(data_ind).data};
-        levels = {CovariateInfo(data_ind).levels};
+        data = cellfun(@(x) covariateData(x).data, term_names, 'UniformOutput', false);
+        levels = cellfun(@(x) covariateInfo(x).levels, term_names, 'UniformOutput', false);
+        baselineLevel = cellfun(@(x) covariateInfo(x).baselineLevel, term_names, 'UniformOutput', false);
+        isCategorical = cellfun(@(x) covariateInfo(x).isCategorical, term_names, 'UniformOutput', false);
+        isCategorical = [isCategorical{:}];
         
         % Convert to indicator variables if categorical
-        isCategorical = [CovariateInfo(data_ind).isCategorical];
-        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, {CovariateInfo(data_ind).baselineLevel});
+        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, baselineLevel);
         numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
         
         % Figure out all the relevant interactions
@@ -87,7 +85,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
         
         numLevels = size(data_temp, 2);
         
-        cov_names_constant = [cov_names_constant repmat(model.terms(curTerm), 1, numLevels)];
+        covNames_constant = [covNames_constant repmat(model.terms(curTerm), 1, numLevels)];
         sqrtPen_constant = [sqrtPen_constant repmat({1}, 1, numLevels)];
         constraints_constant = [constraints_constant repmat({1}, 1, numLevels)];
         constraintLevel_constant = [constraintLevel_constant levels_temp];
@@ -110,7 +108,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
                 smoothingFactor.name = [];
                 smoothParams{2} = smoothingFactor;
             else
-                smoothingFactor.data = CovariateInfo(ismember({CovariateInfo.name}, model.smoothingTerm{curTerm})).data;
+                smoothingFactor.data = covariateData(model.smoothingTerm{curTerm}).data;
                 smoothingFactor.name = model.smoothingTerm{curTerm};
                 smoothParams{2} = smoothingFactor;
             end
@@ -122,7 +120,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
             
             designMatrix_spline = [designMatrix_spline smoothMatrix];
             levels_spline = [levels_spline smoothLevel_names];
-            cov_names_spline = [cov_names_spline smoothCov_name];
+            covNames_spline = [covNames_spline smoothCov_name];
             sqrtPen_spline = [sqrtPen_spline smoothSqrtPen];
             constraints_spline = [constraints_spline smoothConstraints];
             penalty_spline = [penalty_spline smoothPenalty];
@@ -134,8 +132,8 @@ if ~strcmpi(regressionModel_str, 'constant'),
 end
 
 designMatrix = [designMatrix_constant designMatrix_spline];
-level_names = [constraintLevel_constant levels_spline];
-cov_names = [cov_names_constant cov_names_spline];
+levelNames = [constraintLevel_constant levels_spline];
+covNames = [covNames_constant covNames_spline];
 constraintLevel_names = [constraintLevel_constant constraintLevel_spline];
 constraints = [constraints_constant constraints_spline];
 sqrtPen = [sqrtPen_constant sqrtPen_spline];
@@ -148,20 +146,20 @@ penalty = blkdiag(penalty{:});
 constraints = blkdiag(constraints{:});
 
 % Remove Duplicates
-try
-    [~, dup_ind] = unique(level_names, 'stable');
+if verLessThan('matlab', '8.5'),
+    [~, dup_ind] = unique(levelNames, 'stable');
     [~, dup_constraint_ind] = unique(constraintLevel_names, 'stable');
-catch
+else
     % Matlab versions < 2014a
-    [~, dup_ind] = unique(level_names);
+    [~, dup_ind] = unique(levelNames);
     dup_ind = sort(dup_ind);
     [~, dup_constraint_ind] = unique(constraintLevel_names);
     dup_constraint_ind = sort(dup_constraint_ind);
 end
 
 designMatrix = designMatrix(:, dup_ind);
-level_names = level_names(:, dup_ind);
-cov_names = cov_names(:, dup_ind);
+levelNames = levelNames(:, dup_ind);
+covNames = covNames(:, dup_ind);
 sqrtPen = sqrtPen(dup_ind, dup_ind);
 penalty = penalty(dup_ind, dup_ind);
 constraints = constraints(:, dup_ind);
@@ -170,19 +168,17 @@ constant_ind = constant_ind(:, dup_ind);
 constraints = constraints(dup_constraint_ind, :);
 constraintLevel_names = constraintLevel_names(:, dup_constraint_ind);
 
-level_names = regexprep(level_names, '^(:)|^(::)|(:)$|(::)$', '');
-level_names = regexprep(level_names, '::', ':');
+levelNames = regexprep(levelNames, '^(:)|^(::)|(:)$|(::)$', '');
+levelNames = regexprep(levelNames, '::', ':');
 
-gam.cov_names = cov_names;
-gam.level_names = level_names;
+gam.covNames = covNames;
+gam.levelNames = levelNames;
 gam.constraints = constraints;
 gam.constraintLevel_names = constraintLevel_names';
 gam.penalty = penalty;
 gam.sqrtPen = sqrtPen;
 gam.bsplines = bsplines;
 gam.constant_ind = logical(constant_ind);
-
-
 end
 
 %-----------------------------------------------------------------------------
@@ -211,7 +207,7 @@ end
 
 end
 %-----------------------------------------------------------------------------
-function [X, bsplines, cov_name, covLevel_names, sqrtPen, constraints, penalty, constraintLevel_names] = factorBySpline(factor, varargin)
+function [X, bsplines, covName, covLevelNames, sqrtPen, constraints, penalty, constraintLevelNames] = factorBySpline(factor, varargin)
 
 inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
@@ -220,7 +216,7 @@ inParser.addParameter('bsplines', [], @isstruct);
 inParser.addParameter('basis_dim', 10, @isnumeric);
 inParser.addParameter('basis_degree', 3, @isnumeric);
 inParser.addParameter('penalty_degree', 2, @isnumeric);
-inParser.addParameter('ridgeLambda', 1E-6, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('knots', [], @isvector);
 
 inParser.parse(factor, varargin{:});
@@ -261,25 +257,25 @@ penalty = [{bsplines.con_penalty} repmat({bsplines.con_penalty}, [1 numLevels-1]
 
 constraints = [{bsplines.constraint} repmat({bsplines.constraint}, [1 numLevels-1])];
 
-cov_name = repmat({factor.name}, [1 numDim]);
-cov_name = cov_name(:)';
+covName = repmat({factor.name}, [1 numDim]);
+covName = covName(:)';
 
-covLevel_names = repmat(levels, [bsplines.basis_dim-1 1]);
-covLevel_names = covLevel_names(:)';
-covLevel_names = strcat(covLevel_names, ['.' by.smoothingFactor.name]);
+covLevelNames = repmat(levels, [bsplines.basis_dim-1 1]);
+covLevelNames = covLevelNames(:)';
+covLevelNames = strcat(covLevelNames, ['.' by.smoothingFactor.name]);
 level_no = num2cell(repmat(1:bsplines.basis_dim-1, [1 numLevels]));
 level_no = cellfun(@(x) num2str(x), level_no, 'UniformOutput', false);
-covLevel_names = strcat(covLevel_names, '.', level_no);
+covLevelNames = strcat(covLevelNames, '.', level_no);
 
-constraintLevel_names = repmat(levels, [bsplines.basis_dim 1]);
-constraintLevel_names = constraintLevel_names(:)';
-constraintLevel_names = strcat(constraintLevel_names, ['.' by.smoothingFactor.name]);
+constraintLevelNames = repmat(levels, [bsplines.basis_dim 1]);
+constraintLevelNames = constraintLevelNames(:)';
+constraintLevelNames = strcat(constraintLevelNames, ['.' by.smoothingFactor.name]);
 level_no = num2cell(repmat(1:bsplines.basis_dim, [1 numLevels]));
 level_no = cellfun(@(x) num2str(x), level_no, 'UniformOutput', false);
-constraintLevel_names = strcat(constraintLevel_names, '.', level_no);
+constraintLevelNames = strcat(constraintLevelNames, '.', level_no);
 
 for level_ind = 1:numLevels,
-    level_idx = (level_ind-1)*(bsplines.basis_dim-1) + [1:bsplines.basis_dim-1];
+    level_idx = (level_ind-1) * (bsplines.basis_dim-1) + [1:bsplines.basis_dim-1];
     X(:, level_idx) = [bsxfun(@times, data(:, level_ind), bsplines.con_basis)];
 end
 
@@ -309,8 +305,6 @@ else
     pseudoData = repmat([1:length(levels)/size(data, 2)]', [1 size(data, 2)]);
     data = [data; pseudoData];
     out = dummyvar(data);
-    out((end-size(pseudoData, 1)+1):end, :) = [];
+    out((end-size(pseudoData, 1) + 1):end, :) = [];
 end
-
-
 end
