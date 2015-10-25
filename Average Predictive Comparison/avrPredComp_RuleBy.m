@@ -138,12 +138,14 @@ for by_id = 1:length(byLevels),
         parfor sim_ind = 1:apcParams.numSim,
             diffEst = bsxfun(@times, summed_weights, orientationEst(:, sim_ind) - colorEst(:, sim_ind));
             sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
+            
             num = accumarray(trialTime, diffEst);
-            norm_num = accumarray(trialTime, diffEst ./ sumEst);
+            absNum = accumarray(trialTime, abs(diffEst));
+            normNum = accumarray(trialTime, diffEst ./ sumEst);
             
             apc(:, sim_ind) = num ./ den;
-            abs_apc(:, sim_ind) = abs(num) ./ den;
-            norm_apc(:, sim_ind) = norm_num ./ den;
+            abs_apc(:, sim_ind) = absNum ./ den;
+            norm_apc(:, sim_ind) = normNum ./ den;
         end
         avpred(neuron_ind).apc(by_id, :, :) = apc;
         avpred(neuron_ind).abs_apc(by_id, :, :) = abs_apc;

@@ -138,14 +138,14 @@ for history_ind = 1:numHistoryFactors,
         curLevelName = curLevels{levelID(level_ind), history_ind};
         for neuron_ind = 1:numNeurons,
             curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
+            bLE = squeeze(baselineLevelEst(:, neuron_ind, :));
             parfor sim_ind = 1:apcParams.numSim,
-                diffEst = curLevelEst(:, sim_ind) - baselineLevelEst(:, neuron_ind, sim_ind);
-                sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, neuron_ind, sim_ind);
-                num = bsxfun(@times, summedWeights, diffEst);
+                diffEst = bsxfun(@times, summed_weights, curLevelEst(:, sim_ind) - bLE(:, sim_ind));
+                sumEst = curLevelEst(:, sim_ind) + bLE(:, sim_ind);
                 
-                normNum = accumarray(trialTime, num ./ sumEst);
-                num = accumarray(trialTime, num);
-                absNum = abs(num);
+                num = accumarray(trialTime, diffEst);
+                absNum = accumarray(trialTime, abs(diffEst));
+                normNum = accumarray(trialTime, diffEst ./ sumEst);
                 
                 apc(:, sim_ind) = num ./ den;
                 abs_apc(:, sim_ind) = absNum ./ den;
