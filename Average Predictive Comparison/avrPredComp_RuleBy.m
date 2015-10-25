@@ -95,14 +95,14 @@ for by_id = 1:length(byLevels),
     % Find weights
     other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
     if apcParams.isWeighted,
-        [summed_weights] = apc_weights(other_inputs, other_isCategorical);
+        [summedWeights] = apc_weights(other_inputs, other_isCategorical);
     else
-        summed_weights = [];
+        summedWeights = [];
     end
-    if isempty(summed_weights),
-        summed_weights = ones(numData, 1);
+    if isempty(summedWeights),
+        summedWeights = ones(numData, 1);
     end
-    den = accumarray(trialTime, summed_weights);
+    den = accumarray(trialTime, summedWeights);
     %% Compute the difference between the two rules at a specified level of the factor of interest
     
     % Set all trials to the orientation rule
@@ -136,7 +136,7 @@ for by_id = 1:length(byLevels),
         orientationEst = exp(orientationDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
         
         parfor sim_ind = 1:apcParams.numSim,
-            diffEst = bsxfun(@times, summed_weights, orientationEst(:, sim_ind) - colorEst(:, sim_ind));
+            diffEst = bsxfun(@times, summedWeights, orientationEst(:, sim_ind) - colorEst(:, sim_ind));
             sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
             
             num = accumarray(trialTime, diffEst);
