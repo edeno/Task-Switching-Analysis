@@ -5,7 +5,11 @@ allKeys = unique([allKeys{:}]);
 allValues0 = cellfun(@values, maps, 'UniformOutput', false);
 allValues0 = cat(1, allValues0{:});
 for k = 1:size(allValues0, 2),
-    allValues{k} = cat(1, allValues0{:,k});
+    try
+        allValues{k} = cat(1, allValues0{:,k});
+    catch
+        allValues{k} = cat(1, allValues0(:,k));
+    end
 end
 
 mergedMap = containers.Map(allKeys, allValues);
