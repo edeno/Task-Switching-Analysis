@@ -43,7 +43,7 @@ sessionPrepTime = cellfun(@(x) x('Preparation Time'), behaviorJob, 'UniformOutpu
 prepAll = cat(1, sessionPrepTime{:});
 
 monkey = cellfun(@(x) x('Monkey'), behaviorJob, 'UniformOutput', false);
-[monkey_ind, monkeyNames] = grp2idx([monkey{:}]);
+[monkey_ind, monkeyNames] = grp2idx(cat(1, monkey{:}));
 monkeyMeanPrep = accumarray(monkey_ind, prepAll, [], @nanmean);
 monkeyStdPrep = accumarray(monkey_ind, prepAll, [], @nanstd);
 

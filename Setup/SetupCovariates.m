@@ -3,7 +3,7 @@ covInfo = containers.Map;
 %% Preparation Time
 cov.levels = {'1 ms of prep time'};
 cov.isCategorical = false;
-cov.baselineLevel = [];
+cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Preparation Time') = cov;
 %% Indicator Preparation Time
@@ -15,7 +15,7 @@ covInfo('Preparation Time Indicator') = cov;
 %% Normalized Preparation Time
 cov.levels = {'1 Std Dev of Prep Time'};
 cov.isCategorical = false;
-cov.baselineLevel = [];
+cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Normalized Preparation Time') = cov;
 %% Rule
@@ -74,15 +74,14 @@ cov.isCategorical = true;
 cov.baselineLevel = sprintf('Previous Error%d+', numErrorLags);
 cov.isHistory = false;
 covInfo('Previous Error History Indicator') = cov;
-
 %% Error Distance
 cov.levels = {'1 Trial'};
 cov.isCategorical = false;
-cov.baselineLevel = [];
+cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Error Distance') = cov;
 %% Rule Repetition
-ruleRepetitionNames = [strseq('Repetition', 1:numRepetitionLags); sprintf('Repetition%d+', numRepetitionLags)]';
+ruleRepetitionNames = [strseq('Repetition', 1:(numRepetitionLags - 1)); sprintf('Repetition%d+', numRepetitionLags)]';
 cov.levels = ruleRepetitionNames;
 cov.isCategorical = true;
 cov.baselineLevel = sprintf('Repetition%d+', numRepetitionLags);
@@ -91,7 +90,7 @@ covInfo('Rule Repetition') = cov;
 %% Switch Distance
 cov.levels = {'1 Trial'};
 cov.isCategorical = false;
-cov.baselineLevel = [];
+cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Switch Distance') = cov;
 %% Switch
@@ -103,7 +102,7 @@ covInfo('Switch') = cov;
 %% Trial Time
 cov.levels = {'1 ms'};
 cov.isCategorical = false;
-cov.baselineLevel = [];
+cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Trial Time') = cov;
 %% Congruency History
