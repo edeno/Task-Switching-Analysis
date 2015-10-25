@@ -198,7 +198,7 @@ switch(type)
     case 'Full' % symmetric coding, no reference level
         dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
         dummy(~isCategorical) = data(~isCategorical);
-    case 'Reference' % first level is the reference
+    case 'Reference' % baseline level is the reference
         dummy(isCategorical) = cellfun(@(dat, level) createIndicator(dat, level), data(isCategorical), levels(isCategorical), 'UniformOutput', false);
         dummy(isCategorical) = cellfun(@(dat, level, baseLevel) dat(:, ~ismember(level, baseLevel)), dummy(isCategorical), levels(isCategorical), baselineLevel(isCategorical), 'UniformOutput', false);
         dummy(~isCategorical) = data(~isCategorical);
