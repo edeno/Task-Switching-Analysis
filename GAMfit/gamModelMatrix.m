@@ -12,7 +12,7 @@ model = modelFormula_parse(regressionModel_str);
 validCov = covariateData.keys;
 
 % Now create the design matrix
-designMatrix_constant = ones([size(covariateData(validCov{1}).data, 1), 1]);
+designMatrix_constant = ones([size(covariateData(validCov{1}), 1), 1]);
 designMatrix_spline = [];
 
 covNames_constant = {'(Intercept)'};
@@ -36,12 +36,12 @@ if ~strcmpi(regressionModel_str, 'constant'),
     % For each term
     for curTerm = 1:numTerms,
         
-        term_names = regexp(model.terms{curTerm}, ':', 'split');
+        termNames = regexp(model.terms{curTerm}, ':', 'split');
         
-        data = cellfun(@(x) covariateData(x).data, term_names, 'UniformOutput', false);
-        levels = cellfun(@(x) covariateInfo(x).levels, term_names, 'UniformOutput', false);
-        baselineLevel = cellfun(@(x) covariateInfo(x).baselineLevel, term_names, 'UniformOutput', false);
-        isCategorical = cellfun(@(x) covariateInfo(x).isCategorical, term_names, 'UniformOutput', false);
+        data = values(covariateData, termNames);
+        levels = cellfun(@(x) covariateInfo(x).levels, termNames, 'UniformOutput', false);
+        baselineLevel = cellfun(@(x) covariateInfo(x).baselineLevel, termNames, 'UniformOutput', false);
+        isCategorical = cellfun(@(x) covariateInfo(x).isCategorical, termNames, 'UniformOutput', false);
         isCategorical = [isCategorical{:}];
         
         % Convert to indicator variables if categorical
@@ -108,7 +108,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
                 smoothingFactor.name = [];
                 smoothParams{2} = smoothingFactor;
             else
-                smoothingFactor.data = covariateData(model.smoothingTerm{curTerm}).data;
+                smoothingFactor.data = covariateData(model.smoothingTerm{curTerm});
                 smoothingFactor.name = model.smoothingTerm{curTerm};
                 smoothParams{2} = smoothingFactor;
             end

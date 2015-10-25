@@ -93,7 +93,7 @@ behaviorData('Reaction Time') = findTimeDiff({trialInfo('Test Stimulus ON Encode
 behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
 behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
 behaviorData('Reward Time') = findTimeDiff(encodeMap('Reward'));
-cov.data = 1:numtrials;
+cov = 1:numtrials;
 behaviorData('Trial Number') = cov;
 
 consistent = nan(numtrials,1);
@@ -109,7 +109,8 @@ for cur_trial = 1:numtrials,
     numPossibleTrials = length(surroundingTrials_ind);
     
     % find the reaction time
-    surroundingReact = behaviorData('Reaction Time').data(surroundingTrials_ind)';
+    surroundingReact = behaviorData('Reaction Time');
+    surroundingReact = surroundingReact(surroundingTrials_ind)';
     
     % Throwout trials in which the monkey guesses based on reaction time
     % bounds defined by the user (eliminates outliers from reaction time
@@ -127,150 +128,128 @@ for cur_trial = 1:numtrials,
 end
 
 % Consistent
-cov.data = consistent;
-behaviorData('Consistent') = cov;
-clear cov;
+behaviorData('Consistent') = consistent;
 %% Condition
 condition = [trials.Condition]';
 isCondition = @(condName) ismember(condition, trialInfo(condName));
-cov.data = condition;
-behaviorData('Condition') = cov;
-clear cov;
+behaviorData('Condition') = condition;
 %% File Name
-cov.data = repmat({sessionName}, [1 numtrials]);
-behaviorData('Session Name') = cov;
-clear cov;
+behaviorData('Session Name') = repmat({sessionName}, [1 numtrials]);
 %% Monkey
-cov.data = repmat({curMonkey}, [1 numtrials]);
-behaviorData('Monkey') = cov;
-clear cov;
+behaviorData('Monkey') = repmat({curMonkey}, [1 numtrials]);
 %% Rule
-cov.data = nan(numtrials, 1);
+cov = nan(numtrials, 1);
 covName = 'Rule';
 for level_ind = 1:length(covInfo(covName).levels),
     levelName = covInfo(covName).levels{level_ind};
-    cov.data(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
+    cov(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
 end
 behaviorData(covName) = cov;
-clear cov;
 %% Congruency
-cov.data = nan(numtrials, 1);
+cov = nan(numtrials, 1);
 covName = 'Congruency';
 for level_ind = 1:length(covInfo(covName).levels),
     levelName = covInfo(covName).levels{level_ind};
-    cov.data(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
+    cov(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
 end
 behaviorData(covName) = cov;
-clear cov;
 %% Test Stimulus
-cov.data = nan(numtrials, 1);
+cov = nan(numtrials, 1);
 covName = 'Test Stimulus';
 for level_ind = 1:length(covInfo(covName).levels),
     levelName = covInfo(covName).levels{level_ind};
-    cov.data(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
+    cov(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
 end
 behaviorData(covName) = cov;
-clear cov;
 %% Identity of rule cues
-cov.data = nan(numtrials, 1);
+cov = nan(numtrials, 1);
 covName = 'Rule Cues';
 for level_ind = 1:length(covInfo(covName).levels),
     levelName = covInfo(covName).levels{level_ind};
-    cov.data(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
+    cov(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
 end
 behaviorData(covName) = cov;
-clear cov;
 %% Switch Trials
-difference = diff(behaviorData('Rule').data);
+difference = diff(behaviorData('Rule'));
 switc = zeros(1, numtrials);
 switc(find(abs(difference) > 0) + 1) = 1;
-cov.data = grp2idx(switc);
+cov = grp2idx(switc);
 behaviorData('Switch') = cov;
-clear cov;
 %% Correct Trials
-cov.data = ismember([trials.ResponseError], trialInfo('Correct'))';
+cov = ismember([trials.ResponseError], trialInfo('Correct'))';
 behaviorData('Correct') = cov;
-clear cov;
 %% Incorrect Trials
-cov.data = ismember([trials.ResponseError], trialInfo('Incorrect'))';
+cov = ismember([trials.ResponseError], trialInfo('Incorrect'))';
 behaviorData('Incorrect') = cov;
-clear cov;
 %% Attempted Trials
-cov.data = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')])' ...
-    & behaviorData('Reaction Time').data > reactBounds(1) ...
-    & behaviorData('Reaction Time').data < reactBounds(2);
+cov = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')])' ...
+    & behaviorData('Reaction Time') > reactBounds(1) ...
+    & behaviorData('Reaction Time') < reactBounds(2);
 behaviorData('Attempted') = cov;
-clear cov;
 %% Fixation Breaks
-cov.data = ~ismember([trials.ResponseError], trialInfo('Fixation Break'))';
+cov = ~ismember([trials.ResponseError], trialInfo('Fixation Break'))';
 behaviorData('Fixation Break') = cov;
-clear cov;
 %% Consistent Attempt
-behaviorData('Consistent Attempt') = behaviorData('Consistent').data & ...
-    behaviorData('Attempted').data;
+behaviorData('Consistent Attempt') = behaviorData('Consistent') & ...
+    behaviorData('Attempted');
 %% Brain Area - PFC or ACC
 if ~strcmp(sessionName, 'isa5')
     isDLPFC = [cells.WireNumber] <= 8;
-    cov.data = cell(size([cells.WireNumber]));
-    [cov.data{isDLPFC}] = deal('dlPFC');
-    [cov.data{~isDLPFC}] = deal('ACC');
+    cov = cell(size([cells.WireNumber]));
+    [cov{isDLPFC}] = deal('dlPFC');
+    [cov{~isDLPFC}] = deal('ACC');
     behaviorData('Neuron Brain Area') = cov;
     isDLPFC = [lfps.WireNumber] <= 8;
-    cov.data = cell(size([lfps.WireNumber]));
-    [cov.data{isDLPFC}] = deal('dlPFC');
-    [cov.data{~isDLPFC}] = deal('ACC');
+    cov = cell(size([lfps.WireNumber]));
+    [cov{isDLPFC}] = deal('dlPFC');
+    [cov{~isDLPFC}] = deal('ACC');
     behaviorData('LFPs Brain Area') = cov;
 else
     isDLPFC = [cells.WireNumber] <= 16;
-    cov.data = cell(size([cells.WireNumber]));
-    [cov.data{isDLPFC}] = deal('dlPFC');
-    [cov.data{~isDLPFC}] = deal('ACC');
+    cov = cell(size([cells.WireNumber]));
+    [cov{isDLPFC}] = deal('dlPFC');
+    [cov{~isDLPFC}] = deal('ACC');
     behaviorData('Neuron Brain Area') = cov;
     isDLPFC = [lfps.WireNumber] <= 16;
-    cov.data = cell(size([lfps.WireNumber]));
-    [cov.data{isDLPFC}] = deal('dlPFC');
-    [cov.data{~isDLPFC}] = deal('ACC');
+    cov = cell(size([lfps.WireNumber]));
+    [cov{isDLPFC}] = deal('dlPFC');
+    [cov{~isDLPFC}] = deal('ACC');
     behaviorData('LFPs Brain Area') = cov;
 end
 %% Number of Neurons and LFPs
 behaviorData('Number of Neurons') = length([cells.WireNumber]);
 behaviorData('Number of LFPs') = length([lfps.WireNumber]);
 %% Correct Saccade Direction
-cov.data = nan(numtrials, 1);
+cov = nan(numtrials, 1);
 covName = 'Saccade';
 for level_ind = 1:length(covInfo(covName).levels),
     levelName = covInfo(covName).levels{level_ind};
-    cov.data(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
+    cov(isCondition(sprintf('%s:%s', covName, levelName))) = find(ismember(covInfo(covName).levels, levelName));
 end
 behaviorData('Saccade') = cov;
-clear cov;
 %% Monkey's saccade direction
-cov.data = grp2idx(...
+cov = grp2idx(...
     (ismember(condition, trialInfo('Saccade:Left')) & ismember([trials.ResponseError]', trialInfo('Correct'))) ...
     | (~ismember(condition, trialInfo('Saccade:Left')) & ismember([trials.ResponseError]', trialInfo('Incorrect'))) ...
     );
-
 behaviorData('Response Direction') = cov;
 %% Rule Cue Switch
-difference = diff(behaviorData('Rule Cues').data) ~= 0;
+difference = diff(behaviorData('Rule Cues')) ~= 0;
 switc = zeros(1,numtrials);
 switc(find(abs(difference) > 0)+1) = 1;
-cov.data = grp2idx(switc);
+cov = grp2idx(switc);
 behaviorData('Rule Cue Switch') = cov;
-clear cov;
 %% Previous Error
-cov.data = lagmatrix(grp2idx(behaviorData('Incorrect').data), 1);
-cov.data(isnan(cov.data)) = 1;
+cov = lagmatrix(grp2idx(behaviorData('Incorrect')), 1);
+cov(isnan(cov)) = 1;
 behaviorData('Previous Error') = cov;
-clear cov;
 %% Previous Error History
-cov.data = lagmatrix(grp2idx(behaviorData('Incorrect').data), 1:numErrorLags);
-cov.data(isnan(cov.data)) = 1;
+cov = lagmatrix(grp2idx(behaviorData('Incorrect')), 1:numErrorLags);
+cov(isnan(cov)) = 1;
 behaviorData('Previous Error History') = cov;
-clear cov;
 %% Distance from Switch
-ruleRep = nan(size(behaviorData('Switch').data));
-sw = find(behaviorData('Switch').data == 2);
+ruleRep = nan(size(behaviorData('Switch')));
+sw = find(behaviorData('Switch') == 2);
 num = diff(sw);
 
 for sw_ind = 1:length(sw)+1
@@ -283,19 +262,16 @@ for sw_ind = 1:length(sw)+1
     end
 end
 ruleRep = ruleRep + 1;
-cov.data = ruleRep;
+cov = ruleRep;
 behaviorData('Switch Distance') = cov;
-clear cov;
 %% Rule Repetition - number of repetitions up to a number
-cov.data = behaviorData('Switch Distance').data;
-cov.data(cov.data >= numRepetitionLags) = numRepetitionLags;
+cov = behaviorData('Switch Distance');
+cov(cov >= numRepetitionLags) = numRepetitionLags;
 behaviorData('Rule Repetition') = cov;
-clear cov;
 %% Distance from Error
-dist_err = nan(size(behaviorData('Incorrect').data));
-err = find(behaviorData('Incorrect').data);
+dist_err = nan(size(behaviorData('Incorrect')));
+err = find(behaviorData('Incorrect'));
 num = diff(err);
-
 for err_ind = 1:length(err)+1
     if err_ind == 1
         dist_err(1:err(err_ind)) = 0:err(err_ind)-1;
@@ -305,40 +281,34 @@ for err_ind = 1:length(err)+1
         dist_err(err(err_ind-1):end) = 0:(length(dist_err) - err(err_ind-1));
     end
 end
-
-% dist_err(1:find(behaviorData('Incorrect').data, 1) - 1) = numErrorLags;
-cov.data = dist_err;
+% dist_err(1:find(behaviorData('Incorrect'), 1) - 1) = numErrorLags;
+cov = dist_err;
 behaviorData('Error Distance') = cov;
 clear cov
 %% Previous Error History Indicator
 % non-cumulative version of error history
-dist_err = behaviorData('Error Distance').data;
+dist_err = behaviorData('Error Distance');
 dist_err(dist_err == 0) = NaN;
 dist_err(dist_err >= numErrorLags) = numErrorLags;
-cov.data = dist_err;
+cov = dist_err;
 behaviorData('Previous Error History Indicator') = cov;
-clear cov;
 %% Session Time
 thirds = numtrials*(1/3);
 temp = 1:numtrials;
 temp(temp <= thirds) = 1; % early in day
 temp(temp > thirds & temp <= 2* thirds) = 2; %middle of day
 temp(temp > 2* thirds) = 3; %late part of day
-cov.data = temp';
+cov = temp';
 behaviorData('Session Time') = cov;
-clear cov;
 %% Block in Day
-cov.data = cumsum(behaviorData('Switch').data - 1) + 1;
+cov = cumsum(behaviorData('Switch') - 1) + 1;
 behaviorData('Rule Block') = cov;
-clear cov;
 %% Congruency History
-cov.data = lagmatrix(behaviorData('Congruency').data, 0:1);
+cov = lagmatrix(behaviorData('Congruency'), 0:1);
 behaviorData('Congruency History') = cov;
-clear cov;
 %% Previous Congruency
-cov.data = lagmatrix(behaviorData('Congruency').data, 1);
+cov = lagmatrix(behaviorData('Congruency'), 1);
 behaviorData('Previous Congruency') = cov;
-clear cov;
 %% Helper Function 
     function [cov] = findTimeDiff(desiredEncodes)
         findTimeInterval = @(encTime, encs, desiredEnc) sum(diff(encTime(ismember(encs, cell2mat(desiredEnc)))));
@@ -346,6 +316,6 @@ clear cov;
         time = findTimeInteval_AllTrials(desiredEncodes);
         empt = cellfun(@(x) x == 0, time);
         time(empt) = {NaN};
-        cov.data = [time{:}]';
+        cov = [time{:}]';
     end
 end

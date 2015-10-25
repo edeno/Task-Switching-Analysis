@@ -1,11 +1,9 @@
 clear variables; clc;
 main_dir = getWorkingDir();
-load(sprintf('%s/paramSet.mat', main_dir), 'cov_info', 'monkey_names');
+load(sprintf('%s/paramSet.mat', main_dir), 'covInfo', 'monkeyNames');
 load(sprintf('%s/Behavior/behavior.mat', main_dir));
 
-monkey = cat(1, behavior.monkey);
-isCC = ismember(monkey, 'CC');
-isISA = ismember(monkey, 'ISA');
+
 
 % Covariates
 Rule = dummyvar(cat(1, behavior.Rule));
@@ -16,7 +14,7 @@ Preparation_Time = dummyvar(cat(1, behavior.Indicator_Prep_Time));
 Response_Direction = dummyvar(cat(1, behavior.Response_Direction));
 
 % Drop level
-notBaseline = @(cov) find(~ismember(cov_info(ismember({cov_info.name}, cov)).levels, cov_info(ismember({cov_info.name}, cov)).baselineLevel));
+notBaseline = @(cov) find(~ismember(covInfo(ismember({covInfo.name}, cov)).levels, covInfo(ismember({covInfo.name}, cov)).baselineLevel));
 rule_ind = notBaseline('Rule');
 Rule = Rule(:, rule_ind);
 rule_rep_ind = notBaseline('Rule Repetition');
@@ -32,12 +30,12 @@ Response_Direction = Response_Direction(:, response_ind);
 
 % Create Design Matrix
 designMatrix = [Rule, Rule_Repetition, Previous_Error, Congruency_History, Preparation_Time, Response_Direction];
-level_names = [cov_info(ismember({cov_info.name}, 'Rule')).levels(rule_ind), ...
-    cov_info(ismember({cov_info.name}, 'Rule Repetition')).levels(rule_rep_ind), ...
-    cov_info(ismember({cov_info.name}, 'Previous Error History Indicator')).levels(prev_error_ind), ...
-    cov_info(ismember({cov_info.name}, 'Congruency History')).levels(con_hist_ind), ...
-    cov_info(ismember({cov_info.name}, 'Indicator Prep Time')).levels(prep_ind), ...
-    cov_info(ismember({cov_info.name}, 'Response Direction')).levels(response_ind)];
+level_names = [covInfo(ismember({covInfo.name}, 'Rule')).levels(rule_ind), ...
+    covInfo(ismember({covInfo.name}, 'Rule Repetition')).levels(rule_rep_ind), ...
+    covInfo(ismember({covInfo.name}, 'Previous Error History Indicator')).levels(prev_error_ind), ...
+    covInfo(ismember({covInfo.name}, 'Congruency History')).levels(con_hist_ind), ...
+    covInfo(ismember({covInfo.name}, 'Indicator Prep Time')).levels(prep_ind), ...
+    covInfo(ismember({covInfo.name}, 'Response Direction')).levels(response_ind)];
 
 %% Reaction Time
 Reaction_Time = cat(1, behavior.Reaction_Time);

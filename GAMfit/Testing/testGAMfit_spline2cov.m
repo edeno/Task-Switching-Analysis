@@ -8,7 +8,7 @@ smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 2000;
-[SpikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
+[spikeCov, trialTime, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
 % Load Common Parameters
 mainDir = getWorkingDir();
@@ -17,7 +17,7 @@ load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
 trueRate = nan(size(trialTime));
 
 cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
-level_ind = @(cov_name, level_name) ismember(SpikeCov(cov_name).data, cov_id(cov_name, level_name));
+level_ind = @(cov_name, level_name) ismember(spikeCov(cov_name), cov_id(cov_name, level_name));
 
 colorRate = 1;
 orientRate = 5;

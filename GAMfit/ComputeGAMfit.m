@@ -1,4 +1,4 @@
-function [neurons, stats, gam, designMatrix, modelList, gamParams, SpikeCov] = ComputeGAMfit(sessionName, gamParams, covInfo)
+function [neurons, stats, gam, designMatrix, modelList, gamParams, spikeCov] = ComputeGAMfit(sessionName, gamParams, covInfo)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
@@ -71,13 +71,13 @@ else
     referenceLevel = 'Full';
 end
 
-covNames = SpikeCov.keys;
+covNames = spikeCov.keys;
 
 if ~gamParams.includeIncorrect
     for cov_ind = 1:length(covNames),
-        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
-        cov.data = SpikeCov(covNames{cov_ind}).data(isCorrect, :);
-        SpikeCov(covNames{cov_ind}) = cov;
+        if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov = spikeCov(covNames{cov_ind});
+        spikeCov(covNames{cov_ind}) = cov(isCorrect, :);
     end
     spikes(~isCorrect, :) = [];
     trialTime(~isCorrect) = [];
@@ -89,9 +89,9 @@ end
 if ~gamParams.includeTimeBeforeZero,
     isBeforeZero = trialTime < 0;
     for cov_ind = 1:length(covNames),
-        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
-        cov.data = SpikeCov(covNames{cov_ind}).data(~isBeforeZero, :);
-        SpikeCov(covNames{cov_ind}) = cov;
+        if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov = spikeCov(covNames{cov_ind});
+        spikeCov(covNames{cov_ind}) = cov(~isBeforeZero, :);
     end
     spikes(isBeforeZero, :) = [];
     trialTime(isBeforeZero) = [];
@@ -102,9 +102,9 @@ end
 
 if ~gamParams.includeFixationBreaks
     for cov_ind = 1:length(covNames),
-        if ~SpikeCov.isKey(covNames{cov_ind}), continue; end;
-        cov.data = SpikeCov(covNames{cov_ind}).data(isAttempted, :);
-        SpikeCov(covNames{cov_ind}) = cov;
+        if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
+        cov = spikeCov(covNames{cov_ind});
+        spikeCov(covNames{cov_ind}) = cov(isAttempted, :);
     end
     spikes(~isAttempted, :) = [];
     trialTime(~isAttempted) = [];
@@ -112,7 +112,7 @@ if ~gamParams.includeFixationBreaks
     percentTrials(~isAttempted) = [];
 end
 
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, SpikeCov, covInfo, 'level_reference', referenceLevel);
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', referenceLevel);
 
 % Make sure covariates are of class double
 designMatrix = double(designMatrix);
@@ -181,13 +181,13 @@ gam.trialTime = trialTime;
 fprintf('\nSaving GAMs ...\n');
 save(saveFileName, 'neurons', 'stats', ...
     'gam', 'num*', 'gamParams', ...
-    'designMatrix', 'SpikeCov', '-v7.3');
+    'designMatrix', 'spikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
 
 if ~gamParams.isLocal,
     designMatrix = [];
-    SpikeCov = [];
+    spikeCov = [];
 end
 end
 

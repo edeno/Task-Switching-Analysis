@@ -1,8 +1,7 @@
 % Constructs SpikeCovariates for use with GLMfit
-function [SpikeCov, spikes, ...
+function [spikeCov, spikes, ...
     numNeurons, trialID, trialTime, percentTrials, ...
     wire_number, unit_number, neuronBrainArea, isCorrect, isAttempted] = ExtractSpikeCovariatesBySession(sessionName, timePeriod, numSpikeLags, covInfo, behavior, varargin)
-
 %% Load Common Parameters and Parse Inputs
 mainDir = getWorkingDir();
 
@@ -35,7 +34,7 @@ trialID = cellfun(@(x,y) x(ones(size(y))), trialID, time, 'UniformOutput', false
 trialID = cat(2, trialID{:})';
 %% Label each trial time point with the appropriate covariate
 covNames = covInfo.keys;
-SpikeCov = containers.Map;
+spikeCov = containers.Map;
 for cov_ind = 1:covInfo.Count,
     switch(covNames{cov_ind})
         case 'Spike History'
@@ -52,19 +51,20 @@ for cov_ind = 1:covInfo.Count,
                 part_hist(isnan(part_hist)) = 0;
                 spike_hist(:, [1:(numNeurons * length(curLags))] + (parts_quant(parts_ind) - 1) * numNeurons) = sparse(part_hist);
             end
-            cov.data = spike_hist;
-            SpikeCov(covNames{cov_ind}) = cov;
+            spikeCov(covNames{cov_ind}) = spike_hist;
         case 'Trial Time'
-            cov.data = trialTime;
-            SpikeCov(covNames{cov_ind}) = cov;
+            spikeCov(covNames{cov_ind}) = trialTime;
         otherwise
-            cov.data = behavior(covNames{cov_ind}).data(trialID, :);
-            SpikeCov(covNames{cov_ind}) = cov;
+            cov = behavior(covNames{cov_ind});
+            cov = cov(trialID, :);
+            spikeCov(covNames{cov_ind}) = cov;
     end
 end
 
-isAttempted = behavior('Attempted').data(trialID);
-isCorrect = behavior('Correct').data(trialID);
+isAttempted = behavior('Attempted');
+isAttempted = isAttempted(trialID);
+isCorrect = behavior('Correct');
+isCorrect = isCorrect(trialID);
 
 % Compute the number of trials for each time point
 [n, bin] = histc(trialTime, [min(trialTime):max(trialTime) + 1]);
@@ -87,7 +87,7 @@ if ~exist(save_dir, 'dir'),
     mkdir(save_dir);
 end
 
-save(saveFileName, 'SpikeCov', 'spikes', ...
+save(saveFileName, 'spikeCov', 'spikes', ...
     'numNeurons', 'trialID', 'trialTime', 'percentTrials', ...
     'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
 

@@ -39,10 +39,10 @@ else
     behavior = gatherMatorqueOutput(behaviorJob);
 end
 %% Compute normalized preparatory period
-sessionPrepTime = cellfun(@(x) x('Preparation Time').data, behaviorJob, 'UniformOutput', false);
+sessionPrepTime = cellfun(@(x) x('Preparation Time'), behaviorJob, 'UniformOutput', false);
 prepAll = cat(1, sessionPrepTime{:});
 
-monkey = cellfun(@(x) x('Monkey').data, behaviorJob, 'UniformOutput', false);
+monkey = cellfun(@(x) x('Monkey'), behaviorJob, 'UniformOutput', false);
 [monkey_ind, monkeyNames] = grp2idx([monkey{:}]);
 monkeyMeanPrep = accumarray(monkey_ind, prepAll, [], @nanmean);
 monkeyStdPrep = accumarray(monkey_ind, prepAll, [], @nanstd);
@@ -51,7 +51,7 @@ normFun = @(x, m) (x - monkeyMeanPrep(ismember(monkeyNames, m))) / monkeyStdPrep
 
 normPrep = cellfun(normFun, sessionPrepTime, monkey, 'UniformOutput', false);
 for k = 1:length(behavior),
-    cov.data = normPrep{k};
+    cov = normPrep{k};
     behavior{k}('Normalized Preparation Time') = cov;
 end
 clear cov;
@@ -63,7 +63,7 @@ for k = 1:length(monkeyNames),
 end
 
 for k = 1:length(behavior),
-    cov.data = normBySession(sessionPrepTime{k}, quantByMonkey{ismember(monkeyNames, behavior{k}('Monkey').data)});
+    cov = normBySession(sessionPrepTime{k}, quantByMonkey{ismember(monkeyNames, behavior{k}('Monkey'))});
     behavior{k}('Preparation Time Indicator') = cov;
 end
 %% Get total number of neurons

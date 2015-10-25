@@ -1,11 +1,11 @@
-function [SpikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials)
+function [spikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials)
 
 mainDir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', mainDir), 'numErrorLags');
 
-SpikeCov = containers.Map;
+spikeCov = containers.Map;
 
 numNeurons = 1;
 neuronBrainArea = {'Test'};
@@ -22,10 +22,8 @@ trialID = convertFactor(1:numTrials, trialTimeByTrial);
 trialTime = cellfun(@(time) 1:time, num2cell(trialTimeByTrial), 'UniformOutput', false);
 trialTime = cat(2, trialTime{:})';
 %% Preparation Time
-cov.data = convertFactor(prepTime, trialTimeByTrial);
-SpikeCov('Preparation Time') = cov;
-cov.data = convertFactor(zscore(prepTime), trialTimeByTrial);
-SpikeCov('Normalized Preparation Time') = cov;
+spikeCov('Preparation Time') = convertFactor(prepTime, trialTimeByTrial);
+spikeCov('Normalized Preparation Time') = convertFactor(zscore(prepTime), trialTimeByTrial);
 %% Rule Factor
 Rule = nan(1, numTrials);
 Rule(1) = rand < 0.5;
@@ -48,9 +46,7 @@ for trial_ind = 1:numTrials,
 end
 
 Rule = grp2idx(Rule)';
-
-cov.data = convertFactor(Rule, trialTimeByTrial);
-SpikeCov('Rule') = cov;
+spikeCov('Rule') = convertFactor(Rule, trialTimeByTrial);
 %% Switch History
 difference = diff(Rule);
 switc = zeros(1, numTrials);
@@ -74,18 +70,15 @@ dist_sw = dist_sw'+1;
 
 dist_sw(dist_sw >= 6) = 6;
 
-cov.data = convertFactor(dist_sw, trialTimeByTrial);
-SpikeCov('Rule Repetition') = cov;
+spikeCov('Rule Repetition') = convertFactor(dist_sw, trialTimeByTrial);
 %% Congruency History
 inCon = grp2idx(rand(1, numTrials) <= .7);
 inCon = lagmatrix(inCon, 0:1)';
-
-cov.data = [convertFactor(inCon(1, :), trialTimeByTrial), convertFactor(inCon(2, :), trialTimeByTrial)];
-SpikeCov('Congruency History') = cov;
+spikeCov('Congruency History') = [convertFactor(inCon(1, :), trialTimeByTrial), ...
+    convertFactor(inCon(2, :), trialTimeByTrial)];
 %% Response Direction
 responseDir = grp2idx(rand(1, numTrials) <= .5)';
-cov.data = convertFactor(responseDir, trialTimeByTrial);
-SpikeCov('Response Direction') = cov;
+spikeCov('Response Direction') = convertFactor(responseDir, trialTimeByTrial);
 %% Error History
 incorrect = rand(1, numTrials) <= .15;
 
@@ -99,8 +92,7 @@ for error_ind = 1:numErrorLags,
         ];
 end
 
-cov.data = Previous_Error_History;
-SpikeCov('Previous Error History') = cov;
+spikeCov('Previous Error History') =  Previous_Error_History;
 
 % Distance from Error
 distErr = nan(size(incorrect));
@@ -121,8 +113,7 @@ distErr(distErr == 0) = NaN;
 distErr(distErr >= numErrorLags) = numErrorLags;
 
 % non-cumulative version of error history
-cov.data = convertFactor(distErr, trialTimeByTrial);
-SpikeCov('Previous Error History Indicator') = cov;
+spikeCov('Previous Error History Indicator') = convertFactor(distErr, trialTimeByTrial);
 
 isCorrect = convertFactor(~incorrect, trialTimeByTrial);
 isAttempted = true(size(isCorrect));
@@ -133,16 +124,15 @@ isAttempted = true(size(isCorrect));
 percentTrials = n(bin) / max(n);
 
 % Trial Time
-cov.data = trialTime;
-SpikeCov('Trial Time') = cov;
+spikeCov('Trial Time') = trialTime;
 %% Save Simulated Session
-SpikeCovDir = sprintf('%s/Processed Data/Testing/SpikeCov', mainDir);
-if ~exist(SpikeCovDir, 'dir'),
-    mkdir(SpikeCovDir);
+spikeCovDir = sprintf('%s/Processed Data/Testing/spikeCov', mainDir);
+if ~exist(spikeCovDir, 'dir'),
+    mkdir(spikeCovDir);
 end
 
-filename = sprintf('%s/test_SpikeCov.mat', SpikeCovDir);
-save(filename, 'SpikeCov', 'monkeyName', 'percentTrials', ...
+filename = sprintf('%s/test_spikeCov.mat', spikeCovDir);
+save(filename, 'spikeCov', 'monkeyName', 'percentTrials', ...
         'numNeurons', 'trialID', 'trialTime', ...
         'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
 

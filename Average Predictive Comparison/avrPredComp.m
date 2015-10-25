@@ -11,15 +11,15 @@ modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, 
 load(modelList_name, 'modelList');
 % Load fitting data
 GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), sessionName);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'SpikeCov');
+load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'spikeCov');
 
 % Get the names of the covariates for the current model
 model = modelFormula_parse(gamParams.regressionModel_str);
-covNames = SpikeCov.keys;
+covNames = spikeCov.keys;
 
 % Size of Design Matrix
 numPredictors = length(neurons(1).parEst);
-numData = size(SpikeCov(covNames{1}).data, 1);
+numData = size(spikeCov(covNames{1}), 1);
 
 % Simulate from posterior
 parEst = nan(numPredictors, numNeurons, apcParams.numSim);
@@ -44,9 +44,9 @@ end
 % constant and the other inputs
 otherNames = covNames(ismember(covNames, model.terms) & ~ismember(covNames, apcParams.factorOfInterest));
 
-factorData = SpikeCov(apcParams.factorOfInterest).data;
+factorData = spikeCov(apcParams.factorOfInterest);
 if ~isempty(otherNames),
-    otherData = cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false);
+    otherData = cellfun(@(x) spikeCov(x), otherNames, 'UniformOutput', false);
     
     isCategorical = cell2mat(cellfun(@(x) covInfo(x).isCategorical, otherNames, 'UniformOutput', false));
     isCategorical(ismember(otherNames, {'Rule Repetition', 'Previous Error History Indicator'})) = false;
@@ -76,9 +76,10 @@ numHistoryFactors = size(factorData, 2);
 % categorical variables that aren't binary.
 counter_idx = 1;
 trialTime = grp2idx(gam.trialTime);
+origCov = spikeCov(apcParams.factorOfInterest);
+baselineLevel_ind = ismember(covInfo(apcParams.factorOfInterest).levels, covInfo(apcParams.factorOfInterest).baselineLevel);
 
 for history_ind = 1:numHistoryFactors,
-    
     %% Figure out the matrix of other inputs
     if ismember(apcParams.factorOfInterest, {'Previous Error History', 'Congruency History'}),
         history = factorData(:, ~ismember(1:numHistoryFactors, history_ind));
@@ -114,12 +115,10 @@ for history_ind = 1:numHistoryFactors,
     end
     
     % Compute the firing rate holding thne last level constant (only need to do this once)
-    baselineCov = SpikeCov;
-    baselineLevel_ind = ismember(covInfo(apcParams.factorOfInterest).levels, covInfo(apcParams.factorOfInterest).baselineLevel);
-    cov.data = SpikeCov(apcParams.factorOfInterest).data;
-    cov.data(:, history_ind) = levelData(baselineLevel_ind);
-    baselineCov(apcParams.factorOfInterest) = cov;
-    baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, baselineCov, covInfo, 'level_reference', gam.level_reference);
+    cov = origCov;
+    cov(:, history_ind) = levelData(baselineLevel_ind);
+    spikeCov(apcParams.factorOfInterest) = cov;
+    baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     baselineDesignMatrix = baselineDesignMatrix(sample_ind, :) * gam.constraints';
     baselineLevelEst = nan(numData, numNeurons, apcParams.numSim);
     baselineLevelName = curLevels{baselineLevel_ind, history_ind};
@@ -132,11 +131,9 @@ for history_ind = 1:numHistoryFactors,
     numLevels = length(levelID);
     
     for level_ind = 1:numLevels,
-        curLevelCov = SpikeCov;
-        cov.data = SpikeCov(apcParams.factorOfInterest).data;
-        cov.data(:, history_ind) = levelData(levelID(level_ind));
-        curLevelCov(apcParams.factorOfInterest) = cov;
-        curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, curLevelCov, covInfo, 'level_reference', gam.level_reference);
+        cov(:, history_ind) = levelData(levelID(level_ind));
+        spikeCov(apcParams.factorOfInterest) = cov;
+        curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
         for neuron_ind = 1:numNeurons,

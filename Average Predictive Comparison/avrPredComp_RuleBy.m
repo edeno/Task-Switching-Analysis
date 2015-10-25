@@ -10,15 +10,15 @@ modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, 
 load(modelList_name, 'modelList');
 % Load fitting data
 GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), sessionName);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'SpikeCov');
+load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'spikeCov');
 
 % Get the names of the covariates for the current model
 model = modelFormula_parse(gamParams.regressionModel_str);
-covNames = SpikeCov.keys;
+covNames = spikeCov.keys;
 
 % Size of Design Matrix
 numPredictors = length(neurons(1).parEst);
-numData = size(SpikeCov(covNames{1}).data, 1);
+numData = size(spikeCov(covNames{1}), 1);
 
 % Simulate from posterior
 parEst = nan(numPredictors, numNeurons, apcParams.numSim);
@@ -46,7 +46,7 @@ otherNames = covNames(ismember(covNames, model.terms) ...
     & ~ismember(covNames, 'Rule'));
 
 if ~isempty(otherNames),
-    otherData = cellfun(@(x) SpikeCov(x).data, otherNames, 'UniformOutput', false);
+    otherData = cellfun(@(x) spikeCov(x), otherNames, 'UniformOutput', false);
     
     isCategorical = cell2mat(cellfun(@(x) covInfo(x).isCategorical, otherNames, 'UniformOutput', false));
     isCategorical(ismember(otherNames, {'Rule Repetition', 'Previous Error History Indicator'})) = false;
@@ -59,7 +59,7 @@ else
     otherData = {};
 end
 
-byData = SpikeCov(apcParams.factorOfInterest).data;
+byData = spikeCov(apcParams.factorOfInterest);
 byIsCategorical = covInfo(apcParams.factorOfInterest).isCategorical;
 if byIsCategorical,
     byLevels = covInfo(apcParams.factorOfInterest).levels;
@@ -71,6 +71,7 @@ else
 end
 
 trialTime = grp2idx(gam.trialTime);
+origCov = spikeCov(apcParams.factorOfInterest);
 
 % Loop over each level of the by variable
 for by_id = 1:length(byLevels),
@@ -105,42 +106,29 @@ for by_id = 1:length(byLevels),
     %% Compute the difference between the two rules at a specified level of the factor of interest
     
     % Set all trials to the orientation rule
-    orientationCov = SpikeCov;
-    cov.data = SpikeCov('Rule').data;
-    cov.data(:) = find(ismember(covInfo('Rule').levels, 'Orientation'));
-    orientationCov('Rule') = cov;
+    cov = spikeCov('Rule');
+    cov(:) = find(ismember(covInfo('Rule').levels, 'Orientation'));
+    spikeCov('Rule') = cov;
     
     % Set all trials to one of the levels of the factor of interest
-    cov.data = SpikeCov(apcParams.factorOfInterest).data;
+    factorCov = origCov;
     if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.factorOfInterest)),
-        cov.data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
+        factorCov(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
     elseif byIsCategorical
-        cov.data(:) = by_id;
+        factorCov(:) = by_id;
     else
-        cov.data(:) = byLevelsID(by_id);
+        factorCov(:) = byLevelsID(by_id);
     end
-    orientationCov(apcParams.factorOfInterest) = cov;
+    spikeCov(apcParams.factorOfInterest) = factorCov;
     
-    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, orientationCov, covInfo, 'level_reference', gam.level_reference);
+    orientationDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     orientationDesignMatrix = orientationDesignMatrix(sample_ind, :) * gam.constraints';
     
     % Set all trials to the color rule
-    colorCov = SpikeCov;
-    cov.data = SpikeCov('Rule').data;
-    cov.data(:) = find(ismember(covInfo('Rule').levels, 'Color'));
-    colorCov('Rule') = cov;
+    cov(:) = find(ismember(covInfo('Rule').levels, 'Color'));
+    spikeCov('Rule') = cov;
     
-    % Set all trials to one of the levels of the factor of interest
-    cov.data = SpikeCov(apcParams.factorOfInterest).data;
-    if any(ismember({'Previous Error History', 'Congruency History'}, apcParams.factorOfInterest)),
-        cov.data(:, round(by_id/2)) = (mod(by_id, 2) == 0) + 1;
-    elseif byIsCategorical
-        cov.data(:) = by_id;
-    else
-        cov.data(:) = byLevelsID(by_id);
-    end
-    colorCov(apcParams.factorOfInterest) = cov;
-    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, colorCov, covInfo, 'level_reference', gam.level_reference);
+    colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
     for neuron_ind = 1:numNeurons,
