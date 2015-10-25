@@ -134,9 +134,9 @@ condition = [trials.Condition]';
 isCondition = @(condName) ismember(condition, trialInfo(condName));
 behaviorData('Condition') = condition;
 %% File Name
-behaviorData('Session Name') = repmat({sessionName}, [1 numtrials]);
+behaviorData('Session Name') = repmat({sessionName}, [numtrials 1]);
 %% Monkey
-behaviorData('Monkey') = repmat({curMonkey}, [1 numtrials]);
+behaviorData('Monkey') = repmat({curMonkey}, [numtrials 1]);
 %% Rule
 cov = nan(numtrials, 1);
 covName = 'Rule';
