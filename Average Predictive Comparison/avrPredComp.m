@@ -120,11 +120,7 @@ for history_ind = 1:numHistoryFactors,
     spikeCov(apcParams.factorOfInterest) = cov;
     baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     baselineDesignMatrix = baselineDesignMatrix(sample_ind, :) * gam.constraints';
-    baselineLevelEst = nan(numData, numNeurons, apcParams.numSim);
     baselineLevelName = curLevels{baselineLevel_ind, history_ind};
-    for neuron_ind = 1:numNeurons,
-        baselineLevelEst(:, neuron_ind, :) = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-    end
     
     % Number of levels to iterate over.
     levelID = find(~ismember(covInfo(apcParams.factorOfInterest).levels, covInfo(apcParams.factorOfInterest).baselineLevel));
@@ -138,18 +134,14 @@ for history_ind = 1:numHistoryFactors,
         curLevelName = curLevels{levelID(level_ind), history_ind};
         for neuron_ind = 1:numNeurons,
             curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-            bLE = squeeze(baselineLevelEst(:, neuron_ind, :));
+            baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
             parfor sim_ind = 1:apcParams.numSim,
-                diffEst = bsxfun(@times, summed_weights, curLevelEst(:, sim_ind) - bLE(:, sim_ind));
-                sumEst = curLevelEst(:, sim_ind) + bLE(:, sim_ind);
+                diffEst = bsxfun(@times, summedWeights, curLevelEst(:, sim_ind) - baselineLevelEst(:, sim_ind));
+                sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, sim_ind);
                 
-                num = accumarray(trialTime, diffEst);
-                absNum = accumarray(trialTime, abs(diffEst));
-                normNum = accumarray(trialTime, diffEst ./ sumEst);
-                
-                apc(:, sim_ind) = num ./ den;
-                abs_apc(:, sim_ind) = absNum ./ den;
-                norm_apc(:, sim_ind) = normNum ./ den;
+                apc(:, sim_ind) = accumarray(trialTime, diffEst) ./ den;
+                abs_apc(:, sim_ind) = accumarray(trialTime, abs(diffEst)) ./ den;
+                norm_apc(:, sim_ind) = accumarray(trialTime, diffEst ./ sumEst) ./ den;
             end
             avpred(neuron_ind).apc(counter_idx, :, :) = apc;
             avpred(neuron_ind).abs_apc(counter_idx, :, :) = abs_apc;
