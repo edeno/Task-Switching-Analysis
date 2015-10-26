@@ -69,8 +69,9 @@ for add_ind = 1:length(addTerms),
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
                 for add_opts_ind = 1:length(smoothParams_opt_add),
-                    smoothParams_opt_add{add_opts_ind}{2} = str2num(smoothParams_opt_add{add_opts_ind}{2});
+                    smoothParams_opt_add{add_opts_ind}{2} = str2num(smoothParams_opt_add{add_opts_ind}{2}); %#ok<ST2NM>
                 end
+                smoothParams_opt_add = [smoothParams_opt_add{:}];
             end
             if any(numSmoothParams_add == 1),
                 smoothingTerm = [smoothingTerm; repmat(parsedTerms_add{numSmoothParams_add == 1}, size(interTerms))];
@@ -79,7 +80,7 @@ for add_ind = 1:length(addTerms),
             end
             
             if any(numSmoothParams_add > 1),
-                smoothParams_opt = [smoothParams_opt; repmat(smoothParams_opt_add, size(interTerms))];
+                smoothParams_opt = [smoothParams_opt; repmat({smoothParams_opt_add}, size(interTerms))];
             else
                 smoothParams_opt = [smoothParams_opt; cell(size(interTerms))];
             end
@@ -99,10 +100,13 @@ for add_ind = 1:length(addTerms),
             
             smoothParams_opt_add = {parsedTerms_add{numSmoothParams_add > 1}};
             if ~isempty(smoothParams_opt_add)
-                if mod(length(smoothParams_opt_add{:}), 2) ~= 0,
+                if mod(length([smoothParams_opt_add{:}]), 2) ~= 0,
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
-                smoothParams_opt_add{1}(2:2:end) = cellfun(@(x) str2num(x{2:2:end}), smoothParams_opt_add, 'UniformOutput', false); %#ok<*ST2NM>
+                for add_opts_ind = 1:length(smoothParams_opt_add),
+                    smoothParams_opt_add{add_opts_ind}{2} = str2num(smoothParams_opt_add{add_opts_ind}{2}); %#ok<ST2NM>
+                end
+                smoothParams_opt_add = [smoothParams_opt_add{:}];
             end
             
             if any(numSmoothParams_add == 1),
@@ -116,7 +120,7 @@ for add_ind = 1:length(addTerms),
             end
             
             if any(numSmoothParams_add > 1)
-                smoothParams_opt = [smoothParams_opt; smoothParams_opt_add];
+                smoothParams_opt = [smoothParams_opt; {smoothParams_opt_add}];
             else
                 smoothParams_opt = [smoothParams_opt; {[]}];
             end

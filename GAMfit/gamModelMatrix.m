@@ -113,7 +113,7 @@ if ~strcmpi(regressionModel_str, 'constant'),
                 smoothParams{2} = smoothingFactor;
             end
             
-            smoothParams = [smoothParams [model.smoothParams_opt{curTerm, :}]];
+            smoothParams = [smoothParams model.smoothParams_opt{curTerm}];
             
             [smoothMatrix, bsplines{curTerm}, smoothCov_name, smoothLevel_names, ...
                 smoothSqrtPen, smoothConstraints, smoothPenalty, smoothConNames] = factorBySpline(smoothParams{:});
@@ -230,8 +230,8 @@ if isempty(factor.data)
 else
     data = [ones(size(by.smoothingFactor.data)) by.factor.data];
     levels = [{by.smoothingFactor.name} by.factor.levels];
-    %% Hacky crap that alters the number of knots so that we get a specific spacing ************************
     if ~isempty(by.knotDiff)
+        % Alters the number of knots so that we get a specific spacing
         knot_range = diff(quantile(by.smoothingFactor.data, [0 1]));
         knot_range = [min(by.smoothingFactor.data) - (knot_range * 0.001), max(by.smoothingFactor.data) + (knot_range * 0.001)];
         numKnots = ceil((diff(knot_range) / by.knotDiff) + (by.basisDegree - 1));
