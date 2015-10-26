@@ -103,15 +103,9 @@ if ~strcmpi(regressionModel_str, 'constant'),
             smoothParams{1} = factor;
             
             % Find smoothing factor
-            if isempty(model.smoothingTerm{curTerm}),
-                smoothingFactor.data = [];
-                smoothingFactor.name = [];
-                smoothParams{2} = smoothingFactor;
-            else
-                smoothingFactor.data = covariateData(model.smoothingTerm{curTerm});
-                smoothingFactor.name = model.smoothingTerm{curTerm};
-                smoothParams{2} = smoothingFactor;
-            end
+            smoothingFactor.data = covariateData(model.smoothingTerm{curTerm});
+            smoothingFactor.name = model.smoothingTerm{curTerm};
+            smoothParams{2} = smoothingFactor;
             
             smoothParams = [smoothParams model.smoothParams_opt{curTerm}];
             
@@ -224,19 +218,20 @@ inParser.parse(factor, varargin{:});
 
 by = inParser.Results;
 
-if isempty(factor.data)
-    data = {ones(size(by.smoothingFactor.data))};
+if ~isempty(by.knotDiff)
+    % Alters the number of knots so that we get a specific spacing
+    knotRange = diff(quantile(by.smoothingFactor.data, [0 1]));
+    knotRange = [min(by.smoothingFactor.data) - (knotRange * 0.001), max(by.smoothingFactor.data) + (knotRange * 0.001)];
+    numKnots = ceil((diff(knotRange) / by.knotDiff) + (by.basisDegree - 1));
+    by.basisDim = numKnots;
+end
+
+if strcmp(factor.name, by.smoothingFactor.name)
+    data = ones(size(by.smoothingFactor.data));
     levels = {{''}};
 else
     data = [ones(size(by.smoothingFactor.data)) by.factor.data];
     levels = [{by.smoothingFactor.name} by.factor.levels];
-    if ~isempty(by.knotDiff)
-        % Alters the number of knots so that we get a specific spacing
-        knot_range = diff(quantile(by.smoothingFactor.data, [0 1]));
-        knot_range = [min(by.smoothingFactor.data) - (knot_range * 0.001), max(by.smoothingFactor.data) + (knot_range * 0.001)];
-        numKnots = ceil((diff(knot_range) / by.knotDiff) + (by.basisDegree - 1));
-        by.basisDim = numKnots;
-    end
 end
 
 numLevels = size(data, 2);
