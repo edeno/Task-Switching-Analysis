@@ -7,7 +7,7 @@ inParser.parse(varargin{:});
 
 gam = inParser.Results;
 
-model = modelFormula_parse(regressionModel_str);
+model = modelFormulaParse(regressionModel_str);
 
 validCov = covariateData.keys;
 

@@ -1,4 +1,4 @@
-function [model] = modelFormula_parse(model_str)
+function [model] = modelFormulaParse(model_str)
 
 % Expand shortcuts to create terms
 addTerms = strtrim(regexp(model_str, '+', 'split'));
