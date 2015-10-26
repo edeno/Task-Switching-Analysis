@@ -68,7 +68,7 @@ cov.baselineLevel = cov.levels(1:2:end);
 cov.isHistory = true;
 covInfo('Previous Error History') = cov;
 %% Previous Error History Indicator
-errorHistNames = ['Error'; strseq('Previous Error', 1:(numErrorLags-1)); sprintf('Previous Error%d+', numErrorLags)]';
+errorHistNames = [strseq('Previous Error', 1:(numErrorLags-1)); sprintf('Previous Error%d+', numErrorLags)]';
 cov.levels = errorHistNames;
 cov.isCategorical = true;
 cov.baselineLevel = sprintf('Previous Error%d+', numErrorLags);
