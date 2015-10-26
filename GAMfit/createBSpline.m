@@ -17,10 +17,10 @@ basisRank = bsplines.basisDim - basisOrder;
 t = unique(time);
 
 if isempty(bsplines.knots),
-    knot_range = diff(quantile(t, [0 1]));
-    knot_range = [min(t) - (knot_range * 0.001), max(t) + (knot_range * 0.001)];
-    knotsDiff = diff(knot_range) / (basisRank - 1);
-    knots = linspace(knot_range(1) - (knotsDiff * bsplines.basisDegree), knot_range(2) + (knotsDiff * bsplines.basisDegree), bsplines.basisDim + (2 * basisOrder));
+    knotRange = diff(quantile(t, [0 1]));
+    knotRange = [min(t) - (knotRange * 0.001), max(t) + (knotRange * 0.001)];
+    knotsDiff = diff(knotRange) / (basisRank - 1);
+    knots = linspace(knotRange(1) - (knotsDiff * bsplines.basisDegree), knotRange(2) + (knotsDiff * bsplines.basisDegree), bsplines.basisDim + (2 * basisOrder));
 else
     knots = bsplines.knots;
     knots = knots(:);
@@ -63,15 +63,20 @@ for time_ind = 1:length(t),
     basisMatrix(time == cur_t, :) = repmat(basisMatrix_temp(time_ind, :), [sum(time == cur_t) 1]);
 end
 
-% C = ones(1, bsplines.basisDim);
-C = nanmean(basisMatrix);
-[Q,~] = qr(C');
-constraintMatrix = Q(:,2:end);
-
-con_basisMatrix = basisMatrix * constraintMatrix;
-con_penaltyMatrix = constraintMatrix' * penaltyMatrix * constraintMatrix;
-% con_sqrtPenMatrix = sqrtPenMatrix * constraintMatrix;
-con_sqrtPenMatrix = real(sqrtm(con_penaltyMatrix));
+if (bsplines.penaltyDegree == 0) && (bsplines.ridgeLambda == 0),
+    con_basisMatrix = basisMatrix;
+    con_penaltyMatrix = penaltyMatrix;
+    con_sqrtPenMatrix =  real(sqrtm(con_penaltyMatrix));
+else
+    % C = ones(1, bsplines.basisDim);
+    C = nanmean(basisMatrix);
+    [Q,~] = qr(C');
+    constraintMatrix = Q(:,2:end);
+    
+    con_basisMatrix = basisMatrix * constraintMatrix;
+    con_penaltyMatrix = constraintMatrix' * penaltyMatrix * constraintMatrix;
+    con_sqrtPenMatrix = real(sqrtm(con_penaltyMatrix));
+end
 
 bsplines.basis = basisMatrix;
 bsplines.sqrtPen = sqrtPenMatrix;
