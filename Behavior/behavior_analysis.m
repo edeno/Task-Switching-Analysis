@@ -15,8 +15,8 @@ model = 'Rule + Rule Repetition + Previous Error History Indicator + Normalized 
 reactionTime = behavior('Reaction Time');
 
 % Fit Model
-[react_coef_CC, react_dev_CC, react_stats_CC] = glmfit(designMatrix(isCC, :), reactionTime(isCC, :), 'normal', 'link', 'log');
-[react_coef_ISA, react_dev_ISA, react_stats_ISA] =  glmfit(designMatrix(isISA, :), reactionTime(isISA, :), 'normal', 'link', 'log');
+[react_coef_CC, react_dev_CC, react_stats_CC] = glmfit(designMatrix(isCC, :), reactionTime(isCC, :), 'normal', 'link', 'log', 'constant', 'off');
+[react_coef_ISA, react_dev_ISA, react_stats_ISA] =  glmfit(designMatrix(isISA, :), reactionTime(isISA, :), 'normal', 'link', 'log', 'constant', 'off');
 
 % Standard Errors
 react_se_CC = [react_stats_CC.beta - react_stats_CC.se, react_stats_CC.beta + react_stats_CC.se];
@@ -24,19 +24,19 @@ react_se_ISA = [react_stats_ISA.beta - react_stats_ISA.se, react_stats_ISA.beta 
 
 % log scale
 figure;
-subplot(3, 3, 1:6);
-plot(react_coef_CC(end:-1:2), 1:length(gam.levelNames), '-'); hold all;
-plot(react_coef_ISA(end:-1:2), 1:length(gam.levelNames), '-');
+subplot(8, 2, 1:8);
+plot(react_coef_CC(end:-1:2), 1:length(gam.levelNames) - 1, '-'); hold all;
+plot(react_coef_ISA(end:-1:2), 1:length(gam.levelNames) - 1, '-');
 vline(0, 'k');
-plot(react_se_CC(end:-1:2,  :)', [1:length(gam.levelNames); 1:length(gam.levelNames)], 'b')
-plot(react_se_ISA(end:-1:2,  :)', [1:length(gam.levelNames); 1:length(gam.levelNames)], 'color', [0.00  0.50  0.00])
-set(gca, 'YTick', 1:length(gam.levelNames))
-set(gca, 'YTickLabel', gam.levelNames(end:-1:1))
-set(gca, 'YTick', 1:length(gam.levelNames))
-set(gca, 'YTickLabel', gam.levelNames(end:-1:1))
+plot(react_se_CC(end:-1:2,  :)', [1:length(gam.levelNames) - 1; 1:length(gam.levelNames) - 1], 'b')
+plot(react_se_ISA(end:-1:2,  :)', [1:length(gam.levelNames) - 1; 1:length(gam.levelNames) - 1], 'color', [0.00  0.50  0.00])
+set(gca, 'YTick', 1:length(gam.levelNames) - 1)
+set(gca, 'YTickLabel', gam.levelNames(end:-1:2))
+set(gca, 'YTick', 1:length(gam.levelNames) - 1)
+set(gca, 'YTickLabel', gam.levelNames(end:-1:2))
 set(gca, 'XAxisLocation', 'top')
 xlim(log([0.7, 1.4]))
-ylim([1-.5, length(gam.levelNames)+.5]);
+ylim([1-.5, length(gam.levelNames)-1+.5]);
 set(gca, 'XTick', log(0.7:0.1:1.4))
 set(gca, 'XTickLabel', -30:10:40)
 legend({'CC', 'ISA'});
@@ -48,18 +48,15 @@ text(-0.05,0,'\leftarrow Decrease in Reaction Time (%)', 'HorizontalAlignment','
 grid on;
 
 edges = [0:10:1400];
-subplot(3, 3, 7);
-n = histc(reactionTime(isCC, :), edges);
-h = bar(edges,n/sum(n),'histc');
-set(h,'FaceColor','blue');
+subplot(6, 2, 9:10);
+h = histogram(reactionTime(isCC, :), 'Normalization', 'probability');
+h.FaceColor = 'blue';
 vline(exp(react_coef_CC(1)));
 title('CC')
-xlabel('Reaction Time (ms)');
-ylabel('Relative Frequency');
-subplot(3, 3, 8);
-n = histc(reactionTime(isISA, :), edges);
-h = bar(edges,n/sum(n),'histc');
-set(h,'FaceColor',[0.00  0.50  0.00]);
+ylabel('Probability');
+subplot(6, 2, 11:12);
+h = histogram(reactionTime(isISA, :), 'Normalization', 'probability');
+h.FaceColor = 'green';
 vline(exp(react_coef_ISA(1)));
 title('ISA')
 xlabel('Reaction Time (ms)');
