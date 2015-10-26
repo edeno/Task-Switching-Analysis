@@ -11,7 +11,7 @@ str{9} = 's(Rule, Trial Time, penalty_degree = 0)';
 str{10} = 's(Rule, Trial Time, ridgeLambda = 0)';
 str{11} = 's(Rule, Trial Time, knots = [0; 10; 30])';
 str{12} = 's(Rule, Trial Time) + Response Direction';
-%
+str{13} ='s(Switch Distance, ridgeLambda = 0)';
 model = cellfun(@modelFormulaParse, str, 'UniformOutput', false);
 % Model 1
 assert(isequal(model{1}.terms, {'Rule'}));
@@ -86,3 +86,9 @@ assert(isequal(model{12}.isSmooth, [true; false]));
 assert(isequal(model{12}.smoothParams_opt, {[]; []}));
 assert(isequal(model{12}.smoothingTerm, {'Trial Time'; []}));
 assert(isequal(model{12}.isInteraction, false(2,1)));
+% Model 13
+assert(isequal(model{13}.terms, {'Switch Distance'}));
+assert(isequal(model{13}.isSmooth, true));
+assert(isequal(model{10}.smoothParams_opt, {{'ridgeLambda', 0}}));
+assert(isequal(model{13}.smoothingTerm, {'Switch Distance'}));
+assert(isequal(model{13}.isInteraction, false));
