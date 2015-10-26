@@ -108,7 +108,11 @@ for add_ind = 1:length(addTerms),
             if any(numSmoothParams_add == 1),
                 smoothingTerm = [smoothingTerm; parsedTerms_add{numSmoothParams_add == 1}];
             else
-                smoothingTerm = [smoothingTerm; {[]}];
+                if isSmooth_add(add_ind),
+                    smoothingTerm = [smoothingTerm; addTerms(add_ind)];
+                else
+                    smoothingTerm = [smoothingTerm; {[]}];
+                end
             end
             
             if any(numSmoothParams_add > 1)
@@ -116,10 +120,14 @@ for add_ind = 1:length(addTerms),
             else
                 smoothParams_opt = [smoothParams_opt; {[]}];
             end
-            
         else
             smoothParams_opt = [smoothParams_opt; {[]}];
-            smoothingTerm = [smoothingTerm; {[]}];
+            if isSmooth_add(add_ind),
+                smoothingTerm = [smoothingTerm; addTerms(add_ind)];
+            else
+                smoothingTerm = [smoothingTerm; {[]}];
+            end
+            
         end
     end
 end
