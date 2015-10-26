@@ -213,11 +213,12 @@ inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
 inParser.addRequired('smoothingFactor', @isstruct);
 inParser.addParameter('bsplines', [], @isstruct);
-inParser.addParameter('basis_dim', 10, @isnumeric);
-inParser.addParameter('basis_degree', 3, @isnumeric);
-inParser.addParameter('penalty_degree', 2, @isnumeric);
+inParser.addParameter('basisDim', 10, @isnumeric);
+inParser.addParameter('basisDegree', 3, @isnumeric);
+inParser.addParameter('penaltyDegree', 2, @isnumeric);
 inParser.addParameter('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
 inParser.addParameter('knots', [], @isvector);
+inParser.addParameter('knotDiff', [], @isvector);
 
 inParser.parse(factor, varargin{:});
 
@@ -230,26 +231,25 @@ else
     data = [ones(size(by.smoothingFactor.data)) by.factor.data];
     levels = [{by.smoothingFactor.name} by.factor.levels];
     %% Hacky crap that alters the number of knots so that we get a specific spacing ************************
-    if strcmp(by.smoothingFactor.name, 'Trial Time'),
-        desiredTimeDiff = 50; % ms between knots
+    if ~isempty(by.knotDiff)
         knot_range = diff(quantile(by.smoothingFactor.data, [0 1]));
         knot_range = [min(by.smoothingFactor.data) - (knot_range * 0.001), max(by.smoothingFactor.data) + (knot_range * 0.001)];
-        numKnots = ceil((diff(knot_range) / desiredTimeDiff) + (by.basis_degree - 1));
-        by.basis_dim = numKnots;
+        numKnots = ceil((diff(knot_range) / by.knotDiff) + (by.basisDegree - 1));
+        by.basisDim = numKnots;
     end
 end
 
 numLevels = size(data, 2);
 
 if isempty(by.bsplines)
-    [bsplines] = createBSpline(by.smoothingFactor.data, 'basis_dim', by.basis_dim, ...
-        'basis_degree', by.basis_degree, 'penalty_degree', by.penalty_degree, ...
+    [bsplines] = createBSpline(by.smoothingFactor.data, 'basisDim', by.basisDim, ...
+        'basisDegree', by.basisDegree, 'penaltyDegree', by.penaltyDegree, ...
         'knots', by.knots, 'ridgeLambda', by.ridgeLambda);
 else
     bsplines = by.bsplines;
 end
 
-numDim = numLevels * (bsplines.basis_dim - 1);
+numDim = numLevels * (bsplines.basisDim - 1);
 X = zeros(length(by.smoothingFactor.data), numDim);
 
 sqrtPen = [{bsplines.con_sqrtPen} repmat({bsplines.con_sqrtPen}, [1 numLevels-1])];
@@ -260,22 +260,22 @@ constraints = [{bsplines.constraint} repmat({bsplines.constraint}, [1 numLevels-
 covName = repmat({factor.name}, [1 numDim]);
 covName = covName(:)';
 
-covLevelNames = repmat(levels, [bsplines.basis_dim-1 1]);
+covLevelNames = repmat(levels, [bsplines.basisDim-1 1]);
 covLevelNames = covLevelNames(:)';
 covLevelNames = strcat(covLevelNames, ['.' by.smoothingFactor.name]);
-level_no = num2cell(repmat(1:bsplines.basis_dim-1, [1 numLevels]));
+level_no = num2cell(repmat(1:bsplines.basisDim-1, [1 numLevels]));
 level_no = cellfun(@(x) num2str(x), level_no, 'UniformOutput', false);
 covLevelNames = strcat(covLevelNames, '.', level_no);
 
-constraintLevelNames = repmat(levels, [bsplines.basis_dim 1]);
+constraintLevelNames = repmat(levels, [bsplines.basisDim 1]);
 constraintLevelNames = constraintLevelNames(:)';
 constraintLevelNames = strcat(constraintLevelNames, ['.' by.smoothingFactor.name]);
-level_no = num2cell(repmat(1:bsplines.basis_dim, [1 numLevels]));
+level_no = num2cell(repmat(1:bsplines.basisDim, [1 numLevels]));
 level_no = cellfun(@(x) num2str(x), level_no, 'UniformOutput', false);
 constraintLevelNames = strcat(constraintLevelNames, '.', level_no);
 
 for level_ind = 1:numLevels,
-    level_idx = (level_ind-1) * (bsplines.basis_dim-1) + [1:bsplines.basis_dim-1];
+    level_idx = (level_ind-1) * (bsplines.basisDim-1) + [1:bsplines.basisDim-1];
     X(:, level_idx) = [bsxfun(@times, data(:, level_ind), bsplines.con_basis)];
 end
 
