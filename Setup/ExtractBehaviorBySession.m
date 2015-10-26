@@ -97,7 +97,6 @@ cov = 1:numtrials;
 behaviorData('Trial Number') = cov;
 
 consistent = nan(numtrials,1);
-
 %% Find consistent attempts
 for cur_trial = 1:numtrials,
     % find the five trials before the current trial and the five trials after
@@ -173,22 +172,17 @@ behaviorData(covName) = cov;
 difference = diff(behaviorData('Rule'));
 switc = zeros(1, numtrials);
 switc(find(abs(difference) > 0) + 1) = 1;
-cov = grp2idx(switc);
-behaviorData('Switch') = cov;
+behaviorData('Switch') = grp2idx(switc);
 %% Correct Trials
-cov = ismember([trials.ResponseError], trialInfo('Correct'))';
-behaviorData('Correct') = cov;
+behaviorData('Correct') = ismember([trials.ResponseError], trialInfo('Correct'))';
 %% Incorrect Trials
-cov = ismember([trials.ResponseError], trialInfo('Incorrect'))';
-behaviorData('Incorrect') = cov;
+behaviorData('Incorrect') = ismember([trials.ResponseError], trialInfo('Incorrect'))';
 %% Attempted Trials
-cov = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')])' ...
+behaviorData('Attempted') = ismember([trials.ResponseError], [trialInfo('Correct') trialInfo('Incorrect')])' ...
     & behaviorData('Reaction Time') > reactBounds(1) ...
     & behaviorData('Reaction Time') < reactBounds(2);
-behaviorData('Attempted') = cov;
 %% Fixation Breaks
-cov = ~ismember([trials.ResponseError], trialInfo('Fixation Break'))';
-behaviorData('Fixation Break') = cov;
+behaviorData('Fixation Break') = ~ismember([trials.ResponseError], trialInfo('Fixation Break'))';
 %% Consistent Attempt
 behaviorData('Consistent Attempt') = behaviorData('Consistent') & ...
     behaviorData('Attempted');
@@ -228,17 +222,15 @@ for level_ind = 1:length(covInfo(covName).levels),
 end
 behaviorData('Saccade') = cov;
 %% Monkey's saccade direction
-cov = grp2idx(...
+behaviorData('Response Direction') = grp2idx(...
     (ismember(condition, trialInfo('Saccade:Left')) & ismember([trials.ResponseError]', trialInfo('Correct'))) ...
     | (~ismember(condition, trialInfo('Saccade:Left')) & ismember([trials.ResponseError]', trialInfo('Incorrect'))) ...
     );
-behaviorData('Response Direction') = cov;
 %% Rule Cue Switch
 difference = diff(behaviorData('Rule Cues')) ~= 0;
 switc = zeros(1,numtrials);
 switc(find(abs(difference) > 0)+1) = 1;
-cov = grp2idx(switc);
-behaviorData('Rule Cue Switch') = cov;
+behaviorData('Rule Cue Switch') = grp2idx(switc);
 %% Previous Error
 cov = lagmatrix(grp2idx(behaviorData('Incorrect')), 1);
 cov(isnan(cov)) = 1;
@@ -262,13 +254,12 @@ for sw_ind = 1:length(sw)+1
     end
 end
 ruleRep = ruleRep + 1;
-cov = ruleRep;
-behaviorData('Switch Distance') = cov;
+behaviorData('Switch Distance') = ruleRep;
 %% Rule Repetition - number of repetitions up to a number
 cov = behaviorData('Switch Distance');
 cov(cov >= numRepetitionLags) = numRepetitionLags;
 behaviorData('Rule Repetition') = cov;
-%% Distance from Error
+%% Distance from last error
 dist_err = nan(size(behaviorData('Incorrect')));
 err = find(behaviorData('Incorrect'));
 num = diff(err);
@@ -282,33 +273,24 @@ for err_ind = 1:length(err)+1
     end
 end
 % dist_err(1:find(behaviorData('Incorrect'), 1) - 1) = numErrorLags;
-cov = dist_err;
-behaviorData('Error Distance') = cov;
-clear cov
+behaviorData('Error Distance') = dist_err;
 %% Previous Error History Indicator
 % non-cumulative version of error history
 dist_err = behaviorData('Error Distance');
 dist_err(dist_err == 0) = NaN;
 dist_err(dist_err >= numErrorLags) = numErrorLags;
-cov = dist_err;
-behaviorData('Previous Error History Indicator') = cov;
+behaviorData('Previous Error History Indicator') = dist_err;
 %% Session Time
-thirds = numtrials*(1/3);
-temp = 1:numtrials;
-temp(temp <= thirds) = 1; % early in day
-temp(temp > thirds & temp <= 2* thirds) = 2; %middle of day
-temp(temp > 2* thirds) = 3; %late part of day
-cov = temp';
-behaviorData('Session Time') = cov;
+thirds = quantile(1:numtrials, [0 1/3 2/3 1]);
+thirds(end) = thirds(end) + 1;
+[~, sessionTime] = histc(1:numtrials, thirds);
+behaviorData('Session Time') = sessionTime';
 %% Block in Day
-cov = cumsum(behaviorData('Switch') - 1) + 1;
-behaviorData('Rule Block') = cov;
+behaviorData('Rule Block') = cumsum(behaviorData('Switch') - 1) + 1;
 %% Congruency History
-cov = lagmatrix(behaviorData('Congruency'), 0:1);
-behaviorData('Congruency History') = cov;
+behaviorData('Congruency History') = lagmatrix(behaviorData('Congruency'), 0:1);
 %% Previous Congruency
-cov = lagmatrix(behaviorData('Congruency'), 1);
-behaviorData('Previous Congruency') = cov;
+behaviorData('Previous Congruency') = lagmatrix(behaviorData('Congruency'), 1);
 %% Helper Function 
     function [cov] = findTimeDiff(desiredEncodes)
         findTimeInterval = @(encTime, encs, desiredEnc) sum(diff(encTime(ismember(encs, cell2mat(desiredEnc)))));
