@@ -14,7 +14,7 @@ GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, 
 load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'spikeCov');
 
 % Get the names of the covariates for the current model
-model = modelFormula_parse(gamParams.regressionModel_str);
+model = modelFormulaParse(gamParams.regressionModel_str);
 covNames = spikeCov.keys;
 
 % Size of Design Matrix
