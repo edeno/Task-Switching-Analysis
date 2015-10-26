@@ -59,7 +59,7 @@ for add_ind = 1:length(addTerms),
         
         if hasSmoothParams(add_ind),
             parsedTerms_add = parsedTerms{add_ind};
-            parsedTerms_add = regexp(parsedTerms_add, '=', 'split');
+            parsedTerms_add = strtrim(regexp(parsedTerms_add, '=', 'split'));
             numSmoothParams_add = cellfun(@(x) length(x), parsedTerms_add, 'UniformOutput', false);
             numSmoothParams_add = [numSmoothParams_add{:}];
             
@@ -69,7 +69,7 @@ for add_ind = 1:length(addTerms),
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
                 for add_opts_ind = 1:length(smoothParams_opt_add),
-                    smoothParams_opt_add{add_opts_ind}{2} = str2double(smoothParams_opt_add{add_opts_ind}{2});
+                    smoothParams_opt_add{add_opts_ind}{2} = str2num(smoothParams_opt_add{add_opts_ind}{2});
                 end
             end
             if any(numSmoothParams_add == 1),
@@ -93,8 +93,7 @@ for add_ind = 1:length(addTerms),
         isSmooth = [isSmooth; isSmooth_add(add_ind)];
         
         if hasSmoothParams(add_ind),
-            parsedTerms_add = parsedTerms{add_ind};
-            parsedTerms_add = regexp(parsedTerms_add, '=', 'split');
+            parsedTerms_add = strtrim(regexp(parsedTerms{add_ind}, '=', 'split'));
             numSmoothParams_add = cellfun(@(x) length(x), parsedTerms_add, 'UniformOutput', false);
             numSmoothParams_add = [numSmoothParams_add{:}];
             
@@ -103,7 +102,7 @@ for add_ind = 1:length(addTerms),
                 if mod(length(smoothParams_opt_add{:}), 2) ~= 0,
                     error(['Error: smoothing term ', addTerms{add_ind}, 'is parameterized incorrectly']);
                 end
-                smoothParams_opt_add{1}(2:2:end) = cellfun(@(x) str2double(x{2:2:end}), smoothParams_opt_add, 'UniformOutput', false);
+                smoothParams_opt_add{1}(2:2:end) = cellfun(@(x) str2num(x{2:2:end}), smoothParams_opt_add, 'UniformOutput', false); %#ok<*ST2NM>
             end
             
             if any(numSmoothParams_add == 1),
