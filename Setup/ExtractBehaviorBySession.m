@@ -80,6 +80,12 @@ load('-mat', sessionFile, 'trials', 'numtrials', 'cells', 'lfps');
 behaviorData = containers.Map();
 
 curMonkey = upper(regexprep(sessionName, '\d+', ''));
+%% Clean up the data
+% Set trials with empty to NaN
+[trials(cellfun(@isempty, {trials.ResponseError})).ResponseError] = deal(NaN);
+[trials(cellfun(@isempty, {trials.Condition})).Condition] = deal(NaN);
+[trials(cellfun(@isempty, {trials.Encodes})).Encodes] = deal(NaN);
+[trials(cellfun(@isempty, {trials.EncodeTimes})).Encodes] = deal(NaN);
 
 %% Figure out timing of encodes
 encodes = {trials.Encodes};
