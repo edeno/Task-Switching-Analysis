@@ -9,23 +9,30 @@ inParser = inputParser;
 inParser.addRequired('model', @ischar);
 inParser.addParameter('Monkey', 'All');
 inParser.addParameter('Session', 'All');
+inParser.addParameter('correctTrialsOnly', false);
 inParser.addParameter('Color', 'blue');
 inParser.parse(model, varargin{:});
 params = inParser.Results;
 
-monkey = bsxfun(@or, ismember(behavior('Monkey'), {params.Monkey}), strcmp(params.Monkey, 'All'));
-sessions = bsxfun(@or, ismember(behavior('Session Name'), {params.Session}), strcmp(params.Session, 'All'));
+monkey = bsxfun(@or, strcmpi({params.Monkey}, behavior('Monkey')), strcmpi(params.Monkey, 'All'));
+sessions = bsxfun(@or, strcmpi({params.Session}, behavior('Session Name')), strcmpi(params.Session, 'All'));
 filter_ind = monkey & sessions;
+if params.correctTrialsOnly,
+   filter_ind = filter_ind & behavior('Correct');
+end
 
 [designMatrix, gam] = gamModelMatrix(model, behavior, covInfo, 'level_reference', 'Reference');
+designMatrix = designMatrix(filter_ind, :);
+
 % Reaction Time
 reactionTime = behavior('Reaction Time');
+reactionTime = reactionTime(filter_ind);
 sessionNames = behavior('Session Name');
 sessionNames = sessionNames(filter_ind);
 sessionNameKeys = unique(sessionNames);
 numSessions = length(sessionNameKeys);
 
-[parameterEstAll, dev, stats] = glmfit(designMatrix(filter_ind, :), reactionTime(filter_ind), 'normal', 'link', 'log', 'constant', 'off');
+[parameterEstAll, dev, stats] = glmfit(designMatrix, reactionTime, 'normal', 'link', 'log', 'constant', 'off');
 
 numParameters = length(parameterEstAll);
 parameterEstBySession = nan(numSessions, numParameters);
@@ -40,21 +47,24 @@ plotHandles = cell(size(covNames));
 yTicksExpScale = 0.85:0.05:1.15;
 yTicksPercentScale = (yTicksExpScale - 1) * 100;
 yTicksLinearScale = log(yTicksExpScale);
-transparency = 0.2;
+transparency = 0.4;
 
 for plot_ind = 1:length(covNames)
     subplot(subplotSize(1), subplotSize(2), plot_ind);
     if strcmp(covNames{plot_ind}, '(Intercept)'),
-        plotHandles{plot_ind} = histogram(reactionTime(filter_ind, :));
+        plotHandles{plot_ind} = histogram(reactionTime);
         plotHandles{plot_ind}.DisplayStyle = 'stairs';
         plotHandles{plot_ind}.Normalization = 'probability';
         plotHandles{plot_ind}.EdgeColor = params.Color;
         if ~verLessThan('matlab', '8.5.1'),
             plotHandles{plot_ind}.LineWidth = 4; % Only works for matlab 2015b
         end
+        plotHandles{plot_ind}.EdgeAlpha = 0.9;
+        plotHandles{plot_ind}.LineWidth = 3;
         vline(exp(parameterEstAll(1)), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
-        xlim(quantile(reactionTime, [0 1]));
+%         xlim(quantile(reactionTime, [0 1]));
+        xlim([0 500]);
         title('All Reaction Times');
         box off;
         hold all;
@@ -82,12 +92,19 @@ for plot_ind = 1:length(covNames)
         set(gca, 'YTickLabel', yTicksPercentScale)
         set(gca, 'XTick', 1:numLevels);
         set(gca, 'XTickLabel', gam.levelNames(level_ind));
+        fasterTextHandle = text(0.55, min(yTicksLinearScale) + .01, {'Faster RT', '\downarrow'});
+        fasterTextHandle.FontSize = 11;
+        fasterTextHandle.Color = [153, 153, 153] / 255;
+        fasterTextHandle.VerticalAlignment = 'bottom';
+        slowerTextHandle = text(0.55, max(yTicksLinearScale) - .01, {'\uparrow', 'Slower RT'});
+        slowerTextHandle.FontSize = 11;
+        slowerTextHandle.Color = [153, 153, 153] / 255;
+        slowerTextHandle.VerticalAlignment = 'top';
         title(covNames{plot_ind});
         hline(0, 'k');
-        ylabel('Percent Change');
+        ylabel('Change from Baseline (%)');
         hold all;
         box off;
     end
 end
-
 end

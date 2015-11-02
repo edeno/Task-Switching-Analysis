@@ -99,8 +99,7 @@ behaviorData('Reaction Time') = findTimeDiff({trialInfo('Test Stimulus ON Encode
 behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
 behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
 behaviorData('Reward Time') = findTimeDiff(encodeMap('Reward'));
-cov = 1:numtrials;
-behaviorData('Trial Number') = cov;
+behaviorData('Trial Number') = [1:numtrials]';
 
 consistent = nan(numtrials,1);
 %% Find consistent attempts
