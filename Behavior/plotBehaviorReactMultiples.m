@@ -49,7 +49,9 @@ for plot_ind = 1:length(covNames)
         plotHandles{plot_ind}.DisplayStyle = 'stairs';
         plotHandles{plot_ind}.Normalization = 'probability';
         plotHandles{plot_ind}.EdgeColor = params.Color;
-        plotHandles{plot_ind}.LineWidth = 4;
+        if ~verLessThan('matlab', '8.5.1'),
+            plotHandles{plot_ind}.LineWidth = 4; % Only works for matlab 2015b
+        end
         vline(exp(parameterEstAll(1)), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
         xlim(quantile(reactionTime, [0 1]));
