@@ -38,33 +38,35 @@ else
     % Fetch Outputs from the jobs
     behavior = gatherMatorqueOutput(behaviorJob);
 end
-%% Compute normalized preparatory period
-sessionPrepTime = cellfun(@(x) x('Preparation Time'), behaviorJob, 'UniformOutput', false);
-prepAll = cat(1, sessionPrepTime{:});
+%% Compute normalized preparatory period - Normalize by Monkey and by Rule
+behaviorAll = mergeMap(behavior);
+prepTime = behaviorAll('Preparation Time');
+session = behaviorAll('Session Name');
+monkey = grp2idx(behaviorAll('Monkey'));
+monkeyID = unique(monkey);
+normPrepTime = nan(size(prepTime));
 
-monkey = cellfun(@(x) x('Monkey'), behaviorJob, 'UniformOutput', false);
-[monkey_ind, monkeyNames] = grp2idx(cat(1, monkey{:}));
-monkeyMeanPrep = accumarray(monkey_ind, prepAll, [], @nanmean);
-monkeyStdPrep = accumarray(monkey_ind, prepAll, [], @nanstd);
+normalize = @(x) (x - nanmean(x)) / 50; % Scale units to 50 ms of preparation time
 
-normFun = @(x, m) (x - monkeyMeanPrep(ismember(monkeyNames, m))) / monkeyStdPrep(ismember(monkeyNames, m));
-
-normPrep = cellfun(normFun, sessionPrepTime, monkey, 'UniformOutput', false);
-for k = 1:length(behavior),
-    cov = normPrep{k};
-    behavior{k}('Normalized Preparation Time') = cov;
+for monkey_ind = 1:length(monkeyID),
+        filter_ind = monkey == monkeyID(monkey_ind);
+        normPrepTime(filter_ind) = normalize(prepTime(filter_ind));
 end
-clear cov;
+
+for k = 1:length(sessionNames),
+    behavior{k}('Normalized Preparation Time') = normPrepTime(ismember(session, sessionNames{k}));
+end
 %% Split prep period into thirds
-for k = 1:length(monkeyNames),
-    quantByMonkey{k} = quantile(prepAll(monkey_ind == k), [0 (1/3) (2/3) 1]);
-    quantByMonkey{k}(1) = quantByMonkey{k}(1) - 1;
-    quantByMonkey{k}(end) = quantByMonkey{k}(end) + 1;
+numIntervals = 3;
+for monkey_ind = 1:length(monkeyID),
+        filter_ind = monkey == monkeyID(monkey_ind);
+        quantByMonkey = quantile(prepTime(filter_ind), [0:numIntervals] / numIntervals);
+        quantByMonkey(end) = quantByMonkey(end) + 1;
+        prepTimeIndicator(filter_ind) = histc(prepTime(filter_ind), quantByMonkey);
 end
 
-for k = 1:length(behavior),
-    cov = normBySession(sessionPrepTime{k}, quantByMonkey{ismember(monkeyNames, behavior{k}('Monkey'))});
-    behavior{k}('Preparation Time Indicator') = cov;
+for k = 1:length(sessionNames),
+    behavior{k}('Preparation Time Indicator') = prepTimeIndicator(ismember(session, sessionNames{k}));
 end
 %% Get total number of neurons
 numTotalNeurons = cellfun(@(x) x('Number of Neurons'), behaviorJob, 'UniformOutput', false);

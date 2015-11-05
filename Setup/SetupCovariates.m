@@ -7,13 +7,13 @@ cov.baselineLevel = {};
 cov.isHistory = false;
 covInfo('Preparation Time') = cov;
 %% Indicator Preparation Time
-cov.levels = {'Short' 'Medium', 'Long'};
+cov.levels = {'Short', 'Medium', 'Long'};
 cov.isCategorical = true;
 cov.baselineLevel = 'Medium';
 cov.isHistory = false;
 covInfo('Preparation Time Indicator') = cov;
 %% Normalized Preparation Time
-cov.levels = {'1 Std Dev of Prep Time'};
+cov.levels = {'50 ms of Prep Time'};
 cov.isCategorical = false;
 cov.baselineLevel = {};
 cov.isHistory = false;
