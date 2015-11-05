@@ -29,7 +29,7 @@ load(sprintf('%s/paramSet.mat', main_dir), ...
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
-inParser.addParameter('numFolds', 10, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('numFolds', 5, @(x) isnumeric(x) && x > 0)
 inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
 inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
 inParser.addParameter('ridgeLambda', 10.^(-3), @isvector)
