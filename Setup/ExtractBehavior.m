@@ -49,8 +49,8 @@ normPrepTime = nan(size(prepTime));
 normalize = @(x) (x - nanmean(x)) / 50; % Scale units to 50 ms of preparation time
 
 for monkey_ind = 1:length(monkeyID),
-        filter_ind = monkey == monkeyID(monkey_ind);
-        normPrepTime(filter_ind) = normalize(prepTime(filter_ind));
+    filter_ind = (monkey == monkeyID(monkey_ind));
+    normPrepTime(filter_ind) = normalize(prepTime(filter_ind));
 end
 
 for k = 1:length(sessionNames),
@@ -58,11 +58,12 @@ for k = 1:length(sessionNames),
 end
 %% Split prep period into thirds
 numIntervals = 3;
+prepTimeIndicator = nan(size(prepTime));
 for monkey_ind = 1:length(monkeyID),
-        filter_ind = monkey == monkeyID(monkey_ind);
-        quantByMonkey = quantile(prepTime(filter_ind), [0:numIntervals] / numIntervals);
-        quantByMonkey(end) = quantByMonkey(end) + 1;
-        prepTimeIndicator(filter_ind) = histc(prepTime(filter_ind), quantByMonkey);
+    filter_ind = (monkey == monkeyID(monkey_ind));
+    quantByMonkey = quantile(prepTime(filter_ind), [0:numIntervals] / numIntervals);
+    quantByMonkey(end) = quantByMonkey(end) + 1;
+    [~, prepTimeIndicator(filter_ind)] = histc(prepTime(filter_ind), quantByMonkey);
 end
 
 for k = 1:length(sessionNames),
