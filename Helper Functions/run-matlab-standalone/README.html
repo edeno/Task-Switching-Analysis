@@ -1,0 +1,85 @@
+<html>
+<head>
+    <link rel="stylesheet" href="/css/examples.css">
+</head>
+
+<h3>How To Create A Standalone Executable from MATLAB m-files</h3>
+<em>A standalone executable is built with the MATLAB compiler <b>mcc</b>.
+You can run the standalone on a <b>similar</b> computer without MATLAB installed.<br>
+On such a computer, however, the <a href="http://www.mathworks.com/products/compiler/mcr/">
+MATLAB Compiler Runtime (MCR) library</a>, available free of charge from Mathworks, must be installed.</em>
+
+<h4>The standaloneDemo folder</h4>
+<ol>
+<li> makefile.m -- app-specific m-file to help make.m create exec
+<li> make.m -- performs the compilation (>> make )
+<li> myApp.m -- example user application's main program
+<li> myStandalone.m -- optional starting m-file
+<li> mybash.txt -- append to your .bashrc file
+<li> mycsh.txt -- append to your .cshrc file
+<li> README.html -- this file
+<li> run-matlab-standalone.zip -- zip file of this directory
+<li> run_standalone_job -- batch script for running standalone
+</ol>
+
+<h4>Procedures for generating and running a MATLAB standalone on the SCC (or other Linux clusters)</h4>
+<ol>
+<li> If you do not have access to Boston University's Shared Computing Cluster (SCC), you may download the standaloneDemo.zip file. <br>Upon unzipping it, follow the steps starting from "cd run-matlab-standalone"</li>
+<li> If you have access to Boston University's Shared Computing Cluster (SCC), it is more convenient to <br>
+<pre>scc1$ cp -r /project/scv/examples/matlab/misc/run-matlab-standalone your-preferred-path
+scc1$ cd run-matlab-standalone
+scc1$ matlab&
+>> addpath codes2compile   % to access myApp.m
+>> mcc -mv -o myExecR2013a myStandalone.m myApp.m</pre>
+   <ul>
+     <li> -mv  produces a standalone and shows actions taken
+     <li> -o myExecR2013a specifies the executable name. Appending matlab version number indicates associated <a href="http://www.mathworks.com/products/compiler/mcr/">MCR</a> release
+     <li> Compile through <em>make.m</em> is more convenient in general. See <a href="http://www.bu.edu/tech/support/research/software-and-programming/common-languages/matlab/standalone/">How to Create & Run MATLAB Standalone Executable</a>.</li>
+   </ul>
+<li> Append mysch.txt and mybash.txt to .cshrc and .bashrc in your home directory<pre>
+<code>scc1% cat mycsh.txt >> ~/.cshrc</code>
+<code>scc1% cat mybash.txt >> ~/.bashrc</code></pre>
+<li> To make the changes effective immediately<pre>
+<code>scc1$ source ~/.bashrc</code>     <== if you run the bash shell
+<code>scc1% source ~/.cshrc</code>      <== if you run the csh shell</pre>
+<li> To run executable <i>myExecR2013a</i>
+   <ul>
+      <li> interactively from xterm (xwin32, MobaXterm)<br>
+           <code>scc1$ ./myExecR2013a 2000 4       <== n, nprocs are input to executable</code>
+      <li> in batch<br>
+           Submit one batch job via command line<br>
+           <code>scc1$ qsub -V -pe omp 4 -b y "./myExecR2013a 2000 4"</code><br>
+           Submit one batch job via batch script<br>
+           <code>scc1$ qsub -V ./run_standalone_job</code><br>
+           Launch multiple batch jobs via qsub Array Job option<pre>
+<code>scc1$ qsub ./run_standalone_job          <== run 1 job  n = 1000
+<code>scc1$ qsub -t 3  ./run_standalone_job    <== run 1 job; SGE_TASK_ID = 3;
+<code>scc1$ qsub -t 4-6  ./run_standalone_job  <== run 3 jobs; SGE_TASK_ID = [4,5,6];
+The qsubs Array Jobs option (-t) generates the environment variable $SGE_TASK_ID upon submission. 
+Script run_standalone_job  computes n = $SGE_TASK_ID * 1000 and pass to myExecR2013a to calculate
+the sum of the arithmetic sequence
+            s = 1 + 2 + 3 + . . . + n</pre>
+   </ul>
+</ol>
+
+For additional details, please visit: <a href="http://www.bu.edu/tech/support/research/software-and-programming/common-languages/matlab/standalone/">How to Generate a MATLAB Standalone Executable</a>
+
+<pre><em>Kadin Tseng, Research Computing Services, IS&T, Boston University
+Created  : November, 2013
+Modified : March, 2014
+           April, 2014
+           June,  2014
+           July,  2014
+           November, 2014
+            April, 2015
+</em></pre>
+
+<html>
+<head>
+    <link rel="stylesheet" href="/css/examples.css">
+</head>
+
+<!--#include virtual="/css/footer.html" -->
+</body>
+</html>
+
