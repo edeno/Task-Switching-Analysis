@@ -35,7 +35,7 @@ for timePeriod_ind = 1:length(timePeriodNames),
 %         SpikeCovJob = TorqueJob('ExtractSpikeCovariatesBySession', args, ...
 %             'walltime=0:30:00,mem=90GB');
         SpikeCovJob = SGEJob('ExtractSpikeCovariatesBySession', args, ...
-            'h_rt=0:30:00,mem_total=94G');
+            '-l h_rt=0:30:00,mem_total=94G');
         waitMatorqueJob(SpikeCovJob);
         [out, diaryLog{timePeriod_ind}] = gatherMatorqueOutput(SpikeCovJob); % Get the outputs
         for session_ind = 1:length(sessionNames),
