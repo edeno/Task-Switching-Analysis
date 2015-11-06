@@ -38,8 +38,8 @@ for timePeriod_ind = 1:length(timePeriodNames),
 %         spikeJob{timePeriod_ind} = TorqueJob('ExtractSpikesBySession', args, ...
 %             'walltime=1:00:00,mem=16GB');
         spikeJob{timePeriod_ind} = SGEJob('ExtractSpikesBySession', args, ...
-            '-l h_rt=1:00:00');
-        waitMatorqueJob(spikeJob{timePeriod_ind});
+            '-l h_rt=0:30:00', true, 'workingDir', '/projectnb/pfc-rule');
+        waitMatorqueJob(spikeJob{timePeriod_ind}, 'pauseTime', 60);
     end
 end
 %% Append Information to ParamSet

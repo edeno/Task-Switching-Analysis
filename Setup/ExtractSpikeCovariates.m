@@ -35,8 +35,8 @@ for timePeriod_ind = 1:length(timePeriodNames),
 %         SpikeCovJob = TorqueJob('ExtractSpikeCovariatesBySession', args, ...
 %             'walltime=0:30:00,mem=90GB');
         SpikeCovJob = SGEJob('ExtractSpikeCovariatesBySession', args, ...
-            '-l h_rt=0:30:00,mem_total=94G');
-        waitMatorqueJob(SpikeCovJob);
+            '-l h_rt=0:30:00,mem_total=94G', true, 'workingDir', '/projectnb/pfc-rule');
+        waitMatorqueJob(SpikeCovJob, 'pauseTime', 60);
         [out, diaryLog{timePeriod_ind}] = gatherMatorqueOutput(SpikeCovJob); % Get the outputs
         for session_ind = 1:length(sessionNames),
             saveFileName = sprintf('%s/Processed Data/%s/SpikeCov/%s_SpikeCov.mat', mainDir, timePeriodNames{timePeriod_ind}, sessionNames{session_ind});
