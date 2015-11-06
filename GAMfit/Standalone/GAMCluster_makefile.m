@@ -6,8 +6,7 @@ main = 'GAMCluster_standalone'; % or myApp if not to use myStandalone
                        % Then, place myApp.m in current folder
 
 %%2 Location of the rest of your m-files
-srcFolder = '';              % no more files need be compiled
-srcFolder = 'codes2compile'; % more files to compile live here
+srcFolder = 'GAMfit/'; % more files to compile live here
 
 %%3 Your executable base name
 exec = 'GAMClusterExec';   % MATLAB release appended later
