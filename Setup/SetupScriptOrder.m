@@ -1,15 +1,13 @@
 %% Setup Script Order
-clear all; close all; clc;
-
+clear variables; clc;
+isLocal = true; % on local computer or cluster?
 %% Setup Data
 SetupData; %  Sets up folders
+SetupCovariates; % Sets up covariate names
 % Need to transfer raw data into raw data folder
 SetupSessionNames; % Sets up data names
-SetupCovariates; % Sets up covariate names
-
 %% Extract Behavior
-ExtractBehavior; % Extracts behavior
-
+ExtractBehavior(isLocal); % Extracts behavior
 %% Extract Spikes
-ExtractSpikes;
-ExtractGLMCov;
+ExtractSpikes(isLocal);
+ExtractSpikeCovariates(isLocal);

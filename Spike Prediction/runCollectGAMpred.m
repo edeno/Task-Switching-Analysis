@@ -1,16 +1,16 @@
-clear all; close all; clc;
-main_dir = '/data/home/edeno/Task Switching Analysis';
-load(sprintf('%s/paramSet.mat', main_dir), 'data_info');
-timePeriod = 'Rule Response';
+%% Collects GAMfit session files into one file
+clear variables; clc;
+main_dir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', main_dir), 'validFolders');
+isLocal = false;
 
-models_dir = sprintf('%s/%s/Models', data_info.processed_dir, timePeriod);
-
-models = dir(models_dir);
-models = {models.name};
-models = models(~ismember(models, {'.', '..'}));
-
-for models_ind = 1:length(models),
-   
-    collectGAMpred(models{models_ind}, timePeriod);
-    
+if isLocal,
+    for time_ind = 1:length(validFolders),
+        fprintf('\nTime Period: %s\n', validFolders{time_ind});
+        collectGAMpred(validFolders{time_ind});
+    end
+else
+    % Use Cluster
+    job = TorqueJob('collectGAMpred', {validFolders}, ...
+        'walltime=4:00:00,mem=16GB');
 end

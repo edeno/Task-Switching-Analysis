@@ -1,0 +1,48 @@
+#!/bin/csh
+# this script is a qsub companion script that's written explicitly
+# to handle Array Jobs (-t) option for MATLAB standalone batch jobs.
+# Similar to matlab -r ". . ." but more flexible
+# Usage:
+# scc1$ qsub ./run_standalone_job                # n=100
+# scc1$ qsub -v n=200 ./run_standalone_job       # n=200
+# scc1$ qsub -t 200 ./run_standalone_job         # n=200
+# scc1$ qsub -t 100-500:200 ./run_standalone_job # n=100,300,500
+#
+# Specify SGE batch scheduler options
+# Merge output and error files in one
+#$ -j y
+# Send email to SCC userID when job finished or aborted
+#$ -m ae
+# Request 4 cores from omp queue (example needs multicores)
+# For serial apps, prepend the line below with another #
+#$ -pe omp 4
+# set default value for n; override with qsub -v or -t at runtime
+#$ -v n=100
+# Give the job(s) a name
+#$ -N myJobs
+
+echo "\n\n********************************************"
+echo "* This job runs on $HOSTNAME"
+echo "********************************************\n\n"
+
+set NODENAME = `echo $HOSTNAME | sed 's/.scc.bu.edu//'`
+
+# Running MATLAB standalone results in creation of a cache folder
+# in home dir which may cause runtime issues. Workaround below
+echo tmpdir is $TMPDIR
+setenv MCR_CACHE_ROOT $TMPDIR
+echo "\n\n********************************************"
+echo "* Created local scratch folder /net/$NODENAME$TMPDIR"
+echo "********************************************\n\n"
+
+unsetenv DISPLAY
+
+if $?SGE_TASK_ID then
+  @ n = $SGE_TASK_ID
+endif
+
+@ nprocs = $NSLOTS;   # -pe omp 4 ==> NSLOTS = 4 
+
+# this standalone example expects n (parfor i=1:n) & nprocs (cores)
+./myExecR2014b $n $nprocs
+

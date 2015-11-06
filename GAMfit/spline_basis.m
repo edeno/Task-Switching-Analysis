@@ -1,5 +1,5 @@
 function [basis_matrix] = spline_basis(t, knots)
-
+% Cardinal Splines
 knots = knots(:);
 t = t(:);
 t_size = length(t);
@@ -18,9 +18,9 @@ bad_ind = (whichBin == 0);
 t(bad_ind) = [];
 whichBin(bad_ind) = [];
 
-u = (t - knots(whichBin))./knots_diff(whichBin);
+u = (t - knots(whichBin))./ knots_diff(whichBin);
 u = [u.^3 u.^2 u ones(size(u))];    
-basisFun = u*basis;
+basisFun = u * basis;
 
 basis_matrix = zeros(length(t), length(knots));
 

@@ -1,86 +1,91 @@
 %% Extract Behavior
-clear all; close all; clc;
-
+function ExtractBehavior(isLocal)
 %% Setup
-main_dir = '/data/home/edeno/Task Switching Analysis';
-cd(main_dir);
-
-% Find Cluster
-jobMan = parcluster();
-cleanupClusterJob(jobMan, 'edeno', 'finished');
-
 % Load Common Parameters
-load('paramSet.mat', 'session_names', 'data_info', 'trial_info', 'numSessions');
-
-% Set Acceptable Reaction Times
-react_bounds = [100 313];
+mainDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', mainDir), 'sessionNames', 'trialInfo', ...
+    'numErrorLags', 'numRepetitionLags', 'reactBounds', 'encodeMap', 'covInfo');
 
 %% Get Behavior
+behaviorJob = [];
+fprintf('\n\nExtracting Behavior\n');
+if isLocal,
+    % Run Locally
+    for session_ind = 1:length(sessionNames),
+        behaviorJob{session_ind} = ExtractBehaviorBySession(sessionNames{session_ind}, ...
+            reactBounds, ...
+            trialInfo, ...
+            covInfo, ...
+            encodeMap, ...
+            numErrorLags, ...
+            numRepetitionLags);
+    end
+    behavior = behaviorJob;
+else
+    % Use Cluster
+    args = cellfun(@(x) {x; ...
+        reactBounds; ...
+        trialInfo, ...
+        covInfo, ...
+        encodeMap, ...
+        numErrorLags, ...
+        numRepetitionLags}', ...
+        sessionNames, 'UniformOutput', false);
+    behaviorJob = TorqueJob('ExtractBehaviorBySession', args, ...
+        'walltime=1:00:00,mem=16GB');
+    % Make sure the job has finished
+    waitMatorqueJob(behaviorJob);
+    % Fetch Outputs from the jobs
+    behavior = gatherMatorqueOutput(behaviorJob);
+end
+%% Compute normalized preparatory period - Normalize by Monkey and by Rule
+behaviorAll = mergeMap(behavior);
+prepTime = behaviorAll('Preparation Time');
+session = behaviorAll('Session Name');
+monkey = grp2idx(behaviorAll('Monkey'));
+monkeyID = unique(monkey);
+normPrepTime = nan(size(prepTime));
 
-% Create a job to run on the cluster
-behaviorJob = createJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', {which('saveMillerlab')}, 'NumWorkersRange', [1 12]);
+normalize = @(x) (x - nanmean(x)) / 50; % Scale units to 50 ms of preparation time
 
-% Loop through Raw Data Directories
-for session_ind = 1:numSessions,
-    fprintf('\nProcessing session: %s ...\n', session_names{session_ind});
-    createTask(behaviorJob, @SetupBehavior_cluster, 1, ...
-        {session_names{session_ind}, main_dir, react_bounds, session_ind});
-    
-end  % End Raw Data Directories
-
-submit(behaviorJob);
-
-% Make sure the job has finished
-fprintf('\nWaiting for sessions to finish ...\n');
-wait(behaviorJob);
-
-% Fetch Outputs from the jobs
-tempOutputs = fetchOutputs(behaviorJob);
-behavior = [tempOutputs{:}];
-
-%% Compute normalized preparatory period
-prep = cat(1, behavior.Prep_Time);
-norm_prep = nan(size(prep));
-monk = grp2idx(cat(1, behavior.monkey))';
-for k = 1:max(monk)
-    norm_prep(monk == k) = prep(monk == k) - nanmean(prep(monk == k));
+for monkey_ind = 1:length(monkeyID),
+    filter_ind = (monkey == monkeyID(monkey_ind));
+    normPrepTime(filter_ind) = normalize(prepTime(filter_ind));
 end
 
-norm_prep = norm_prep ./ (nanstd(norm_prep));
-
-for k = 1:length(behavior)
-    behavior(k).Normalized_Prep_Time = norm_prep(cat(1, behavior.day) == k);
+for k = 1:length(sessionNames),
+    behavior{k}('Normalized Preparation Time') = normPrepTime(ismember(session, sessionNames{k}));
+end
+%% Split prep period into thirds
+numIntervals = 3;
+prepTimeIndicator = nan(size(prepTime));
+for monkey_ind = 1:length(monkeyID),
+    filter_ind = (monkey == monkeyID(monkey_ind));
+    quantByMonkey = quantile(prepTime(filter_ind), [0:numIntervals] / numIntervals);
+    quantByMonkey(end) = quantByMonkey(end) + 1;
+    [~, prepTimeIndicator(filter_ind)] = histc(prepTime(filter_ind), quantByMonkey);
 end
 
-%% Split prep period into fifths
-prep = cat(1, behavior.Prep_Time);
-indicator_prep = nan(size(prep));
-monk = grp2idx(cat(1, behavior.monkey))';
-
-for k = 1:max(monk)
-    prep_quant_bounds = [-inf quantile(prep(monk == k), [1/5 2/5 3/5 4/5]) inf];
-    [~, bin] = histc(prep(monk == k), prep_quant_bounds);
-    bin(bin == 0) = NaN;
-    indicator_prep(monk == k) = bin;
+for k = 1:length(sessionNames),
+    behavior{k}('Preparation Time Indicator') = prepTimeIndicator(ismember(session, sessionNames{k}));
 end
-
-for k = 1:length(behavior)
-    behavior(k).Indicator_Prep_Time = indicator_prep(cat(1, behavior.day) == k);
-end
-
-
 %% Get total number of neurons
-numTotalNeurons = sum(cat(1, behavior.numNeurons));
-numTotalLFPs = sum(cat(1, behavior.numLFPs));
-
+numTotalNeurons = cellfun(@(x) x('Number of Neurons'), behaviorJob, 'UniformOutput', false);
+numTotalNeurons = sum([numTotalNeurons{:}]);
+numTotalLFPs = cellfun(@(x) x('Number of LFPs'), behaviorJob, 'UniformOutput', false);
+numTotalLFPs = sum([numTotalLFPs{:}]);
 %% Save everything
-fprintf('\nSaving ...\n');
+saveFileName = sprintf('%s/Behavior/behavior.mat', mainDir);
+fprintf('\nSaving to %s...\n', saveFileName);
 % Save Behavior
-save_file_name = sprintf('%s/behavior.mat', data_info.behavior_dir);
-save(save_file_name, 'behavior');
+save(saveFileName, 'behavior');
 
 % Append Information to ParamSet
-save_file_name = sprintf('%s/paramSet.mat', data_info.main_dir);
-save(save_file_name, 'numTotalNeurons', 'numTotalLFPs', 'react_bounds', '-append');
-
+saveFileName = sprintf('%s/paramSet.mat', mainDir);
+save(saveFileName, 'numTotalNeurons', 'numTotalLFPs', '-append');
+end
+function [quantile_ind] = normBySession(sessionPrepTime, quantBounds)
+[~, quantile_ind] = histc(sessionPrepTime, quantBounds);
+quantile_ind(isnan(sessionPrepTime)) = NaN;
+end
 

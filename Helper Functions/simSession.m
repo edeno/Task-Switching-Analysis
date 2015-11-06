@@ -1,24 +1,29 @@
-function [GLMCov, trial_id, trial_time, incorrect] = simSession(numTrials)
+function [spikeCov, trialTime, isCorrect, isAttempted, trialID, percentTrials] = simSession(numTrials)
+
+mainDir = getWorkingDir();
+
+% Load Common Parameters
+load(sprintf('%s/paramSet.mat', mainDir), 'numErrorLags');
+
+spikeCov = containers.Map;
+
+numNeurons = 1;
+neuronBrainArea = {'Test'};
+unit_number = 1;
+wire_number = 1;
+monkeyName = {'test'};
+
 % Trial Time, ID
 prepTime = round(100 + 200.*rand(numTrials, 1))';
-trialTime = 160 + prepTime;
+trialTimeByTrial = 160 + prepTime;
 
-trial_id = convertFactor(1:numTrials, trialTime);
+trialID = convertFactor(1:numTrials, trialTimeByTrial);
 
-trial_time = cellfun(@(time) 1:time, num2cell(trialTime), 'UniformOutput', false);
-trial_time = cat(2, trial_time{:})';
-
+trialTime = cellfun(@(time) 1:time, num2cell(trialTimeByTrial), 'UniformOutput', false);
+trialTime = cat(2, trialTime{:})';
 %% Preparation Time
-GLMCov(1).name = 'Prep Time';
-GLMCov(1).levels = {'1 ms of prep time'};
-GLMCov(1).isCategorical = false;
-GLMCov(1).data = convertFactor(prepTime, trialTime);
-
-GLMCov(2).name = 'Normalized Prep Time';
-GLMCov(2).levels = {'1 Std Dev of Prep Time'};
-GLMCov(2).isCategorical = false;
-GLMCov(2).data = convertFactor(zscore(prepTime), trialTime);
-
+spikeCov('Preparation Time') = convertFactor(prepTime, trialTimeByTrial);
+spikeCov('Normalized Preparation Time') = convertFactor(zscore(prepTime), trialTimeByTrial);
 %% Rule Factor
 Rule = nan(1, numTrials);
 Rule(1) = rand < 0.5;
@@ -41,16 +46,11 @@ for trial_ind = 1:numTrials,
 end
 
 Rule = grp2idx(Rule)';
-
-GLMCov(3).name = 'Rule';
-GLMCov(3).levels = {'Orientation', 'Color'};
-GLMCov(3).isCategorical = true;
-GLMCov(3).data = convertFactor(Rule, trialTime);
-
+spikeCov('Rule') = convertFactor(Rule, trialTimeByTrial);
 %% Switch History
 difference = diff(Rule);
-switc = zeros(1,numTrials);
-switc(find(difference)+1) = 1;
+switc = zeros(1, numTrials);
+switc(find(difference) + 1) = 1;
 switc = grp2idx(switc);
 
 dist_sw = nan(size(switc));
@@ -68,84 +68,81 @@ for sw_ind = 1:length(sw)+1
 end
 dist_sw = dist_sw'+1;
 
-dist_sw(dist_sw >= 11) = 11;
+dist_sw(dist_sw >= 6) = 6;
 
-GLMCov(4).name = 'Switch History';
-switch_hist_names = [strseq('Repetition', 1:10); 'Repetition11+']';
-GLMCov(4).levels = switch_hist_names;
-GLMCov(4).isCategorical = true;
-GLMCov(4).data = convertFactor(dist_sw, trialTime);
-
+spikeCov('Rule Repetition') = convertFactor(dist_sw, trialTimeByTrial);
 %% Congruency History
 inCon = grp2idx(rand(1, numTrials) <= .7);
 inCon = lagmatrix(inCon, 0:1)';
-
-GLMCov(5).name = 'Congruency History';
-GLMCov(5).levels = {'Congruent', 'Incongruent', 'Previous Congruent', 'Previous Incongruent'};
-GLMCov(5).isCategorical = true;
-GLMCov(5).data = [convertFactor(inCon(1, :), trialTime), convertFactor(inCon(2, :), trialTime)];
-
+spikeCov('Congruency History') = [convertFactor(inCon(1, :), trialTimeByTrial), ...
+    convertFactor(inCon(2, :), trialTimeByTrial)];
 %% Response Direction
 responseDir = grp2idx(rand(1, numTrials) <= .5)';
-
-GLMCov(6).name = 'Response Direction';
-GLMCov(6).levels = {'Right', 'Left'};
-GLMCov(6).isCategorical = true;
-GLMCov(6).data = convertFactor(responseDir, trialTime);
-
+spikeCov('Response Direction') = convertFactor(responseDir, trialTimeByTrial);
 %% Error History
 incorrect = rand(1, numTrials) <= .15;
 
-errorHist = lagmatrix(grp2idx(incorrect), 1:10)';
+errorHist = lagmatrix(grp2idx(incorrect), 1:numErrorLags)';
 Previous_Error_History = [];
 
-for error_ind = 1:10,
+for error_ind = 1:numErrorLags,
     Previous_Error_History = [
         Previous_Error_History ...
-        convertFactor(errorHist(error_ind, :), trialTime)...
+        convertFactor(errorHist(error_ind, :), trialTimeByTrial)...
         ];
 end
 
-GLMCov(7).name = 'Previous Error History';
-error_hist_names = [strseq('No Previous Error', 1:10) strseq('Previous Error', 1:10)]';
-GLMCov(7).levels = error_hist_names(:)';
-GLMCov(7).isCategorical = true;
-GLMCov(7).data = Previous_Error_History;
+spikeCov('Previous Error History') =  Previous_Error_History;
 
 % Distance from Error
-dist_err = nan(size(incorrect));
+distErr = nan(size(incorrect));
 err = find(incorrect);
 num = diff(err);
 
 for err_ind = 1:length(err)+1
     if err_ind == 1
-        dist_err(1:err(err_ind)) = 0:err(err_ind)-1;
+        distErr(1:err(err_ind)) = 0:err(err_ind)-1;
     elseif err_ind ~= length(err)+1
-        dist_err(err(err_ind-1):(err(err_ind-1) + num(err_ind-1) - 1)) = 0:num(err_ind-1)-1;
+        distErr(err(err_ind-1):(err(err_ind-1) + num(err_ind-1) - 1)) = 0:num(err_ind-1)-1;
     else
-        dist_err(err(err_ind-1):end) = 0:(length(dist_err) - err(err_ind-1));
+        distErr(err(err_ind-1):end) = 0:(length(distErr) - err(err_ind-1));
     end
 end
 
-dist_err(dist_err == 0) = NaN;
-dist_err(dist_err >= 11) = 11;
+distErr(distErr == 0) = NaN;
+distErr(distErr >= numErrorLags) = numErrorLags;
 
 % non-cumulative version of error history
-GLMCov(8).name = 'Previous Error History Indicator';
-error_hist_names = [strseq('Previous Error', 1:10); 'Previous Error11+']';
-GLMCov(8).levels = error_hist_names;
-GLMCov(8).isCategorical = true;
-GLMCov(8).data = convertFactor(dist_err, trialTime);
+spikeCov('Previous Error History Indicator') = convertFactor(distErr, trialTimeByTrial);
 
-incorrect = convertFactor(incorrect, trialTime);
+isCorrect = convertFactor(~incorrect, trialTimeByTrial);
+isAttempted = true(size(isCorrect));
+
+% Compute the number of trials for each time point
+% Compute the number of trials for each time point
+[n, bin] = histc(trialTime, [min(trialTime):max(trialTime) + 1]);
+percentTrials = n(bin) / max(n);
+
+% Trial Time
+spikeCov('Trial Time') = trialTime;
+%% Save Simulated Session
+spikeCovDir = sprintf('%s/Processed Data/Testing/spikeCov', mainDir);
+if ~exist(spikeCovDir, 'dir'),
+    mkdir(spikeCovDir);
+end
+
+filename = sprintf('%s/test_spikeCov.mat', spikeCovDir);
+save(filename, 'spikeCov', 'monkeyName', 'percentTrials', ...
+        'numNeurons', 'trialID', 'trialTime', ...
+        'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
 
 end
 
-function [converted] = convertFactor(GLMCov, trialTime)
+%%%%%%%%%%%%%%%%%%% Convert Factor %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [converted] = convertFactor(covariateDataByTrial, trialTimeByTrial)
 
-converted = cellfun(@(GLMCov, time) repmat(GLMCov, [1 time]), ...
-    num2cell(GLMCov, 1), num2cell(trialTime), 'UniformOutput', false);
+converted = cellfun(@(cov, time) repmat(cov, [1 time]), ...
+    num2cell(covariateDataByTrial, 1), num2cell(trialTimeByTrial), 'UniformOutput', false);
 
 converted = cat(2, converted{:})';
-
 end

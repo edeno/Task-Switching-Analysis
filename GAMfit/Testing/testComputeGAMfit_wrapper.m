@@ -1,19 +1,49 @@
-function [neurons, gam, designMatrix, spikes, model_dir] = testComputeGAMfit_wrapper(gamParams, Rate, GLMCov_name, timePeriod_dir, session_name)
+function [neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
+
+mainDir = getWorkingDir();
+
+load(sprintf('%s/paramSet.mat', mainDir), ...
+    'validPredType', 'covInfo');
+
+inParser = inputParser;
+inParser.addRequired('regressionModel_str', @ischar);
+inParser.addRequired('Rate',  @(x) isnumeric(x) & all(x > 0));
+inParser.addParameter('numFolds', 10, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParameter('smoothLambda', 0, @isvector)
+inParser.addParameter('ridgeLambda', 0, @isvector)
+inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('includeIncorrect', false, @islogical);
+inParser.addParameter('includeFixationBreaks', false, @islogical);
+inParser.addParameter('includeTimeBeforeZero', false, @islogical);
+inParser.addParameter('isPrediction', false, @islogical);
+inParser.addParameter('spikes', [], @(x) isnumeric(x));
+
+inParser.parse(regressionModel_str, Rate, varargin{:});
+
+% Add parameters to input structure after validation
+gamParams = inParser.Results;
+
+gamParams.timePeriod = 'Testing';
+gamParams.isLocal = true;
+
+timePeriodDir = sprintf('%s/Processed Data/Testing/', mainDir);
 
 % Simulate Spikes
-dt = 1E-3;
-spikes = simPoisson(Rate, dt);
-
-% Append spikes to GLMCov file
-save(GLMCov_name, 'spikes', '-append');
-
-% Save directory
-model_dir = sprintf('%s/Models/%s', timePeriod_dir, gamParams.regressionModel_str);
-if ~exist(model_dir, 'dir'),
-    mkdir(model_dir);
+if isempty(gamParams.spikes),
+    dt = 1E-3;
+    spikes = simPoisson(Rate, dt);
+    % Append spikes to GLMCov file
+    % Save Simulated Session
+    SpikeCovName = sprintf('%s/SpikeCov/test_SpikeCov.mat', timePeriodDir);
+    save(SpikeCovName, 'spikes', '-append');
+else
+    spikes = gamParams.spikes;
 end
 
-% Estimate GAM parameters
-[neurons, gam, designMatrix] = ComputeGAMfit(timePeriod_dir, session_name, gamParams, model_dir);
+%% Estimate GAM parameters
+profile -memory on;
+[neurons, stats, gam, designMatrix] = ComputeGAMfit('test', gamParams, covInfo);
+profile viewer;
 
 end

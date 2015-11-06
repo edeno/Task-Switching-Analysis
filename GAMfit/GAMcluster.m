@@ -16,86 +16,54 @@
 % includeIncorrect: true, *false* (optional)
 % inoTimeInteraction: {}, any valid covariate (optional)
 
-function GAMcluster(regressionModel_str, timePeriod, main_dir, varargin)
+function [gamJob] = GAMcluster(regressionModel_str, timePeriod, varargin)
 
 %% Validate Parameters
+main_dir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', main_dir), ...
-    'data_info', 'cov_info', 'validFolders', 'session_names', 'numMaxLags', 'monkey_names');
-
-validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
+    'covInfo', 'timePeriodNames', 'sessionNames', ...
+    'monkeyNames', 'validPredType');
 
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
-inParser.addRequired('timePeriod',  @(x) any(ismember(x, validFolders)));
-inParser.addParamValue('numFolds', 10, @(x) isnumeric(x) && x > 0)
-inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParamValue('smoothLambda', 10.^(-3:1:3), @isvector)
-inParser.addParamValue('ridgeLambda', 10.^(-3:1:3), @isvector)
-inParser.addParamValue('overwrite', false, @islogical)
-inParser.addParamValue('includeIncorrect', false, @islogical);
-inParser.addParamValue('includeFixationBreaks', false, @islogical);
-inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
+inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
+inParser.addParameter('numFolds', 5, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
+inParser.addParameter('ridgeLambda', 10.^(-3), @isvector)
+inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('includeIncorrect', false, @islogical);
+inParser.addParameter('includeFixationBreaks', false, @islogical);
+inParser.addParameter('includeTimeBeforeZero', false, @islogical);
+inParser.addParameter('isPrediction', false, @islogical);
+inParser.addParameter('isLocal', false, @islogical);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 gamParams = inParser.Results;
 
-if all(size(gamParams.ridgeLambda) ~= size(gamParams.smoothLambda)),
-    error('ridgeLambda must equal smoothLambda'); 
-end
-
-%% Setup Data Directories and Cluster Job Manager
-
-% Specify Cluster Profile
-jobMan = parcluster();
-
-% Specify Home and Data Directory
-timePeriod_dir = sprintf('%s/%s', data_info.processed_dir, timePeriod);
-save_dir = sprintf('%s/Models/%s', timePeriod_dir, gamParams.regressionModel_str);
-
-if ~exist(save_dir, 'dir'),
-    mkdir(save_dir);
-end
-
-%% Create or Open Log File
-log_file = sprintf('%s/Log.log', save_dir);
-fileID = fopen(log_file, 'w+');
-
-% Load the covariate file to process
-fprintf(fileID, '\n------------------------\n');
-fprintf(fileID, '\nDate: %s\n \n', datestr(now));
-fprintf(fileID, '\nGAM Parameters\n');
-fprintf(fileID, '\t regressionModel_str: %s\n', gamParams.regressionModel_str);
-fprintf(fileID, '\t timePeriod: %s\n', gamParams.timePeriod);
-fprintf(fileID, '\t numFolds: %d\n', gamParams.numFolds);
-fprintf(fileID, '\t ridgeLambda: %d\n', gamParams.ridgeLambda);
-fprintf(fileID, '\t smoothLambda: %d\n', gamParams.smoothLambda);
-fprintf(fileID, '\t overwrite: %d\n', gamParams.overwrite);
-fprintf(fileID, '\t includeIncorrect: %d\n', gamParams.includeIncorrect);
-
 %% Process Data
 fprintf('\nProcessing Model: %s\n', regressionModel_str);
-gamJob = cell(1, length(session_names));
-GAMfit_names = strcat(session_names, '_GAMfit.mat');
+gamJob = [];
 
-% Loop through files in the data directory
-for session_ind = 1:length(session_names),
-    
-    if exist(sprintf('%s/%s', save_dir, GAMfit_names{session_ind}), 'file') && ~gamParams.overwrite,
-       continue;
+if gamParams.isLocal,
+    % Run Locally
+    for session_ind = 1:length(sessionNames),
+        fprintf('\t...Session: %s\n', sessionNames{session_ind});
+        ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
     end
-    
-    fprintf('\t...Session: %s\n', session_names{session_ind});
-    gamJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir}, 'AttachedFiles', ...
-        {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
-    
-    createTask(gamJob{session_ind}, @ComputeGAMfit, 0, {timePeriod_dir, session_names{session_ind}, gamParams, save_dir});
-    submit(gamJob{session_ind}); 
+else
+    fprintf('Updating model list...\n');
+    modelListJob = TorqueJob('updateModelList', {{gamParams}}); 
+    waitMatorqueJob(modelListJob, 'pauseTime', 60);
+    % Use Cluster
+    fprintf('Fitting model....\n');
+    args = cellfun(@(x) {x; gamParams; covInfo}', sessionNames, 'UniformOutput', false);
+    gamJob = TorqueJob('ComputeGAMfit', args, ...
+        'walltime=24:00:00,mem=120GB,nodes=1:ppn=12');
 end
-
-fclose(fileID);
 
 end
