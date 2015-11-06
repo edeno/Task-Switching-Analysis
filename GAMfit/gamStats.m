@@ -1,9 +1,9 @@
 function [stats] = gamStats(designMatrix, y, fitInfo, trial_id, varargin)
 
 inParser = inputParser;
-inParser.addParameter('extraFitPenalty', 1, @isvector); % set to 1.4 if want extra smoothing
-inParser.addParameter('prior_weights', [], @isvector);
-inParser.addParameter('Compact', false, @islogical);
+inParser.addParamValue('extraFitPenalty', 1, @isvector); % set to 1.4 if want extra smoothing
+inParser.addParamValue('prior_weights', [], @isvector);
+inParser.addParamValue('Compact', false, @islogical);
 
 inParser.parse(varargin{:});
 stats = inParser.Results;

@@ -29,16 +29,16 @@ load(sprintf('%s/paramSet.mat', main_dir), ...
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
-inParser.addParameter('numFolds', 5, @(x) isnumeric(x) && x > 0)
-inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
-inParser.addParameter('ridgeLambda', 10.^(-3), @isvector)
-inParser.addParameter('overwrite', false, @islogical)
-inParser.addParameter('includeIncorrect', false, @islogical);
-inParser.addParameter('includeFixationBreaks', false, @islogical);
-inParser.addParameter('includeTimeBeforeZero', false, @islogical);
-inParser.addParameter('isPrediction', false, @islogical);
-inParser.addParameter('isLocal', false, @islogical);
+inParser.addParamValue('numFolds', 5, @(x) isnumeric(x) && x > 0)
+inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParamValue('smoothLambda', 10.^(-3), @isvector)
+inParser.addParamValue('ridgeLambda', 10.^(-3), @isvector)
+inParser.addParamValue('overwrite', false, @islogical)
+inParser.addParamValue('includeIncorrect', false, @islogical);
+inParser.addParamValue('includeFixationBreaks', false, @islogical);
+inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
+inParser.addParamValue('isPrediction', false, @islogical);
+inParser.addParamValue('isLocal', false, @islogical);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 

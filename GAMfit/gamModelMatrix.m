@@ -1,7 +1,7 @@
 function [designMatrix, gam] = gamModelMatrix(regressionModel_str, covariateData, covariateInfo, varargin)
 
 inParser = inputParser;
-inParser.addParameter('level_reference', 'Full', @ischar);
+inParser.addParamValue('level_reference', 'Full', @ischar);
 
 inParser.parse(varargin{:});
 
@@ -206,13 +206,13 @@ function [X, bsplines, covName, covLevelNames, sqrtPen, constraints, penalty, co
 inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
 inParser.addRequired('smoothingFactor', @isstruct);
-inParser.addParameter('bsplines', [], @isstruct);
-inParser.addParameter('basisDim', 10, @isnumeric);
-inParser.addParameter('basisDegree', 3, @isnumeric);
-inParser.addParameter('penaltyDegree', 2, @isnumeric);
-inParser.addParameter('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
-inParser.addParameter('knots', [], @isvector);
-inParser.addParameter('knotDiff', [], @isvector);
+inParser.addParamValue('bsplines', [], @isstruct);
+inParser.addParamValue('basisDim', 10, @isnumeric);
+inParser.addParamValue('basisDegree', 3, @isnumeric);
+inParser.addParamValue('penaltyDegree', 2, @isnumeric);
+inParser.addParamValue('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
+inParser.addParamValue('knots', [], @isvector);
+inParser.addParamValue('knotDiff', [], @isvector);
 
 inParser.parse(factor, varargin{:});
 

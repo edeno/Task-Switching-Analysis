@@ -6,7 +6,7 @@ function [spikeCov, spikes, ...
 mainDir = getWorkingDir();
 
 inParser = inputParser;
-inParser.addParameter('overwrite', false, @islogical);
+inParser.addParamValue('overwrite', false, @islogical); %#ok<NVREPL>
 inParser.parse(varargin{:});
 
 SpikeCovParams = inParser.Results;
