@@ -7,7 +7,7 @@ computerNames = {'cns-ws18', ...
 directories = {'C:\Users\edeno\Task Switching Analysis\', ...
     '/data/home/edeno/Task Switching Analysis/', ...
     '/Users/edeno/Documents/GitHub/Task-Switching-Analysis/', ...
-    '/projectnb/pfc-rule/Task Switching Analysis/'};
+    '/projectnb/pfc-rule/Task-Switching-Analysis/'};
 
 workingDir = containers.Map(computerNames, directories);
 [~, hostname] = system('hostname');
@@ -21,5 +21,5 @@ end
 if workingDir.isKey(hostname),
     directory = workingDir(hostname);
 else
-    directory = '/projectnb/pfc-rule/Task Switching Analysis/'; % Hacky default to assume we're on the cluster
+    directory = '/projectnb/pfc-rule/Task-Switching-Analysis/'; % Hacky default to assume we're on the cluster
 end
