@@ -21,5 +21,5 @@ end
 if workingDir.isKey(hostname),
     directory = workingDir(hostname);
 else
-    directory = sprintf('%s/Task Switching Analysis/', pwd);
+    directory = '/projectnb/pfc-rule/Task Switching Analysis/'; % Hacky default to assume we're on the cluster
 end
