@@ -1,12 +1,13 @@
 % makefile.m script -- serves as input template for make.m
 % Make appropriate changes to suit your own app
+main_dir = getWorkingDir;
 
 %%1 Main program - either interface myStandalone or myApp
 main = 'GAMCluster_standalone'; % or myApp if not to use myStandalone
                        % Then, place myApp.m in current folder
 
 %%2 Location of the rest of your m-files
-srcFolder = 'GAMfit/'; % more files to compile live here
+srcFolder = sprintf('%s/GAMfit/', main_dir); % more files to compile live here
 
 %%3 Your executable base name
 exec = 'GAMClusterExec';   % MATLAB release appended later
