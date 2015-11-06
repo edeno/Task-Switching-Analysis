@@ -12,12 +12,12 @@ inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)) || strcmp(x, 'Testing'));
 inParser.addRequired('factorOfInterest',  @ischar);
-inParser.addParameter('numSim', 1000, @(x) isnumeric(x) && x > 0)
-inParser.addParameter('numSamples', [], @(x) isnumeric(x))
-inParser.addParameter('isWeighted', false, @islogical)
-inParser.addParameter('isLocal', false, @islogical)
-inParser.addParameter('overwrite', false, @islogical)
-inParser.addParameter('sessionNames', [], @iscell)
+inParser.addParamValue('numSim', 1000, @(x) isnumeric(x) && x > 0)
+inParser.addParamValue('numSamples', [], @(x) isnumeric(x))
+inParser.addParamValue('isWeighted', false, @islogical)
+inParser.addParamValue('isLocal', false, @islogical)
+inParser.addParamValue('overwrite', false, @islogical)
+inParser.addParamValue('sessionNames', [], @iscell)
 
 inParser.parse(regressionModel_str, timePeriod, type, varargin{:});
 
