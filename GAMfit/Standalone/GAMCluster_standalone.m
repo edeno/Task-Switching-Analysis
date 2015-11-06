@@ -7,6 +7,12 @@ function GAMCluster_standalone(session_ind, regressionModel_str, timePeriod, var
 %    scc1$ ./myExecR2013a 2000 4
 % c) Commandline input (if any) are passed as strings
 
+fprintf('\nMatlab:\n')
+fprintf('Session_ind: %s\n', session_ind);
+fprintf('Model: %s\n', regressionModel_str);
+fprintf('Time Period: %s\n', timePeriod);
+fprintf('vargain: %s\n', varargin{:});
+
 % Specify number of processors
 NPROCS = 12;
 % Must be converted to double for used as double
@@ -45,5 +51,4 @@ matlabpool('local', NPROCS);  % R2013a or older
 ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 matlabpool close;
 exit;
-
 end
