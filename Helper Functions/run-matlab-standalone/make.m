@@ -12,29 +12,29 @@ function make(varargin)
 
 % Strip filename's file extension (if present)
 for i=1:nargin
-  [~,name,~] = fileparts(varargin{i}); 
-  varargin{i} = name;
+    [~,name,~] = fileparts(varargin{i});
+    varargin{i} = name;
 end
 
 % param={cmd  file} dictates what make will do & with what
 switch nargin
-   case 0    % default: compile /with/ makefile
-     param = {'compile' 'makefile'}; % default settings
-     fprintf('Use default: %s with %s\n', param{1}, param{2});
-   case 1    % dryrun /with/ makefile or compile /with/ filename
-     if strcmpi('dryrun', varargin)   
-       param = {'dryrun' 'makefile'};
-     else
-       param = {'compile' varargin{1}};
-     end
-     fprintf('Set 1 parameter: %s with %s\n', param{1}, param{2});
-   case 2    % dryrun /with/ filename
-     ind = find(~strcmpi('dryrun', varargin));
-     param = {'dryrun' varargin{ind}};
-     fprintf('Set 2 parameters: %s with %s\n', param{1}, param{2});
-   otherwise
-     fprintf('Too many input. Process terminated.\n');
-     exit
+    case 0    % default: compile /with/ makefile
+        param = {'compile' 'makefile'}; % default settings
+        fprintf('Use default: %s with %s\n', param{1}, param{2});
+    case 1    % dryrun /with/ makefile or compile /with/ filename
+        if strcmpi('dryrun', varargin)
+            param = {'dryrun' 'makefile'};
+        else
+            param = {'compile' varargin{1}};
+        end
+        fprintf('Set 1 parameter: %s with %s\n', param{1}, param{2});
+    case 2    % dryrun /with/ filename
+        ind = find(~strcmpi('dryrun', varargin));
+        param = {'dryrun' varargin{ind}};
+        fprintf('Set 2 parameters: %s with %s\n', param{1}, param{2});
+    otherwise
+        fprintf('Too many input. Process terminated.\n');
+        exit
 end
 
 dryrun = strcmpi('dryrun', param{1}); % dryrun(true) or compile
@@ -43,20 +43,20 @@ run(param{2});   % runs makefile or filename
 opts = '-N';   % compile for MATLAB only (no toolboxes)
 theMessage = 'compile for MATLAB only (no toolboxes)';
 if numel(boxes) > 0
-   if sum(cell2mat(strfind(boxes,'all'))) >= 1;
-     opts = ''; % compile for MATLAB and all toolboxes
-     theMessage = 'compile for MATLAB and all toolboxes';
-   else
-     opts = strcat({'-p '},boxes,{' '}); % add to each element of boxes
-     opts = ['-N ' opts{1:end}];   % looks like this: '-N -p optim -p stats'
-     theMessage = 'compile for MATLAB and selected toolboxes';
-   end
+    if sum(cell2mat(strfind(boxes,'all'))) >= 1;
+        opts = ''; % compile for MATLAB and all toolboxes
+        theMessage = 'compile for MATLAB and all toolboxes';
+    else
+        opts = strcat({'-p '},boxes,{' '}); % add to each element of boxes
+        opts = ['-N ' opts{1:end}];   % looks like this: '-N -p optim -p stats'
+        theMessage = 'compile for MATLAB and selected toolboxes';
+    end
 end
 
 runtimeopts = [];
 if numel(runopts) > 0
-   runtimeopts = strcat({'-R '}, runopts, {' '});
-   runtimeopts = [runtimeopts{1:end}];
+    runtimeopts = strcat({'-R '}, runopts, {' '});
+    runtimeopts = [runtimeopts{1:end}];
 end
 
 % Append MATLAB MCR version detail to exec name
@@ -72,52 +72,54 @@ mymcc = [mymcc sprintf('       %s ...\n', opts)];
 
 % Next, specify the runtime options . . .
 if numel(runtimeopts) > 0
-  mymcc = [mymcc sprintf('       %s ...\n', runtimeopts)];
+    mymcc = [mymcc sprintf('       %s ...\n', runtimeopts)];
 end
 
 % Credits due . . .
 mymcc = [mymcc sprintf('       %s ... \n', credit)];
 % Then add "-a srcFolder" to point to user app files
-mymcc = [mymcc sprintf('       -a %s\n', srcFolder)];
+if ~isempty(srcFolder),
+    mymcc = [mymcc sprintf('       -a %s\n', srcFolder)];
+end
 
-fprintf(1,'\n\nmake will %s . . .\n %s\n', theMessage, mymcc)
+fprintf(1,'\n\nmake will %s . . .\n %s\n', theMessage, mymcc);
 
 %% Check if executable exists or outdated
-if ~exist(myexec) 
-  fprintf('Standalone does not exist !\n');
-  go = true;
-else
-  tmp = [dir(myexec); dir([main '.m']); nodots(srcFolder);];
-  tstamp = [tmp.datenum];
-  tfiles = tstamp(2:end);
-  texec = repmat(tstamp(1), [1, numel(tfiles)]);
-  if logical(any((tfiles - texec)>0))
-    fprintf('At least 1 file is newer than myexec; compile !\n');
+if ~exist(myexec)
+    fprintf('Standalone does not exist !\n');
     go = true;
-    STR1='File'; STR2='Last Modified';
-    fprintf('%-35s %32s\n',STR1, STR2);
-    for i=1:numel(tstamp)
-      fprintf('%-35s \t %s\n',tmp(i).name,datestr(tstamp(i)));
+else
+    tmp = [dir(myexec); dir([main '.m']); nodots(srcFolder);];
+    tstamp = [tmp.datenum];
+    tfiles = tstamp(2:end);
+    texec = repmat(tstamp(1), [1, numel(tfiles)]);
+    if logical(any((tfiles - texec)>0))
+        fprintf('At least 1 file is newer than myexec; compile !\n');
+        go = true;
+        STR1='File'; STR2='Last Modified';
+        fprintf('%-35s %32s\n',STR1, STR2);
+        for i=1:numel(tstamp)
+            fprintf('%-35s \t %s\n',tmp(i).name,datestr(tstamp(i)));
+        end
+    else
+        fprintf('%s is up-to-date, no compilation required !\n', myexec);
+        go = false;
     end
-  else
-    fprintf('%s is up-to-date, no compilation required !\n', myexec);
-    go = false;
-  end
 end
 
 if dryrun
-  fprintf('\n\n******************************************************\n');
-  fprintf(1,'    This is a test. No standalone generated.\n')
-  fprintf('******************************************************\n');
-else
-  if go
-    tic   % starts wallclock timer to record compile time
-    fprintf('Starts compiling . . .\n');
-    eval(mymcc) % run the mcc statement
     fprintf('\n\n******************************************************\n');
-    fprintf('Compile time for %s is %8.2f seconds\n', myexec, toc);
+    fprintf(1,'    This is a test. No standalone generated.\n')
     fprintf('******************************************************\n');
-  end
+else
+    if go
+        tic   % starts wallclock timer to record compile time
+        fprintf('Starts compiling . . .\n');
+        eval(mymcc) % run the mcc statement
+        fprintf('\n\n******************************************************\n');
+        fprintf('Compile time for %s is %8.2f seconds\n', myexec, toc);
+        fprintf('******************************************************\n');
+    end
 end
 
 %% Kadin Tseng & Keith Ma
