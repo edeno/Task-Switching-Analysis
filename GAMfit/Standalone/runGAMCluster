@@ -30,6 +30,8 @@ printf "********************************************\n\n"
 
 unset DISPLAY
 
+echo $LD_LIBRARY_PATH
+
 if [ -z "${SGE_TASK_ID}" ]; then
   session_ind=$SGE_TASK_ID
 fi
@@ -38,5 +40,6 @@ MODEL="Rule"
 echo "Model: $MODEL"
 TIMEPERIOD="Rule Response"
 echo "Time Period: $TIMEPERIOD"
+echo "Session Ind: $session_ind"
 
 ./GAMClusterExecR2013a "$session_ind" "$MODEL" "$TIMEPERIOD"
