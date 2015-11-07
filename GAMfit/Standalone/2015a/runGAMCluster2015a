@@ -42,4 +42,4 @@ TIMEPERIOD="Rule Response"
 echo "Time Period: $TIMEPERIOD"
 echo "Session Ind: $session_ind"
 
-./GAMClusterExecR2013a "$session_ind" "$MODEL" "$TIMEPERIOD"
+./GAMClusterExecR2015a "$session_ind" "$MODEL" "$TIMEPERIOD"

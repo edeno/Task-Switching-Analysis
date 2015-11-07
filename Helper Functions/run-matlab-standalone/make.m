@@ -85,41 +85,18 @@ end
 fprintf(1,'\n\nmake will %s . . .\n %s\n', theMessage, mymcc);
 
 %% Check if executable exists or outdated
-if ~exist(myexec)
-    fprintf('Standalone does not exist !\n');
-    go = true;
-else
-    tmp = [dir(myexec); dir([main '.m']); nodots(srcFolder);];
-    tstamp = [tmp.datenum];
-    tfiles = tstamp(2:end);
-    texec = repmat(tstamp(1), [1, numel(tfiles)]);
-    if logical(any((tfiles - texec)>0))
-        fprintf('At least 1 file is newer than myexec; compile !\n');
-        go = true;
-        STR1='File'; STR2='Last Modified';
-        fprintf('%-35s %32s\n',STR1, STR2);
-        for i=1:numel(tstamp)
-            fprintf('%-35s \t %s\n',tmp(i).name,datestr(tstamp(i)));
-        end
-    else
-        fprintf('%s is up-to-date, no compilation required !\n', myexec);
-        go = false;
-    end
-end
 
 if dryrun
     fprintf('\n\n******************************************************\n');
     fprintf(1,'    This is a test. No standalone generated.\n')
     fprintf('******************************************************\n');
 else
-    if go
-        tic   % starts wallclock timer to record compile time
-        fprintf('Starts compiling . . .\n');
-        eval(mymcc) % run the mcc statement
-        fprintf('\n\n******************************************************\n');
-        fprintf('Compile time for %s is %8.2f seconds\n', myexec, toc);
-        fprintf('******************************************************\n');
-    end
+    tic   % starts wallclock timer to record compile time
+    fprintf('Starts compiling . . .\n');
+    eval(mymcc) % run the mcc statement
+    fprintf('\n\n******************************************************\n');
+    fprintf('Compile time for %s is %8.2f seconds\n', myexec, toc);
+    fprintf('******************************************************\n');
 end
 
 %% Kadin Tseng & Keith Ma
@@ -132,7 +109,11 @@ end
 end   % function
 
 function d = nodots(target)
-d = dir(target); % 'target' is the investigated directory
-d = d(arrayfun(@(x) ~strcmp(x.name(1),'.'),d)); % remove .
-d = d(arrayfun(@(x) ~strcmp(x.name(1),'..'),d));% remove ..
+if ~isempty(target)
+    d = dir(target); % 'target' is the investigated directory
+    d = d(arrayfun(@(x) ~strcmp(x.name(1),'.'),d)); % remove .
+    d = d(arrayfun(@(x) ~strcmp(x.name(1),'..'),d));% remove ..
+else
+    d = target;
+end
 end

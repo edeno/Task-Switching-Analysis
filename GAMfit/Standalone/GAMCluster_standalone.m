@@ -1,17 +1,11 @@
 function GAMCluster_standalone(session_ind, regressionModel_str, timePeriod, varargin)
-% Standalone Main Program Rules
-% a) It must be a function, and it must not have output
-%    >> myStandalone 2000 4       % command  syntax
-%    >> myStandalone(2000, 4)     % function syntax
-% b) The standalone runs in command syntax only
-%    scc1$ ./myExecR2013a 2000 4
-% c) Commandline input (if any) are passed as strings
-
-fprintf('\nMatlab:\n')
+fprintf('\nMatlab\n')
+fprintf('---------\n')
 fprintf('Session_ind: %s\n', session_ind);
 fprintf('Model: %s\n', regressionModel_str);
 fprintf('Time Period: %s\n', timePeriod);
 fprintf('vargain: %s\n', varargin{:});
+fprintf('---------\n');
 
 % Specify number of processors
 NPROCS = 12;
@@ -35,11 +29,12 @@ inParser.addParamValue('numFolds', 5, @(x) isnumeric(x) && x > 0)
 inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
 inParser.addParamValue('smoothLambda', 10.^(-3:4), @isvector)
 inParser.addParamValue('ridgeLambda', 1, @isvector)
-inParser.addParamValue('overwrite', false, @isnumeric)
+inParser.addParamValue('overwrite', true, @isnumeric)
 inParser.addParamValue('includeIncorrect', false, @isnumeric);
 inParser.addParamValue('includeFixationBreaks', false, @isnumeric);
 inParser.addParamValue('includeTimeBeforeZero', true, @isnumeric);
 inParser.addParamValue('isPrediction', false, @isnumeric);
+inParser.addParamValue('isLocal', false, @isnumeric);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
@@ -47,12 +42,12 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 gamParams = inParser.Results;
 
 % Compute sum with Parallel Computing Toolbox's parfor
-if verLessThan('matlab', '8.1'),
+if verLessThan('matlab', '8.2'),
     matlabpool('local', NPROCS);  % R2013a or older
     ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
     matlabpool close;
 else
-    clusterProfile = parpool('local', NPROCS);
+    parpool('local', NPROCS);
     ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 end
 
