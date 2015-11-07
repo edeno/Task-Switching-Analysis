@@ -14,29 +14,29 @@
 # Give the job(s) a name
 #$ -N GAMfit
 
-echo "\n\n********************************************"
-echo "* This job runs on $HOSTNAME"
-echo "********************************************\n\n"
+printf "\n\n********************************************"
+printf "* This job runs on %s" "$HOSTNAME"
+printf "********************************************\n\n"
 
-NODENAME = `echo $HOSTNAME | sed 's/.scc.bu.edu//'`
+NODENAME=$(echo "$HOSTNAME" | sed 's/.scc.bu.edu//')
 
 # Running MATLAB standalone results in creation of a cache folder
 # in home dir which may cause runtime issues. Workaround below
-echo tmpdir is $TMPDIR
+printf "tmpdir is %s" "$TMPDIR"
 export MCR_CACHE_ROOT=$TMPDIR
-echo "\n\n********************************************"
-echo "* Created local scratch folder /net/$NODENAME$TMPDIR"
-echo "********************************************\n\n"
+printf "\n\n********************************************"
+printf "* Created local scratch folder /net/%s%s" "$NODENAME" "$TMPDIR"
+printf "********************************************\n\n"
 
 unset DISPLAY
 
 if [ -z "${SGE_TASK_ID}" ]; then
-  session_ind = $SGE_TASK_ID
+  session_ind=$SGE_TASK_ID
 fi
 
-MODEL = "Rule"
+MODEL="Rule"
 echo "Model: $MODEL"
-TIMEPERIOD = "Rule Response"
+TIMEPERIOD="Rule Response"
 echo "Time Period: $TIMEPERIOD"
 
-./GAMClusterExecR2013a $session_ind $MODEL $TIMEPERIOD
+./GAMClusterExecR2013a "$session_ind" "$MODEL" "$TIMEPERIOD"
