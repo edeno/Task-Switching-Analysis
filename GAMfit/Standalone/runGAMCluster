@@ -30,7 +30,7 @@ echo "********************************************\n\n"
 
 unset DISPLAY
 
-if $?SGE_TASK_ID then
+if [ -z "${SGE_TASK_ID}" ]; then
   session_ind = $SGE_TASK_ID
 fi
 
