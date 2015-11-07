@@ -3,7 +3,7 @@
 # to handle Array Jobs (-t) option for MATLAB standalone batch jobs.
 # Similar to matlab -r ". . ." but more flexible
 # Usage:
-# scc1$ qsub -t 1-32 ./runGAMCluster # session_ind=1,2, .. 32
+# scc1$ qsub -t 1-32 ./runGAMCluster2013a.sh # session_ind=1,2, .. 32
 #
 # Specify SGE batch scheduler options
 # Merge output and error files in one
@@ -13,7 +13,6 @@
 #$ -N GAMfit
 
 module load mcr/8.1
-
 
 printf "\n\n********************************************"
 printf "* This job runs on %s" "$HOSTNAME"

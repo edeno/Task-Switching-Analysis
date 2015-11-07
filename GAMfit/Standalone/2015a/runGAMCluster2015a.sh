@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 # this script is a qsub companion script that's written explicitly
 # to handle Array Jobs (-t) option for MATLAB standalone batch jobs.
 # Similar to matlab -r ". . ." but more flexible
@@ -9,10 +9,10 @@
 # Merge output and error files in one
 #$ -j y
 #$ -pe omp 12
-# set default value for n; override with qsub -v or -t at runtime
-#$ -v session_ind=1
 # Give the job(s) a name
 #$ -N GAMfit
+
+module load mcr/9.0
 
 printf "\n\n********************************************"
 printf "* This job runs on %s" "$HOSTNAME"
@@ -32,9 +32,7 @@ unset DISPLAY
 
 echo $LD_LIBRARY_PATH
 
-if [ -z "${SGE_TASK_ID}" ]; then
-  session_ind=$SGE_TASK_ID
-fi
+session_ind=$SGE_TASK_ID
 
 MODEL="Rule"
 echo "Model: $MODEL"
