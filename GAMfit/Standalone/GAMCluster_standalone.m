@@ -47,8 +47,14 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 gamParams = inParser.Results;
 
 % Compute sum with Parallel Computing Toolbox's parfor
-matlabpool('local', NPROCS);  % R2013a or older
-ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
-matlabpool close;
+if verLessThan('matlab', '8.1'),
+    matlabpool('local', NPROCS);  % R2013a or older
+    ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
+    matlabpool close;
+else
+    clusterProfile = parpool('local', NPROCS);
+    ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
+end
+
 exit;
 end
