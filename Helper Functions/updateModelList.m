@@ -12,12 +12,12 @@ end
 if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
     load(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'modelList');
     if ~modelList.isKey(gamParams.regressionModel_str)
-        fprintf('Adding model to list...\n');
+        fprintf('Adding model %s to list...\n', gamParams.regressionModel_str);
         fprintf('Folder name: %s\n', sprintf('M%d', modelList.length + 1));
         modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
     end
 else
-    fprintf('Adding model to list...\n');
+    fprintf('Adding model %s to list...\n', gamParams.regressionModel_str);
     fprintf('Folder name: M1\n');
     modelList = containers.Map(gamParams.regressionModel_str, 'M1');
 end
