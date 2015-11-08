@@ -32,7 +32,7 @@ inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
 inParser.addParamValue('numFolds', 5, @(x) isnumeric(x) && x > 0)
 inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
 inParser.addParamValue('smoothLambda', 10.^(-3), @isvector)
-inParser.addParamValue('ridgeLambda', 10.^(-3), @isvector)
+inParser.addParamValue('ridgeLambda', 1, @isvector)
 inParser.addParamValue('overwrite', false, @islogical)
 inParser.addParamValue('includeIncorrect', false, @islogical);
 inParser.addParamValue('includeFixationBreaks', false, @islogical);
