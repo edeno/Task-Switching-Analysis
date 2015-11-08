@@ -2,7 +2,7 @@
 modelList=("s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
 "s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)")
 
-runScript="/projectnb/pfc-rule/Task-Switching-Analysis/GAMfit/Standalone/2015a/runGAMCluster2015a.sh"
+runScript="./runGAMCluster2015a.sh"
 
 # Time Period: Rule Response
 timeperiod="Rule Response"
@@ -17,7 +17,7 @@ do
   addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper Functions'); \
   updateModelList(gamParams); exit;"
   # Submit Cluster Jobs
-  qsub -t 1-34 "$runScript" \
+  qsub -t 1-2 \
        -N GAMfit \
        -l h_rt=24:00:00 \
        -l mem_total=125G \
@@ -25,5 +25,6 @@ do
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
-       -j y /projectnb/pfc-rule/jobs/
+       -j y \
+       "$runScript" \;
 done
