@@ -7,10 +7,7 @@
 #
 # Specify SGE batch scheduler options
 # Merge output and error files in one
-#$ -j y
 #$ -pe omp 12
-# Give the job(s) a name
-#$ -N GAMfit
 
 module load mcr/8.5
 
