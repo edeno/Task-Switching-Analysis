@@ -12,7 +12,7 @@
 # Give the job(s) a name
 #$ -N GAMfit
 
-module load mcr/9.0
+module load mcr/8.5
 
 printf "\n\n********************************************"
 printf "* This job runs on %s" "$HOSTNAME"
