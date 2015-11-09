@@ -1,4 +1,14 @@
 function GAMCluster_standalone(session_ind, regressionModel_str, timePeriod, varargin)
+%#function ComputeGAMfit
+%#function fitGAM
+%#function gamModelMatrix
+%#function gamStats
+%#function getGLMDistrParams
+%#function insertNaN
+%#function modelFormulaParse
+%#function spline_basis
+%#function testlink
+
 fprintf('\nMatlab\n')
 fprintf('---------\n')
 fprintf('Session_ind: %s\n', session_ind);
