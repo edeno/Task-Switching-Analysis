@@ -27,8 +27,6 @@ printf "********************************************\n\n"
 
 unset DISPLAY
 
-echo "$MODEL"
-
 session_ind=$SGE_TASK_ID
 MODEL=${MODEL?No model specified}
 TIMEPERIOD=${TIMEPERIOD?No time period specified}

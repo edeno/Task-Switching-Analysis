@@ -19,7 +19,7 @@ do
   qsub -t 1-2 \
        -N GAMfit \
        -l h_rt=24:00:00 \
-       -v MODEL="$curModel" \
+       -v 'MODEL="$curModel"' \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
