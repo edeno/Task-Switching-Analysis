@@ -7,6 +7,8 @@
 #
 # Specify SGE batch scheduler options
 # Merge output and error files in one
+#$ -j y
+#$ -o "/usr3/graduate/edeno/logs/$SGE_TASK_ID.log"
 #$ -pe omp 12
 
 module load mcr/8.5

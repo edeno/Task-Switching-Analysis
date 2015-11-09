@@ -20,13 +20,12 @@ do
   # because qsub splits passed variables with commas
   curModel=$(echo "$curModel" | sed -e "s/,/','/g")
   # Submit Cluster Jobs
-  qsub -t 1-2 \
+  qsub -t "1-$numFiles" \
        -N GAMfit \
        -l h_rt=24:00:00 \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
-       -j y \
        ./runGAMCluster2015a.sh;
 done
