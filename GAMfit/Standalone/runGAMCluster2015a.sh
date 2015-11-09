@@ -13,9 +13,9 @@
 
 module load mcr/8.5
 
-printf "\n\n********************************************"
-printf "* This job runs on %s" "$HOSTNAME"
-printf "********************************************\n\n"
+printf "\n\n---------\n"
+printf "This job runs on %s" "$HOSTNAME"
+printf "\n---------\n\n"
 
 NODENAME=$(echo "$HOSTNAME" | sed 's/.scc.bu.edu//')
 
@@ -23,9 +23,9 @@ NODENAME=$(echo "$HOSTNAME" | sed 's/.scc.bu.edu//')
 # in home dir which may cause runtime issues. Workaround below
 printf "tmpdir is %s" "$TMPDIR"
 export MCR_CACHE_ROOT=$TMPDIR
-printf "\n\n********************************************"
-printf "* Created local scratch folder /net/%s%s" "$NODENAME" "$TMPDIR"
-printf "********************************************\n\n"
+printf "\n\n---------\n"
+printf "Created local scratch folder /net/%s%s" "$NODENAME" "$TMPDIR"
+printf "\n---------\n\n"
 
 unset DISPLAY
 
