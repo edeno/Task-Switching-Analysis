@@ -9,10 +9,10 @@ fprintf('---------\n');
 
 % Specify number of processors
 NPROCS = 12;
-% Must be converted to double for used as double
+% Must be converted to double for use as double
 session_ind = str2double(session_ind);
 if ~isempty(varargin),
-    varargin{2:2:end} = str2double(varargin{2:2:end});
+    varargin(2:2:end) = deal(cellfun(@(x) str2double(x), varargin(2:2:end), 'UniformOutput', false));
 end
 %% Validate Parameters
 main_dir = getWorkingDir();
