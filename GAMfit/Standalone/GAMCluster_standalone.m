@@ -14,7 +14,8 @@ session_ind = str2double(session_ind);
 if ~isempty(varargin),
     convert_ind = 2:2:length(varargin);
     % Don't convert predType -- which is entered as a string
-    convert_ind = convert_ind(~ismember(convert_ind, (find(ismember(varargin, 'predType')) + 1)));
+    predTypeArg_ind = find(ismember(varargin, 'predType')) + 1; % Find predType argument if it exists
+    convert_ind = convert_ind(~ismember(convert_ind, predTypeArg_ind)); % Remove from index of cells to convert
     varargin(convert_ind) = deal(cellfun(@(x) str2double(x), varargin(convert_ind), 'UniformOutput', false));
 end
 %% Validate Parameters
