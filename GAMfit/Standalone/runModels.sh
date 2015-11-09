@@ -23,6 +23,7 @@ do
   qsub -t "1-$numFiles" \
        -N GAMfit \
        -l h_rt=24:00:00 \
+	-l mem_total=125G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \

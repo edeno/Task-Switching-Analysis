@@ -18,7 +18,7 @@ fprintf('vargain: %s\n', varargin{:});
 fprintf('---------\n');
 
 % Specify number of processors
-NPROCS = 12;
+NPROCS = 8;
 % Numbers are passed as strings. Need to convert to correct type
 session_ind = str2double(session_ind);
 if ~isempty(varargin),
