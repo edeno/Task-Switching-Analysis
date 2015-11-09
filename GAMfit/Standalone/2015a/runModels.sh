@@ -20,11 +20,12 @@ do
   qsub -t 1-2 \
        -N GAMfit \
        -l h_rt=24:00:00 \
-       -l mem_total=125G \
+       -l mem_total=94G \
        -v MODEL="${modelList[$i]}" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
        -j y \
+       -w v \
        "$runScript" \;
 done
