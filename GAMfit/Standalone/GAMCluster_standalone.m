@@ -9,10 +9,13 @@ fprintf('---------\n');
 
 % Specify number of processors
 NPROCS = 12;
-% Must be converted to double for use as double
+% Numbers are passed as strings. Need to convert to correct type
 session_ind = str2double(session_ind);
 if ~isempty(varargin),
-    varargin(2:2:end) = deal(cellfun(@(x) str2double(x), varargin(2:2:end), 'UniformOutput', false));
+    convert_ind = 2:2:length(varargin);
+    % Don't convert predType -- which is entered as a string
+    convert_ind = convert_ind(~ismember(convert_ind, (find(ismember(varargin, 'predType')) + 1)));
+    varargin(convert_ind) = deal(cellfun(@(x) str2double(x), varargin(convert_ind), 'UniformOutput', false));
 end
 %% Validate Parameters
 main_dir = getWorkingDir();
