@@ -2,7 +2,7 @@
 modelList=("s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
 "s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)")
 
-numFiles=2;
+numFiles=34;
 # Time Period: Rule Response
 timeperiod="Rule Response"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
