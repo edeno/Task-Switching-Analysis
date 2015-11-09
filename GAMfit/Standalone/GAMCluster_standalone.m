@@ -40,14 +40,18 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 gamParams = inParser.Results;
+myCluster = parcluster('local');
+if getenv('ENVIRONMENT')    % true if this is a batch job
+    myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
+end
 
 % Compute sum with Parallel Computing Toolbox's parfor
 if verLessThan('matlab', '8.2'),
-    matlabpool('local', NPROCS);  % R2013a or older
+    matlabpool(myCluster, NPROCS);  % R2013a or older
     ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
     matlabpool close;
 else
-    parpool('local', NPROCS);
+    parpool(myCluster, NPROCS);
     ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 end
 
