@@ -27,8 +27,6 @@ printf "********************************************\n\n"
 
 unset DISPLAY
 
-echo $LD_LIBRARY_PATH
-
 session_ind=$SGE_TASK_ID
 MODEL=${MODEL?No model specified}
 TIMEPERIOD=${TIMEPERIOD?No time period specified}
@@ -54,7 +52,7 @@ echo "Include time before zero: $INCLUDETIMEBEFOREZERO"
 echo "Prediction: $ISPREDICTION"
 
 ./GAMClusterExecR2015a "$session_ind" "$MODEL" "$TIMEPERIOD" \
-"numFolds" "$NUMFOLDS"\
+"numFolds" "$NUMFOLDS" \
 "predType" "$PREDTYPE" \
 "smoothLambda" "$SMOOTHLAMBDA" \
 "ridgeLambda"  "$RIDGELAMBDA" \
