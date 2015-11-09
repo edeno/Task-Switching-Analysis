@@ -39,6 +39,9 @@ INCLUDEFIXATIONBREAKS=${OVERWRITE:-"0"}
 INCLUDETIMEBEFOREZERO=${OVERWRITE:-"0"}
 ISPREDICTION=${ISPREDICTION:-"0"}
 
+# Strip escaped commas from the model string
+MODEL=$(echo "$MODEL" | sed -e "s/','/,/g")
+
 echo "Session Ind: $session_ind"
 echo "Model: $MODEL"
 echo "Time Period: $TIMEPERIOD"

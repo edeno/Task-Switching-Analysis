@@ -2,6 +2,7 @@
 modelList=("s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
 "s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)")
 
+numFiles=2;
 # Time Period: Rule Response
 timeperiod="Rule Response"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
@@ -15,11 +16,14 @@ do
   gamParams.regressionModel_str = '$curModel'; \
   addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper Functions'); \
   updateModelList(gamParams); exit;"
+  # Escape commas in model string with single quotes
+  # because qsub splits passed variables with commas
+  curModel=$(echo "$curModel" | sed -e "s/,/','/g")
   # Submit Cluster Jobs
   qsub -t 1-2 \
        -N GAMfit \
        -l h_rt=24:00:00 \
-       -v 'MODEL="$curModel"' \
+       -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
