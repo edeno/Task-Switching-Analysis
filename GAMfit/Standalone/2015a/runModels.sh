@@ -9,7 +9,7 @@ printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
 for (( i = 0; i < ${#modelList[@]}; i++ ))
 do
   curModel="${modelList[$i]}"
-  printf "\tProcessing Model: %s \n" $curModel
+  printf "\tProcessing Model: %s \n" "$curModel"
   # Update model list
   matlab -nodisplay -r "gamParams.timePeriod = '$timeperiod'; \
   gamParams.regressionModel_str = '$curModel'; \
