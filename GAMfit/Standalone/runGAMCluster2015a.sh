@@ -32,16 +32,16 @@ unset DISPLAY
 session_ind=$SGE_TASK_ID
 MODEL=${MODEL?No model specified}
 TIMEPERIOD=${TIMEPERIOD?No time period specified}
-NUMFOLDS=${NUMFOLDS:-5}
+NUMFOLDS=${NUMFOLDS:-"5"}
 PREDTYPE=${PREDTYPE:-"Dev"}
 SMOOTHLAMBDA=${SMOOTHLAMBDA:-"10^(-3)"}
 RIDGELAMBDA=${RIDGELAMBDA:-"1"}
 OVERWRITE=${OVERWRITE:-"0"}
-INCLUDEFIXATIONBREAKS=${OVERWRITE:-"0"}
-INCLUDETIMEBEFOREZERO=${OVERWRITE:-"0"}
+INCLUDEFIXATIONBREAKS=${INCLUDEFIXATIONBREAKS:-"0"}
+INCLUDETIMEBEFOREZERO=${INCLUDETIMEBEFOREZERO:-"0"}
 ISPREDICTION=${ISPREDICTION:-"0"}
 
-# Strip escaped commas from the model string
+# Strip escaped commas ',' from the model string
 MODEL=$(echo "$MODEL" | sed -e "s/','/,/g")
 
 echo "Session Ind: $session_ind"
