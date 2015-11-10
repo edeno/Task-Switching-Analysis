@@ -35,7 +35,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -46,3 +47,6 @@ Icon
 
 # Data
 *.sdt
+*.log
+GAMfit.o*
+GAMfit.po*
