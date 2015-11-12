@@ -129,7 +129,7 @@ isPrediction = gamParams.isPrediction;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
 % Remove NaNs beforehand to avoid the memory cost of removing them in fitGaM
-wasNaN = any(isnan(spikes), 2) | any(isnan(designMatrix), 2);
+wasNaN = any(isnan(designMatrix), 2);
 
 %Transfer static assets to each worker only once
 if verLessThan('matlab', '8.6'),
