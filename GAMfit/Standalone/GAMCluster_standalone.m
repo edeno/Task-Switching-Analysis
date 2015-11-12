@@ -59,15 +59,8 @@ if getenv('ENVIRONMENT')    % true if this is a batch job
     myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
 end
 
-% Compute sum with Parallel Computing Toolbox's parfor
-if verLessThan('matlab', '8.2'),
-    matlabpool(myCluster, NPROCS);  % R2013a or older
-    ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
-    matlabpool close;
-else
-    parpool(myCluster, NPROCS);
-    ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
-end
+parpool(myCluster, NPROCS, 'SpmdEnabled', false);
+ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 
 exit;
 end
