@@ -59,7 +59,7 @@ if getenv('ENVIRONMENT')    % true if this is a batch job
     myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
 end
 
-parpool(myCluster, NPROCS, 'SpmdEnabled', false);
+parpool(myCluster, NPROCS);
 ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 
 exit;
