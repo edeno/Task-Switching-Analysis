@@ -132,6 +132,7 @@ fprintf('\nFitting GAMs ...\n');
 wasNaN = any(isnan(designMatrix), 2);
 
 %Transfer static assets to each worker only once
+fprintf('\nTransfering static assets to each worker...\n');
 if verLessThan('matlab', '8.6'),
     dM = WorkerObjWrapper(designMatrix(~wasNaN, :));
     gP = WorkerObjWrapper(gamParams);
@@ -147,6 +148,7 @@ else
     gP = parallel.pool.Constant(gamParams);
     tI = parallel.pool.Constant(trialID(~wasNaN, :));
 end
+fprintf('\nFinished transfering static assets...\n');
 
 spikes = spikes(~wasNaN, :);
 % dM.Value = designMatrix(~wasNaN, :);
