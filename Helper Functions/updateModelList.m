@@ -6,6 +6,7 @@ timePeriod_dir = sprintf('%s/Processed Data/%s/', main_dir, gamParams.timePeriod
 model_dir = sprintf('%s/Models/', timePeriod_dir);
 
 if ~exist(model_dir, 'dir'),
+    fprintf('\nCreating model directory: %s\n', model_dir);
     mkdir(model_dir);
 end
 
