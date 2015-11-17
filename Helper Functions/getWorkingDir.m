@@ -10,10 +10,14 @@ directories = {'C:\Users\edeno\Documents\GitHub\Task-Switching-Analysis\', ...
     '/projectnb/pfc-rule/Task-Switching-Analysis/'};
 
 workingDir = containers.Map(computerNames, directories);
-[~, hostname] = system('hostname -f');
+if ispc,
+    [~, hostname] = system('hostname');
+else
+    [~, hostname] = system('hostname -f');
+end
 hostname = strtrim(hostname);
 
- % Make all cluster nodes save to the same space
+% Make all cluster nodes save to the same space
 if strfind(hostname, 'scc'),
     hostname = 'scc';
 end
