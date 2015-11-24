@@ -9,7 +9,7 @@
 # Merge output and error files in one
 #$ -j y
 #$ -o /usr3/graduate/edeno/logs/$JOB_NAME-$TASK_ID-$JOB_ID.log
-#$ -pe omp 8
+#$ -pe omp 16
 
 module load mcr/8.5
 
