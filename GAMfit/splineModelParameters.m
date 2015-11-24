@@ -2,7 +2,7 @@ clear variables; clc;
 ridgeLambda = 1;
 smoothLambda = 10.^(-3:4);
 numFolds = 5;
-isOverwrite = true;
+isOverwrite = false;
 timePeriods = {'Rule Response'};
 includeTimeBeforeZero = true;
 model = {...
