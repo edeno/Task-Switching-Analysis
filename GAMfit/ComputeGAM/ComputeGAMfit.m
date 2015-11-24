@@ -126,8 +126,7 @@ unitNumber = num2cell(unitNumber);
 stats = cell([1 numNeurons]);
 neurons = cell([1 numNeurons]);
 isPrediction = gamParams.isPrediction;
-%% Do the fitting
-fprintf('\nFitting GAMs ...\n');
+
 % Remove NaNs beforehand to avoid the memory cost of removing them in fitGaM
 wasNaN = any(isnan(designMatrix), 2);
 
@@ -157,6 +156,9 @@ spikes = spikes(~wasNaN, :);
 % con.Value = gam.constraints;
 % gP.Value = gamParams;
 % tI.Value = trialID(~wasNaN, :);
+
+%% Do the fitting
+fprintf('\nFitting GAMs ...\n');
 
 parfor curNeuron = 1:numNeurons,
     if isPrediction,
