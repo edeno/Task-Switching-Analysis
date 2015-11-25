@@ -22,12 +22,12 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N GAMfit \
-       -l h_rt=48:00:00 \
+       -l h_rt=72:00:00 \
        -l mem_total=125G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
-       -v OVERWRITE="1" \
+       -v OVERWRITE="0" \
        -v ISPREDICTION="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
        ./runGAMCluster2015a.sh;
