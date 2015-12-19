@@ -3,16 +3,18 @@ clear variables; close all; clc; profile off;
 % GAMpred parameters
 isOverwrite = true;
 numFolds = 5;
-ridgeLambda = 0;
+ridgeLambda = 1;
 smoothLambda = 10.^(-3:3);
 
 % Simulate Session
 numTrials = 2000;
-[SpikeCov, trial_time, isCorrect, isAttempted, trialID] = simSession(numTrials);
+[spikeCov, trial_time, isCorrect, isAttempted, trialID] = simSession(numTrials);
 
 % Load Common Parameters
 mainDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', mainDir), 'covInfo');
+cov_id = @(cov_name, level_name) find(ismember(covInfo(cov_name).levels, level_name));
+level_ind = @(cov_name, level_name) ismember(spikeCov(cov_name), cov_id(cov_name, level_name));
 %%
 trueRate = nan(size(trial_time));
 
