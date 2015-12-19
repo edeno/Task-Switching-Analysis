@@ -102,8 +102,9 @@ maxIter = 25; % maximum number of iterations before stopping
 tol = 1E-8; % termination tolerance
 augmented_weights = ones(size(sqrtPenMatrix, 1), 1);
 
-fullX =  [x; sqrtPenMatrix];
-[nrowx,ncolx] = size(fullX);
+orig_ncolx = size(x, 1);
+x =  [x; sqrtPenMatrix];
+[nrowx,ncolx] = size(x);
 
 %% Begin fitting
 for iter = 1:maxIter,
@@ -138,7 +139,7 @@ for iter = 1:maxIter,
     % Solve the weighted fit for beta
     beta = wfit();
     % New linear prediction
-    etaNew = gam.offset + (x * beta);
+    etaNew = gam.offset + (x(1:orig_ncolx, :) * beta);
     % Error between current prediction and new prediction
     dz = max(abs(etaCurrent - etaNew));
     
@@ -169,7 +170,7 @@ for iter = 1:maxIter,
     end
 end
 
-xw_r = bsxfun(@times, x, sqrtw);
+xw_r = bsxfun(@times, x(1:orig_ncolx, :), sqrtw);
 [~, R] = qr(xw_r,0);
 [u, d, ~] = svd([R; sqrtPenMatrix], 0);
 
@@ -203,13 +204,8 @@ fitInfo.distrFun = distrFun;
 
 %% Perform a weighted least squares fit
     function [beta] = wfit()
-        
-        yw = fullY .* fullWeights;
-        xw = bsxfun(@times, fullX, fullWeights);
-        
-        [Q, wR, perm] = qr(xw,0);
-        
-        z = Q'*yw;
+        [Q, wR, perm] = qr(bsxfun(@times, x, fullWeights),0);
+        z = Q' * (fullY .* fullWeights);
         % Use the rank-revealing QR to keep the linearly independent columns of XW.
         wKeepCols = abs(diag(wR)) > (abs(wR(1)) .* max(nrowx,ncolx) .* eps(class(wR)));
         
