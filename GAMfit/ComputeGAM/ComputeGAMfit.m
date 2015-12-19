@@ -63,13 +63,16 @@ unitNumber = double(unit_number);
 
 monkeyName = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
 monkeyName = monkeyName{:};
-%% Setup Design Matrix
-fprintf('\nConstructing model design matrix...\n');
-if all(gamParams.ridgeLambda == 0)
-    referenceLevel = 'Reference';
-else
-    referenceLevel = 'Full';
-end
+
+numTrials = length(unique(trialID));
+numPFC = sum(ismember(neuronBrainArea, 'dlPFC'));
+numACC = sum(ismember(neuronBrainArea, 'ACC'));
+
+wireNumber = num2cell(wireNumber);
+unitNumber = num2cell(unitNumber);
+stats = cell([1 numNeurons]);
+neurons = cell([1 numNeurons]);
+isPrediction = gamParams.isPrediction;
 
 covNames = spikeCov.keys;
 
@@ -112,59 +115,48 @@ if ~gamParams.includeFixationBreaks
     percentTrials(~isAttempted) = [];
 end
 
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', referenceLevel);
-
-% Make sure covariates are of class double
-designMatrix = double(designMatrix);
-
-numTrials = length(unique(trialID));
-numPFC = sum(ismember(neuronBrainArea, 'dlPFC'));
-numACC = sum(ismember(neuronBrainArea, 'ACC'));
-
-wireNumber = num2cell(wireNumber);
-unitNumber = num2cell(unitNumber);
-stats = cell([1 numNeurons]);
-neurons = cell([1 numNeurons]);
-isPrediction = gamParams.isPrediction;
-
-% Remove NaNs beforehand to avoid the memory cost of removing them in fitGaM
-wasNaN = any(isnan(designMatrix), 2);
-
 %Transfer static assets to each worker only once
 fprintf('\nTransfering static assets to each worker...\n');
-if verLessThan('matlab', '8.6'),
-    dM = WorkerObjWrapper(designMatrix(~wasNaN, :));
-    gP = WorkerObjWrapper(gamParams);
-    cI = WorkerObjWrapper(gam.constant_ind);
-    sP = WorkerObjWrapper(gam.sqrtPen);
-    con = WorkerObjWrapper(gam.constraints);
-    tI = WorkerObjWrapper(trialID(~wasNaN, :));
-else
-    dM = parallel.pool.Constant(designMatrix(~wasNaN, :));
-    cI = parallel.pool.Constant(gam.constant_ind);
-    sP = parallel.pool.Constant(gam.sqrtPen);
-    con = parallel.pool.Constant(gam.constraints);
-    gP = parallel.pool.Constant(gamParams);
-    tI = parallel.pool.Constant(trialID(~wasNaN, :));
-end
+% if verLessThan('matlab', '8.6'),
+%     gP = WorkerObjWrapper(gamParams);
+%     tI = WorkerObjWrapper(trialID);
+%     sC = WorkerObjWrapper(spikeCov);
+%     cI = WorkerObjWrapper(covInfo);
+% else
+%     gP = parallel.pool.Constant(gamParams);
+%     tI = parallel.pool.Constant(trialID);
+%     sC = parallel.pool.Constant(spikeCov);
+%     cI = parallel.pool.Constant(covInfo);
+% end
 fprintf('\nFinished transfering static assets...\n');
 
-spikes = spikes(~wasNaN, :);
-% dM.Value = designMatrix(~wasNaN, :);
-% cI.Value = gam.constant_ind;
-% sP.Value = gam.sqrtPen;
-% con.Value = gam.constraints;
-% gP.Value = gamParams;
-% tI.Value = trialID(~wasNaN, :);
-
+gP.Value = gamParams;
+tI.Value = trialID;
+sC.Value = spikeCov;
+cI.Value = covInfo;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
-
-parfor curNeuron = 1:numNeurons,
-    if isPrediction,
-        neurons{curNeuron} = predictGAM(dM.Value, spikes(:, curNeuron), cI.Value, sP.Value, con.Value, gP.Value, tI.Value, curNeuron);
+for curNeuron = 1:numNeurons,
+    fprintf('\nConstructing model design matrix for Neuron #%d...\n', curNeuron);
+    if all(gP.Value.ridgeLambda == 0),
+        referenceLevel = 'Reference';
     else
-        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(dM.Value, spikes(:, curNeuron), cI.Value, sP.Value, con.Value, gP.Value, tI.Value, curNeuron);
+        referenceLevel = 'Full';
+    end
+    
+    [designMatrix, gam] = gamModelMatrix(gP.Value.regressionModel_str, sC.Value, cI.Value, 'level_reference', referenceLevel);
+    
+    % Make sure covariates are of class double
+    designMatrix = double(designMatrix);
+
+    if isPrediction,
+        neurons{curNeuron} = predictGAM(designMatrix, spikes(:, curNeuron), ...
+            gam.constant_ind, gam.sqrtPen, gam.constraints, gP.Value, ...
+            tI.Value, curNeuron);
+    else
+        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(designMatrix, ...
+            spikes(:, curNeuron), gam.constant_ind, gam.sqrtPen, ...
+            gam.constraints, gP.Value, tI.Value, curNeuron);
     end
 end % End Neuron Loop
 
@@ -179,6 +171,12 @@ end
 neurons = [neurons{:}];
 stats = [stats{:}];
 
+if all(gamParams.ridgeLambda == 0)
+    referenceLevel = 'Reference';
+else
+    referenceLevel = 'Full';
+end
+[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', referenceLevel);
 gam.trialID = trialID;
 gam.trialTime = trialTime;
 %% Save to file
