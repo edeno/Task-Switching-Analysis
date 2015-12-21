@@ -52,6 +52,12 @@ if exist(saveFileName, 'file') && ~gamParams.overwrite,
     fprintf('File %s already exists. Skipping.\n', saveFileName);
     return;
 end
+
+myCluster = parcluster('local');
+tempDir = tempname;
+mkdir(tempDir);
+myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
+parpool(myCluster, 8);
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
 dataFileName = sprintf('%s/SpikeCov/%s_SpikeCov.mat', timePeriodDir, sessionName);
@@ -186,6 +192,7 @@ save(saveFileName, 'neurons', 'stats', ...
     'designMatrix', 'spikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
+rmdir(tempDir);
 
 if ~gamParams.isLocal,
     designMatrix = [];

@@ -44,7 +44,6 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 gamParams = inParser.Results;
-
 %% Process Data
 fprintf('\nProcessing Model: %s\n', regressionModel_str);
 gamJob = [];
