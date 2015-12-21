@@ -123,26 +123,26 @@ end
 
 %Transfer static assets to each worker only once
 fprintf('\nTransfering static assets to each worker...\n');
-% if verLessThan('matlab', '8.6'),
-%     gP = WorkerObjWrapper(gamParams);
-%     tI = WorkerObjWrapper(trialID);
-%     sC = WorkerObjWrapper(spikeCov);
-%     cI = WorkerObjWrapper(covInfo);
-% else
-%     gP = parallel.pool.Constant(gamParams);
-%     tI = parallel.pool.Constant(trialID);
-%     sC = parallel.pool.Constant(spikeCov);
-%     cI = parallel.pool.Constant(covInfo);
-% end
+if verLessThan('matlab', '8.6'),
+    gP = WorkerObjWrapper(gamParams);
+    tI = WorkerObjWrapper(trialID);
+    sC = WorkerObjWrapper(spikeCov);
+    cI = WorkerObjWrapper(covInfo);
+else
+    gP = parallel.pool.Constant(gamParams);
+    tI = parallel.pool.Constant(trialID);
+    sC = parallel.pool.Constant(spikeCov);
+    cI = parallel.pool.Constant(covInfo);
+end
 fprintf('\nFinished transfering static assets...\n');
 
-gP.Value = gamParams;
-tI.Value = trialID;
-sC.Value = spikeCov;
-cI.Value = covInfo;
+% gP.Value = gamParams;
+% tI.Value = trialID;
+% sC.Value = spikeCov;
+% cI.Value = covInfo;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
-for curNeuron = 1:numNeurons,
+parfor curNeuron = 1:numNeurons,
     fprintf('\nConstructing model design matrix for Neuron #%d...\n', curNeuron);
     if all(gP.Value.ridgeLambda == 0),
         referenceLevel = 'Reference';
