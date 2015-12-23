@@ -192,7 +192,11 @@ save(saveFileName, 'neurons', 'stats', ...
     'designMatrix', 'spikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
-rmdir(tempDir);
+try
+    rmdir(tempDir);
+catch
+    error('Removing directory failed');
+end
 
 if ~gamParams.isLocal,
     designMatrix = [];
