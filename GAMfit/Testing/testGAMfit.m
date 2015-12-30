@@ -28,24 +28,29 @@ trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
 % Correct Model
 model = 'Rule';
-[neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
+[saveDir, spikes] = testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false);
 
+correct = load(sprintf('%s/Test_neuron_test_1_1_GAMfit.mat', saveDir), 'neuron', 'stat');
+correctParams = load(sprintf('%s/test_GAMfit.mat', saveDir), 'gamParams', 'designMatrix');
+
 % Misspecified Model
 model = 'Response Direction';
-[neurons_misspecified, stats_misspecified, gam_misspecified, designMatrix_misspecified, spikes_misspecified, gamParams_misspecified] = testComputeGAMfit_wrapper(model, trueRate, ...
+[saveDir, spikes] = testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false, 'spikes', spikes);
 
+misspecified = load(sprintf('%s/Test_neuron_test_1_1_GAMfit.mat', saveDir), 'neuron', 'stat');
+misspecifiedParams = load(sprintf('%s/test_GAMfit.mat', saveDir), 'gamParams', 'designMatrix');
 %% KS-Test: Time Rescaling
 figure;
-uniformCDFvalues = stats.timeRescale.uniformCDFvalues;
-numSpikes = stats.timeRescale.numSpikes;
+uniformCDFvalues = correct.stat.timeRescale.uniformCDFvalues;
+numSpikes = correct.stat.timeRescale.numSpikes;
 CI = 1.36 / sqrt(numSpikes);
 
-plot(uniformCDFvalues, stats.timeRescale.sortedKS); hold all;
-plot(uniformCDFvalues, stats_misspecified.timeRescale.sortedKS);
+plot(uniformCDFvalues, correct.stat.timeRescale.sortedKS); hold all;
+plot(uniformCDFvalues, misspecified.stat.timeRescale.sortedKS);
 plot(uniformCDFvalues, (uniformCDFvalues + CI), 'k--');
 plot(uniformCDFvalues, (uniformCDFvalues - CI), 'k--');
 axis([0 1 0 1]);
@@ -57,8 +62,8 @@ ylabel('Model CDF');
 box off;
 
 figure;
-plot(uniformCDFvalues, stats.timeRescale.sortedKS - uniformCDFvalues); hold all;
-plot(uniformCDFvalues, stats_misspecified.timeRescale.sortedKS - uniformCDFvalues);
+plot(uniformCDFvalues, correct.stat.timeRescale.sortedKS - uniformCDFvalues); hold all;
+plot(uniformCDFvalues, misspecified.stat.timeRescale.sortedKS - uniformCDFvalues);
 ylabel('Model CDF - Empirical CDF');
 legend('True Model', 'Mispecified Model');
 hline([-CI CI], 'k--');
@@ -66,9 +71,9 @@ hline(0, 'k-')
 
 %% PSTH Correlation
 adjustedTrueRate = trueRate;
-adjustedTrueRate((~gamParams.includeIncorrect .* ~isCorrect) | (~gamParams.includeFixationBreaks .* ~isAttempted)) = [];
-modelRate = exp(designMatrix * neurons.parEst) * 1000;
-misspecifiedModelRate = exp(designMatrix_misspecified * neurons_misspecified.parEst) * 1000;
+adjustedTrueRate((~correctParams.gamParams.includeIncorrect .* ~isCorrect) | (~correctParams.gamParams.includeFixationBreaks .* ~isAttempted)) = [];
+modelRate = exp(correctParams.designMatrix * correct.neuron.parEst) * 1000;
+misspecifiedModelRate = exp(misspecifiedParams.designMatrix * misspecified.neuron.parEst) * 1000;
 
 figure;
 subplot(2,1,1);

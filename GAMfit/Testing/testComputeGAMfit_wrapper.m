@@ -1,4 +1,4 @@
-function [neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
+function [saveDir, spikes] = testComputeGAMfit_wrapper(regressionModel_str, Rate, varargin)
 
 mainDir = getWorkingDir();
 
@@ -43,7 +43,7 @@ end
 
 %% Estimate GAM parameters
 profile -memory on;
-[neurons, stats, gam, designMatrix] = ComputeGAMfit('test', gamParams, covInfo);
+saveDir = ComputeGAMfit('test', gamParams, covInfo);
 profile viewer;
 
 end

@@ -1,4 +1,4 @@
-function [neurons, stats, gam, designMatrix, modelList, gamParams, spikeCov] = ComputeGAMfit(sessionName, gamParams, covInfo)
+function [saveDir] = ComputeGAMfit(sessionName, gamParams, covInfo)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
@@ -79,8 +79,6 @@ numACC = sum(ismember(neuronBrainArea, 'ACC'));
 
 wireNumber = num2cell(wireNumber);
 unitNumber = num2cell(unitNumber);
-stats = cell([1 numNeurons]);
-neurons = cell([1 numNeurons]);
 isPrediction = gamParams.isPrediction;
 
 covNames = spikeCov.keys;
@@ -146,6 +144,19 @@ fprintf('\nFinished transfering static assets...\n');
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
 parfor curNeuron = 1:numNeurons,
+    % Save name for each neuron
+    neuronName = sprintf('%s_neuron_%s_%d_%d', neuronBrainArea{curNeuron}, sessionName, wireNumber{curNeuron}, unitNumber{curNeuron});
+    if gP.Value.isPrediction,
+        neuronSaveName = sprintf('%s/%s_GAMpred.mat', saveDir, neuronName);
+    else
+        neuronSaveName = sprintf('%s/%s_GAMfit.mat', saveDir, neuronName);
+    end
+    
+    % Check if neuron has already been saved
+    if exist(neuronSaveName, 'file') && ~gP.Value.overwrite,
+        continue;
+    end
+    
     fprintf('\nConstructing model design matrix for Neuron #%d...\n', curNeuron);
     if all(gP.Value.ridgeLambda == 0),
         referenceLevel = 'Reference';
@@ -157,28 +168,26 @@ parfor curNeuron = 1:numNeurons,
     
     % Make sure covariates are of class double
     designMatrix = double(designMatrix);
-
+    
     if isPrediction,
-        neurons{curNeuron} = predictGAM(designMatrix, spikes(:, curNeuron), ...
+        neuron = predictGAM(designMatrix, spikes(:, curNeuron), ...
             gam.constant_ind, gam.sqrtPen, gam.constraints, gP.Value, ...
             tI.Value, curNeuron);
+        stat = [];
     else
-        [neurons{curNeuron}, stats{curNeuron}] = estimateGAM(designMatrix, ...
+        [neuron, stat] = estimateGAM(designMatrix, ...
             spikes(:, curNeuron), gam.constant_ind, gam.sqrtPen, ...
             gam.constraints, gP.Value, tI.Value, curNeuron);
     end
+    
+    neuron.wireNumber = wireNumber{curNeuron};
+    neuron.unitNumber = unitNumber{curNeuron};
+    neuron.sessionName = sessionName;
+    neuron.monkeyName = monkeyName;
+    neuron.brainArea = neuronBrainArea{curNeuron};
+    
+    parSave(neuronSaveName, neuron, stat, '-v7.3');
 end % End Neuron Loop
-
-for curNeuron = 1:numNeurons,
-    neurons{curNeuron}.wireNumber = wireNumber{curNeuron};
-    neurons{curNeuron}.unitNumber = unitNumber{curNeuron};
-    neurons{curNeuron}.sessionName = sessionName;
-    neurons{curNeuron}.monkeyName = monkeyName;
-    neurons{curNeuron}.brainArea = neuronBrainArea{curNeuron};
-end
-
-neurons = [neurons{:}];
-stats = [stats{:}];
 
 if all(gamParams.ridgeLambda == 0)
     referenceLevel = 'Reference';
@@ -190,7 +199,7 @@ gam.trialID = trialID;
 gam.trialTime = trialTime;
 %% Save to file
 fprintf('\nSaving GAMs ...\n');
-save(saveFileName, 'neurons', 'stats', ...
+save(saveFileName, ...
     'gam', 'num*', 'gamParams', ...
     'designMatrix', 'spikeCov', '-v7.3');
 
@@ -199,11 +208,6 @@ try
     rmdir(tempDir);
 catch
     error('Removing directory failed');
-end
-
-if ~gamParams.isLocal,
-    designMatrix = [];
-    spikeCov = [];
 end
 end
 
@@ -321,7 +325,7 @@ if gamParams.numFolds > 1
 end
 
 for curFold = 1:gamParams.numFolds,
-    fprintf('\t Prediction: Fold #%d\n', curFold);
+    fprintf('\t Prediction:  Neuron #%d, Fold #%d\n', neuron_ind, curFold);
     if gamParams.numFolds > 1
         trainingIdx = ismember(trialID, trials(CVO.training(curFold)));
         testIdx = ismember(trialID, trials(CVO.test(curFold)));
