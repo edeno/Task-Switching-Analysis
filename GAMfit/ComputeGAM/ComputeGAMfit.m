@@ -57,7 +57,10 @@ myCluster = parcluster('local');
 tempDir = tempname;
 mkdir(tempDir);
 myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
-parpool(myCluster, 8);
+
+if isempty(gcp),
+    parpool(myCluster, 8);
+end
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
 dataFileName = sprintf('%s/SpikeCov/%s_SpikeCov.mat', timePeriodDir, sessionName);
