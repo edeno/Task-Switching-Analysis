@@ -186,6 +186,7 @@ parfor curNeuron = 1:numNeurons,
     neuron.monkeyName = monkeyName;
     neuron.brainArea = neuronBrainArea{curNeuron};
     
+    fprintf('\nSaving %s ...\n', neuronName);
     parSave(neuronSaveName, neuron, stat, '-v7.3');
 end % End Neuron Loop
 
