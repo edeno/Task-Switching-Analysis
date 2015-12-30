@@ -17,29 +17,6 @@ for time_ind = 1:length(timePeriods),
             'isLocal', false);
         
         waitMatorqueJob(gamJob); % Wait for job to finish running
-%         [out, diaryLog] = gatherMatorqueOutput(gamJob); % Get the outputs      
-%         %% Name the outputs
-%         neurons = [out{:,1}];
-%         stats = [out{:, 2}];
-%         gam = [out{:, 3}];
-%         modelList = [out{end, 5}];
-%         gamParams = [out{end, 6}];        
-%         %% Create corresponding local directories
-%         modelDir = sprintf('%s/Models/', timePeriod_dir);
-%         
-%         if ~exist(modelDir, 'dir'),
-%             mkdir(modelDir);
-%         end
-%         saveDir = sprintf('%s/Models/%s/Collected GAMfit/', timePeriod_dir, modelList(model{model_ind}));
-%         if ~exist(saveDir, 'dir'),
-%             mkdir(saveDir);
-%         end        
-%         %% Save to file
-%         fprintf('Saving GAMs ...\n');
-%         save(sprintf('%s/neurons.mat', saveDir), 'neurons', 'gamParams', '-v7.3');
-%         save(sprintf('%s/gam.mat', saveDir), 'gam', '-v7.3');
-%         save(sprintf('%s/stats.mat', saveDir), 'stats', '-v7.3');
-%         save(sprintf('%s/log.mat', saveDir), 'diaryLog', '-v7.3');
     end
     % Save model list
     fprintf('Saving model list...\n');
