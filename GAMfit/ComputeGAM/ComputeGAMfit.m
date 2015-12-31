@@ -58,8 +58,9 @@ tempDir = tempname;
 mkdir(tempDir);
 myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
 
-if isempty(gcp),
-    parpool(myCluster, 8);
+poolobj = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(poolobj)
+     parpool(myCluster, 8);
 end
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
@@ -208,7 +209,7 @@ fprintf('\nFinished: %s\n', datestr(now));
 try
     rmdir(tempDir);
 catch
-    error('Removing directory failed');
+    fprintf('\nRemoving directory failed\n');
 end
 end
 
