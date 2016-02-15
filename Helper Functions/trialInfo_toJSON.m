@@ -4,6 +4,7 @@ load([main_dir, 'paramSet.mat'], ...
     'sessionNames', 'monkeyNames', 'dataInfo');
 
 %%
+count = 1;
 for subject_ind = 1:length(monkeyNames),
     curSessions = regexp(sessionNames, [lower(monkeyNames{subject_ind}),'.*'], 'match');
     curSessions = [curSessions{:}];
@@ -16,8 +17,19 @@ for subject_ind = 1:length(monkeyNames),
                 curSessionFile.cells(neuron_ind).WireNumber, ...
                 curSessionFile.cells(neuron_ind).UnitNumber);
             
-            trialInfo.neurons.(neuronName).sessionName = curSessions{session_ind};
-            trialInfo.neurons.(neuronName).subjectName = monkeyNames{subject_ind};
+            trialInfo.neurons(count).name = neuronName;
+            trialInfo.neurons(count).sessionName = curSessions{session_ind};
+            trialInfo.neurons(count).subjectName = monkeyNames{subject_ind};
+            if curSessionFile.cells(neuron_ind).WireNumber > 8 && ~strcmp('isa5', curSessions{session_ind});
+                trialInfo.neurons(count).brainArea = 'ACC';
+            else
+                if strcmp('isa5', curSessions{session_ind}) && curSessionFile.cells(neuron_ind).WireNumber > 16
+                    trialInfo.neurons(count).brainArea = 'ACC';
+                else
+                    trialInfo.neurons(count).brainArea = 'dlPFC';
+                end
+            end
+            count = count + 1;
         end
     end
 end
