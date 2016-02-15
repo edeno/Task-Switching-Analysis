@@ -60,7 +60,7 @@ myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
 
 poolobj = gcp('nocreate'); % If no pool, do not create new one.
 if isempty(poolobj)
-     parpool(myCluster, 8);
+     parpool(myCluster, 9);
 end
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
