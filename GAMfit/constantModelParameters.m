@@ -4,7 +4,10 @@ smoothLambda = 0;
 numFolds = 5;
 isOverwrite = false;
 includeTimeBeforeZero = true;
-timePeriods = {'Rule Response'};
+walltime = '1:00:00';
+mem = '60GB';
+numCores = 12;
+timePeriods = {'Rule Response', 'Stimulus Reward'};
 model = {...
     'Constant', ...
     'Previous Error + Response Direction', ...

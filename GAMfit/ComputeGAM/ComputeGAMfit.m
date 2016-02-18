@@ -13,6 +13,7 @@ fprintf('\t overwrite: %d\n', gamParams.overwrite);
 fprintf('\t includeIncorrect: %d\n', gamParams.includeIncorrect);
 fprintf('\t includeTimeBeforeZero: %d\n', gamParams.includeTimeBeforeZero);
 fprintf('\t isPrediction: %d\n', gamParams.isPrediction);
+fprintf('\t numCores: %d\n', gamParams.numCores);
 %% Get directories
 mainDir = getWorkingDir();
 timePeriodDir = sprintf('%s/Processed Data/%s/', mainDir, gamParams.timePeriod);
@@ -53,15 +54,6 @@ if exist(saveFileName, 'file') && ~gamParams.overwrite,
     return;
 end
 
-myCluster = parcluster('local');
-tempDir = tempname;
-mkdir(tempDir);
-myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
-
-poolobj = gcp('nocreate'); % If no pool, do not create new one.
-if isempty(poolobj)
-     parpool(myCluster, 9);
-end
 %%  Load Data for Fitting
 fprintf('\nLoading data...\n');
 dataFileName = sprintf('%s/SpikeCov/%s_SpikeCov.mat', timePeriodDir, sessionName);
@@ -123,8 +115,20 @@ if ~gamParams.includeFixationBreaks
     percentTrials(~isAttempted) = [];
 end
 
+%% Create matlab pool
+fprintf('\nCreate matlab pool...\n');
+myCluster = parcluster('local');
+tempDir = tempname;
+mkdir(tempDir);
+myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
+
+poolobj = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(poolobj)
+     parpool(myCluster, min([numNeurons, gamParams.numCores, myCluster.NumWorkers]));
+end
+
 %Transfer static assets to each worker only once
-fprintf('\nTransfering static assets to each worker...\n');
+fprintf('\nTransferring static assets to each worker...\n');
 if verLessThan('matlab', '8.6'),
     gP = WorkerObjWrapper(gamParams);
     tI = WorkerObjWrapper(trialID);
@@ -136,7 +140,7 @@ else
     sC = parallel.pool.Constant(spikeCov);
     cI = parallel.pool.Constant(covInfo);
 end
-fprintf('\nFinished transfering static assets...\n');
+fprintf('\nFinished transferring static assets...\n');
 
 % gP.Value = gamParams;
 % tI.Value = trialID;
@@ -178,7 +182,7 @@ parfor curNeuron = 1:numNeurons,
     else
         [neuron, stat] = estimateGAM(designMatrix, ...
             spikes(:, curNeuron), gam.constant_ind, gam.sqrtPen, ...
-            gam.constraints, gP.Value, tI.Value, curNeuron);
+            gam.constraints, gP.Value, tI.Value, curNeuron, false);
     end
     
     neuron.wireNumber = wireNumber{curNeuron};
@@ -206,15 +210,10 @@ save(saveFileName, ...
     'designMatrix', 'spikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
-try
-    rmdir(tempDir);
-catch
-    fprintf('\nRemoving directory failed\n');
-end
 end
 
 %%%%%%%%%%% Function to estimate GAM for a single neuron %%%%%%%%%%%%%%%%%%
-function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trialID, neuron_ind)
+function [neuron, stats, fitInfo] = estimateGAM(designMatrix, spikes, constant_ind, sqrtPen, constraints, gamParams, trialID, neuron_ind, isPrediction)
 
 %% Pick a Lambda if there's more than one, unless there's one specified
 
@@ -246,7 +245,7 @@ fprintf('Fitting Best Model for Neuron #%d: Ridge %d, Smooth %d\n', ...
     'constraints', constraints);
 
 stats = gamStats(designMatrix, spikes, fitInfo, trialID, ...
-    'Compact', false);
+    'isPrediction', isPrediction);
 
 %%%%%%%%%%%%%%%%%% Function to pick a particular smoothing parameter %%%%%%
     function [bestLambda_ind] = pickLambda()
@@ -287,7 +286,7 @@ stats = gamStats(designMatrix, spikes, fitInfo, trialID, ...
                 %                 edf(curLambda, curFold) = fitInfo.edf;
                 
                 [pickLambdaStats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), pickLambdaFitInfo, trialID(testIdx),...
-                    'Compact', true);
+                    'isPrediction', true);
                 
                 % Store prediction error
                 predError(curFold, curLambda) = pickLambdaStats.(gamParams.predType);
@@ -337,10 +336,10 @@ for curFold = 1:gamParams.numFolds,
     end
     
     %% Estimate Model
-    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), constant_ind, sqrtPen, constraints, gamParams, trialID(trainingIdx), neuron_ind);
+    [~, ~, fitInfo] = estimateGAM(designMatrix(trainingIdx, :), spikes(trainingIdx), constant_ind, sqrtPen, constraints, gamParams, trialID(trainingIdx), neuron_ind, true);
     
     [stats] = gamStats(designMatrix(testIdx, :), spikes(testIdx), fitInfo, trialID(testIdx),...
-        'Compact', true);
+        'isPrediction', true);
     %% Store a prediction on the test set
     neuron.Dev(curFold) = stats.Dev;
     neuron.AUC(curFold) = stats.AUC;

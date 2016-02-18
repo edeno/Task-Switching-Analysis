@@ -29,16 +29,19 @@ load(sprintf('%s/paramSet.mat', main_dir), ...
 inParser = inputParser;
 inParser.addRequired('regressionModel_str', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
-inParser.addParamValue('numFolds', 5, @(x) isnumeric(x) && x > 0)
-inParser.addParamValue('predType', 'Dev', @(x) any(ismember(x, validPredType)))
-inParser.addParamValue('smoothLambda', 10.^(-3), @isvector)
-inParser.addParamValue('ridgeLambda', 1, @isvector)
-inParser.addParamValue('overwrite', false, @islogical)
-inParser.addParamValue('includeIncorrect', false, @islogical);
-inParser.addParamValue('includeFixationBreaks', false, @islogical);
-inParser.addParamValue('includeTimeBeforeZero', false, @islogical);
-inParser.addParamValue('isPrediction', false, @islogical);
-inParser.addParamValue('isLocal', false, @islogical);
+inParser.addParameter('numFolds', 5, @(x) isnumeric(x) && x > 0)
+inParser.addParameter('predType', 'Dev', @(x) any(ismember(x, validPredType)))
+inParser.addParameter('smoothLambda', 10.^(-3), @isvector)
+inParser.addParameter('ridgeLambda', 1, @isvector)
+inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('includeIncorrect', false, @islogical);
+inParser.addParameter('includeFixationBreaks', false, @islogical);
+inParser.addParameter('includeTimeBeforeZero', false, @islogical);
+inParser.addParameter('isPrediction', false, @islogical);
+inParser.addParameter('isLocal', false, @islogical);
+inParser.addParameter('walltime', '150:00:00', @ischar);
+inParser.addParameter('mem', '124GB', @ischar);
+inParser.addParameter('numCores', 9, @(x) isnumeric(x) && x > 0);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
@@ -62,7 +65,7 @@ else
     fprintf('Fitting model....\n');
     args = cellfun(@(x) {x; gamParams; covInfo}', sessionNames, 'UniformOutput', false);
     gamJob = TorqueJob('ComputeGAMfit', args, ...
-        'walltime=150:00:00,mem=124GB,nodes=1:ppn=12', true, 'numOutputs', 0);
+        sprintf('walltime=%s,mem=%s,nodes=1:ppn=12', gamParams.walltime, gamParams.mem), true, 'numOutputs', 0);
 end
 
 end

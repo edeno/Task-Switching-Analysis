@@ -18,6 +18,7 @@ inParser.addParameter('includeFixationBreaks', false, @islogical);
 inParser.addParameter('includeTimeBeforeZero', false, @islogical);
 inParser.addParameter('isPrediction', false, @islogical);
 inParser.addParameter('spikes', [], @(x) isnumeric(x));
+inParser.addParameter('numCores', 2, @(x) isnumeric(x));
 
 inParser.parse(regressionModel_str, Rate, varargin{:});
 
