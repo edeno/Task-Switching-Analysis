@@ -18,7 +18,7 @@ fprintf('vargain: %s\n', varargin{:});
 fprintf('---------\n');
 
 % Specify number of processors
-NPROCS = 8;
+NPROCS = 9;
 % Numbers are passed as strings. Need to convert to correct type
 session_ind = str2double(session_ind);
 if ~isempty(varargin),
@@ -49,6 +49,7 @@ inParser.addParameter('includeFixationBreaks', false, @isnumeric);
 inParser.addParameter('includeTimeBeforeZero', true, @isnumeric);
 inParser.addParameter('isPrediction', false, @isnumeric);
 inParser.addParameter('isLocal', false, @isnumeric);
+inParser.addParameter('numCores', 9, @(x) isnumeric(x) && x > 0);
 
 inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
