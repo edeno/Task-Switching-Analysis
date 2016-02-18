@@ -1,9 +1,9 @@
 function [stats] = gamStats(designMatrix, y, fitInfo, trial_id, varargin)
 
 inParser = inputParser;
-inParser.addParamValue('extraFitPenalty', 1, @isvector); % set to 1.4 if want extra smoothing
-inParser.addParamValue('prior_weights', [], @isvector);
-inParser.addParamValue('Compact', false, @islogical);
+inParser.addParameter('extraFitPenalty', 1, @isvector); % set to 1.4 if want extra smoothing
+inParser.addParameter('prior_weights', [], @isvector);
+inParser.addParameter('isPrediction', false, @islogical);
 
 inParser.parse(varargin{:});
 stats = inParser.Results;
@@ -28,35 +28,38 @@ trial_id(isNan) = [];
 mu(isNan) = [];
 prior_weights(isNan) = [];
 designMatrix(isNan, :) = [];
+numSpikes = nansum(y);
 
-% Time Rescale
-if strcmp(distr, 'poisson')
-    lambdaInt = accumarray(trial_id, mu, [], @(m) {cumsum(m)}, {NaN}); % Integrated Intensity Function by Trial
-    spikeInd = accumarray(trial_id, y, [], @(s) {find(s == 1)}); % Spike times by Trial
-    rescaledISIs = cell2mat(cellfun(@(lI,sI) (diff([0; lI(sI)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
-    maxTransformedInterval = cell2mat(cellfun(@(lI,sI) lI(end) - lI(sI), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
-    
-    uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
-    uniformRescaledISIs(uniformRescaledISIs > (1 - 1E-6)) = (1 - 1E-6);
-    uniformRescaledISIs(uniformRescaledISIs == 0) = 1E-6;
-    normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
-    numSpikes = length(uniformRescaledISIs); % Number of Spikes
-    
-    if numSpikes > 0
-        sortedKS = sort(uniformRescaledISIs, 'ascend');
-        uniformCDFvalues = ([1:numSpikes] - 0.5)' / numSpikes;
-        ksStat = max(abs(sortedKS - uniformCDFvalues));
-    else
-        ksStat = 1;
-        uniformCDFvalues = [];
+if ~stats.isPrediction
+    % Time Rescale
+    if strcmp(distr, 'poisson')
+        lambdaInt = accumarray(trial_id, mu, [], @(m) {cumsum(m)}, {NaN}); % Integrated Intensity Function by Trial
+        spikeInd = accumarray(trial_id, y, [], @(s) {find(s == 1)}); % Spike times by Trial
+        rescaledISIs = cell2mat(cellfun(@(lI,sI) (diff([0; lI(sI)])), lambdaInt, spikeInd, 'UniformOutput', false)); % Integrated Intensities between successive spikes, aka rescaled ISIs
+        maxTransformedInterval = cell2mat(cellfun(@(lI,sI) lI(end) - lI(sI), lambdaInt, spikeInd, 'UniformOutput', false)) + rescaledISIs; % correction for short intervals as in Wiener 2003 - Neural Computation
+        
+        uniformRescaledISIs = (1 - exp(-rescaledISIs)) ./ (1 - exp(-maxTransformedInterval)); % Convert Rescaled ISIs to Uniform Distribution (0, 1)
+        uniformRescaledISIs(uniformRescaledISIs > (1 - 1E-6)) = (1 - 1E-6);
+        uniformRescaledISIs(uniformRescaledISIs == 0) = 1E-6;
+        normalRescaledISIs = norminv(uniformRescaledISIs, 0, 1); % Convert to normal distribution
+        numSpikes = length(uniformRescaledISIs); % Number of Spikes
+        
+        if numSpikes > 0
+            sortedKS = sort(uniformRescaledISIs, 'ascend');
+            uniformCDFvalues = ([1:numSpikes] - 0.5)' / numSpikes;
+            ksStat = max(abs(sortedKS - uniformCDFvalues));
+        else
+            ksStat = 1;
+            uniformCDFvalues = [];
+        end
+        stats.timeRescale.uniformCDFvalues = uniformCDFvalues;
+        stats.timeRescale.sortedKS = sortedKS;
+        stats.timeRescale.ksStat = ksStat;
+        stats.timeRescale.numSpikes = numSpikes;
+        stats.timeRescale.rescaledISIs = rescaledISIs;
+        stats.timeRescale.uniformRescaledISIs = uniformRescaledISIs;
+        stats.timeRescale.normalRescaledISIs = normalRescaledISIs;
     end
-    stats.timeRescale.uniformCDFvalues = uniformCDFvalues;
-    stats.timeRescale.sortedKS = sortedKS;
-    stats.timeRescale.ksStat = ksStat;
-    stats.timeRescale.numSpikes = numSpikes;
-    stats.timeRescale.rescaledISIs = rescaledISIs;
-    stats.timeRescale.uniformRescaledISIs = uniformRescaledISIs;
-    stats.timeRescale.normalRescaledISIs = normalRescaledISIs;
 end
 
 % Deviance
@@ -82,7 +85,7 @@ else
     stats.mutual_information = NaN;
 end
 
-if stats.Compact,
+if stats.isPrediction,
     return;
 end
 %% Get effective degrees of freedom (trace of the influence "hat" matrix a)
