@@ -1,10 +1,11 @@
 #!/bin/sh
-modelList=("s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
-"s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)")
+modelList=("s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
+"s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+"s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Rule * Congruency, Trial Time, knotDiff=50)")
 
 numFiles=34;
-# Time Period: Rule Response
-timeperiod="Rule Response"
+# Time Period: Stimulus Reward
+timeperiod="Stimulus Reward"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
 
 for (( i = 0; i < ${#modelList[@]}; i++ ))
@@ -22,7 +23,7 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N GAMfit \
-       -l h_rt=48:00:00 \
+       -l h_rt=96:00:00 \
        -l mem_total=125G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
