@@ -1,19 +1,19 @@
 function CompareModelPredictions(filename)
 load(filename);
-models = models(2:end);
+models = models(~ismember(models, 'Constant'));
 numModels = length(models);
 predType = predType(1:2);
 numPred = length(predType);
-pred = pred(2:end, :, :);
+pred = pred(~ismember(models, 'Constant'), :, :);
 
 %% Parallel Histograms
 for pred_ind = 1:length(predType),
     f = figure;
     f.Name = [brainArea, ' - ', predType{pred_ind}, ' - Parallel Histograms'];
     if ~strcmp(predType{pred_ind}, 'Dev'),
-        [~, sort_ind] = sort(mean(squeeze(pred(:, :, pred_ind)), 2), 'descend');
+        [~, sort_ind] = sort(nanmean(squeeze(pred(:, :, pred_ind)), 2), 'descend');
     else
-        [~, sort_ind] = sort(mean(squeeze(pred(:, :, pred_ind)), 2), 'ascend');
+        [~, sort_ind] = sort(nanmean(squeeze(pred(:, :, pred_ind)), 2), 'ascend');
     end
     p = squeeze(pred(:, :, pred_ind));
     p = p(:);
@@ -22,7 +22,7 @@ for pred_ind = 1:length(predType),
         subplot(numModels, 1, model_ind);
         histogram(squeeze(pred(sort_ind(model_ind), :, pred_ind)), 100);
         box off;
-        vline(mean(squeeze(pred(sort_ind(model_ind), :, pred_ind))));
+        vline(nanmean(squeeze(pred(sort_ind(model_ind), :, pred_ind))));
         xlim([extent])
         xAxis = get(gca, 'xAxis');
         yAxis = get(gca, 'yAxis');
