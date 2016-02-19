@@ -11,7 +11,7 @@
 #$ -o /usr3/graduate/edeno/logs/$JOB_NAME-$TASK_ID-$JOB_ID.log
 #$ -pe omp 16
 
-module load mcr/8.5
+module load mcr/8.5_2015a
 
 printf "\n\n---------\n"
 printf "This job runs on %s" "$HOSTNAME"
