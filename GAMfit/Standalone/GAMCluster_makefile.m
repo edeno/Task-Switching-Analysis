@@ -1,6 +1,6 @@
 % makefile.m script -- serves as input template for make.m
 % Make appropriate changes to suit your own app
-main_dir = getWorkingDir;
+main_dir = getWorkingDir();
 
 %%1 Main program - either interface myStandalone or myApp
 main = 'GAMCluster_standalone'; % or myApp if not to use myStandalone
