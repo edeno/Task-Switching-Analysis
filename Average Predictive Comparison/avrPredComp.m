@@ -10,22 +10,32 @@ main_dir = getWorkingDir();
 modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
 load(modelList_name, 'modelList');
 % Load fitting data
-GAMfit_name = sprintf('%s/Processed Data/%s/Models/%s/%s_GAMfit.mat', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), sessionName);
-load(GAMfit_name, 'gam', 'gamParams', 'neurons', 'stats', 'numNeurons', 'spikeCov');
+modelDir = sprintf('%s/Processed Data/%s/Models/%s/',  main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str));
+sessionFile = sprintf('%s/%s_GAMfit.mat', modelDir, sessionName);
+neuronFiles = dir(sprintf('%s/*_neuron_%s_*_GAMfit.mat', modelDir, sessionName));
+neuronFiles = {neuronFiles.name};
+load(sessionFile, 'gam', 'gamParams', 'numNeurons', 'spikeCov', 'designMatrix');
+assert(length(neuronFiles) == numNeurons);
 
 % Get the names of the covariates for the current model
 model = modelFormulaParse(gamParams.regressionModel_str);
 covNames = spikeCov.keys;
 
-% Size of Design Matrix
-numPredictors = length(neurons(1).parEst);
-numData = size(spikeCov(covNames{1}), 1);
+numData = size(designMatrix, 1);
 
 % Simulate from posterior
-parEst = nan(numPredictors, numNeurons, apcParams.numSim);
-
 for neuron_ind = 1:numNeurons,
-    parEst(:, neuron_ind, :) = mvnrnd(neurons(neuron_ind).parEst, stats(neuron_ind).covb, apcParams.numSim)';
+    curFile = load(sprintf('%s/%s', modelDir, neuronFiles{neuron_ind}));
+    if neuron_ind == 1,
+        numPredictors = length(curFile.neuron.parEst);
+        parEst = nan(numPredictors, numNeurons, apcParams.numSim);
+    end
+    
+    avpred(neuron_ind).wireNumber = curFile.neuron.wireNumber;
+    avpred(neuron_ind).unitNumber = curFile.neuron.unitNumber;
+    avpred(neuron_ind).brainArea = curFile.neuron.brainArea;
+    avpred(neuron_ind).monkeyNames = curFile.neuron.monkeyName;
+    parEst(:, neuron_ind, :) = mvnrnd(curFile.neuron.parEst, curFile.stat.covb, apcParams.numSim)';
 end
 
 % Cut down on the number of data points by sampling
@@ -135,7 +145,7 @@ for history_ind = 1:numHistoryFactors,
         for neuron_ind = 1:numNeurons,
             curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
             baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-            parfor sim_ind = 1:apcParams.numSim,
+            for sim_ind = 1:apcParams.numSim,
                 diffEst = bsxfun(@times, summedWeights, curLevelEst(:, sim_ind) - baselineLevelEst(:, sim_ind));
                 sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, sim_ind);
                 
@@ -159,10 +169,6 @@ end
 [avpred.numSim] = deal(apcParams.numSim);
 [avpred.sessionName] = deal(sessionName);
 [avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
-[avpred.wireNumber] = deal(neurons.wireNumber);
-[avpred.unitNumber] = deal(neurons.unitNumber);
-[avpred.brainArea] = deal(neurons.brainArea);
-[avpred.monkeyNames] = deal(neurons.monkeyName);
 baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
 [avpred.baselineFiringRate] = deal(baseline{:});
 [avpred.comparisonNames] = deal(comparisonNames);
