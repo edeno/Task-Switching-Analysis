@@ -4,7 +4,18 @@
 % an error has been committed in the previous trial or when the monkey
 % saccades to the left.
 function [avpred] = avrPredComp(sessionName, apcParams, covInfo)
-
+%% Log parameters
+fprintf('\n------------------------\n');
+fprintf('\nSession: %s\n', sessionName);
+fprintf('\nDate: %s\n \n', datestr(now));
+fprintf('\nAPC Parameters\n');
+fprintf('\t regressionModel_str: %s\n', apcParams.regressionModel_str);
+fprintf('\t timePeriod: %s\n', apcParams.timePeriod);
+fprintf('\t factorOfInterest: %s\n', apcParams.factorOfInterest);
+fprintf('\t numSim: %d\n', apcParams.numSim);
+fprintf('\t numSamples: %d\n', apcParams.numSamples);
+fprintf('\t isWeighted: %d\n', apcParams.isWeighted);
+fprintf('\t overwrite: %d\n', apcParams.overwrite);
 %% Load covariate fit and model fit information
 main_dir = getWorkingDir();
 modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
@@ -16,6 +27,7 @@ neuronFiles = dir(sprintf('%s/*_neuron_%s_*_GAMfit.mat', modelDir, sessionName))
 neuronFiles = {neuronFiles.name};
 load(sessionFile, 'gam', 'gamParams', 'numNeurons', 'spikeCov', 'designMatrix');
 assert(length(neuronFiles) == numNeurons);
+fprintf('\n umber of Neurons: #%d...\n', numNeurons);
 
 % Get the names of the covariates for the current model
 model = modelFormulaParse(gamParams.regressionModel_str);
@@ -96,6 +108,7 @@ norm_apc = nan(max(trialTime), apcParams.numSim);
 
 for history_ind = 1:numHistoryFactors,
     %% Figure out the matrix of other inputs
+    fprintf('\nLoop over history variable #%d...\n', history_ind);
     if ismember(apcParams.factorOfInterest, {'Previous Error History', 'Congruency History'}),
         history = factorData(:, ~ismember(1:numHistoryFactors, history_ind));
         history = dummyvar(history);
@@ -111,6 +124,7 @@ for history_ind = 1:numHistoryFactors,
     end
     %% Compute covariance matrix used for Mahalanobis distances:
     % Find weights
+    fprintf('\nFind weights...\n');
     other_isCategorical = [isCategorical{:} true(1, size(history ,2))];
     if apcParams.isWeighted,
         summedWeights = apc_weights(other_inputs, other_isCategorical);
@@ -147,10 +161,15 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
+        fprintf('\nComputing Level: %s...\n', curLevelName);
         for neuron_ind = 1:numNeurons,
+            fprintf('\tNeuron: #%d...\n', neuron_ind);
             curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
             baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
             for sim_ind = 1:apcParams.numSim,
+                if (mod(sim_ind, 100) == 0)
+                    fprintf('\t\tSim #%d...\n', sim_ind);
+                end
                 diffEst = bsxfun(@times, summedWeights, curLevelEst(:, sim_ind) - baselineLevelEst(:, sim_ind));
                 sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, sim_ind);
                 
@@ -179,11 +198,13 @@ baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
 [avpred.comparisonNames] = deal(comparisonNames);
 [avpred.trialTime] = deal(min(gam.trialTime):max(gam.trialTime(sample_ind)));
 
+fprintf('\nSaving...\n');
 saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
 if ~exist(saveFolder, 'dir'),
     mkdir(saveFolder);
 end
 save_file_name = sprintf('%s/%s_APC.mat', saveFolder, sessionName);
-save(save_file_name, 'avpred');
+save(save_file_name, 'avpred', '-v7.3');
+fprintf('\nFinished: %s\n', datestr(now));
 
 end
