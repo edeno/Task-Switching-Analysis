@@ -19,7 +19,7 @@ inParser.addParameter('overwrite', false, @islogical)
 inParser.addParameter('sessionNames', [], @iscell)
 inParser.addParameter('walltime', '150:00:00', @ischar);
 inParser.addParameter('mem', '124GB', @ischar);
-inParser.addParameter('numCores', 9, @(x) isnumeric(x) && x > 0);
+inParser.addParameter('numCores', 12, @(x) isnumeric(x) && x > 0);
 
 inParser.parse(regressionModel_str, timePeriod, factorOfInterest, varargin{:});
 

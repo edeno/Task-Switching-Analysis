@@ -106,6 +106,18 @@ apc = nan(max(trialTime), apcParams.numSim);
 abs_apc = nan(max(trialTime), apcParams.numSim);
 norm_apc = nan(max(trialTime), apcParams.numSim);
 
+%% Create matlab pool
+fprintf('\nCreate matlab pool...\n');
+myCluster = parcluster('local');
+tempDir = tempname;
+mkdir(tempDir);
+myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
+
+poolobj = gcp('nocreate'); % If no pool, do not create new one.
+if isempty(poolobj)
+     parpool(myCluster, min([apcParams.numCores, myCluster.NumWorkers]));
+end
+
 for history_ind = 1:numHistoryFactors,
     %% Figure out the matrix of other inputs
     fprintf('\nLoop over history variable #%d...\n', history_ind);
