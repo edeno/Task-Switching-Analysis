@@ -86,8 +86,13 @@ numHistoryFactors = size(factorData, 2);
 % categorical variables that aren't binary.
 counter_idx = 1;
 trialTime = grp2idx(gam.trialTime);
+trialTime = trialTime(sample_ind);
 origCov = spikeCov(apcParams.factorOfInterest);
 baselineLevel_ind = ismember(covInfo(apcParams.factorOfInterest).levels, covInfo(apcParams.factorOfInterest).baselineLevel);
+
+apc = nan(max(trialTime), apcParams.numSim);
+abs_apc = nan(max(trialTime), apcParams.numSim);
+norm_apc = nan(max(trialTime), apcParams.numSim);
 
 for history_ind = 1:numHistoryFactors,
     %% Figure out the matrix of other inputs
@@ -149,9 +154,9 @@ for history_ind = 1:numHistoryFactors,
                 diffEst = bsxfun(@times, summedWeights, curLevelEst(:, sim_ind) - baselineLevelEst(:, sim_ind));
                 sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, sim_ind);
                 
-                apc(:, sim_ind) = accumarray(trialTime, diffEst) ./ den;
-                abs_apc(:, sim_ind) = accumarray(trialTime, abs(diffEst)) ./ den;
-                norm_apc(:, sim_ind) = accumarray(trialTime, diffEst ./ sumEst) ./ den;
+                apc(:, sim_ind) = accumarray(trialTime, diffEst, [], [], NaN) ./ den;
+                abs_apc(:, sim_ind) = accumarray(trialTime, abs(diffEst), [], [], NaN) ./ den;
+                norm_apc(:, sim_ind) = accumarray(trialTime, diffEst ./ sumEst, [], [], NaN) ./ den;
             end
             avpred(neuron_ind).apc(counter_idx, :, :) = apc;
             avpred(neuron_ind).abs_apc(counter_idx, :, :) = abs_apc;
@@ -172,7 +177,7 @@ end
 baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
 [avpred.baselineFiringRate] = deal(baseline{:});
 [avpred.comparisonNames] = deal(comparisonNames);
-[avpred.trialTime] = deal(unique(gam.trialTime));
+[avpred.trialTime] = deal(min(gam.trialTime):max(gam.trialTime(sample_ind)));
 
 saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
 if ~exist(saveFolder, 'dir'),
