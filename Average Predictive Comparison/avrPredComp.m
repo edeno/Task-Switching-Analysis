@@ -161,21 +161,6 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
-        %Transfer static assets to each worker only once
-        fprintf('\nTransferring static assets to each worker...\n');
-        if verLessThan('matlab', '8.6'),
-            cLDM = WorkerObjWrapper(curLevelDesignMatrix);
-            bDM = WorkerObjWrapper(baselineDesignMatrix);
-            tT = WorkerObjWrapper(trialTime);
-            d = WorkerObjWrapper(den);
-            sW = WorkerObjWrapper(summedWeights);
-        else
-            cLDM = parallel.pool.Constant(curLevelDesignMatrix);
-            bDM = parallel.pool.Constant(baselineDesignMatrix);
-            tT = parallel.pool.Constant(trialTime);
-            d = parallel.pool.Constant(den);
-            sW = parallel.pool.Constant(summedWeights);
-        end
         fprintf('\nComputing Level: %s...\n', curLevelName);
         for neuron_ind = 1:numNeurons,
             fprintf('\tNeuron: #%d...\n', neuron_ind);
@@ -183,14 +168,14 @@ for history_ind = 1:numHistoryFactors,
                 if (mod(sim_ind, 100) == 0)
                     fprintf('\t\tSim #%d...\n', sim_ind);
                 end
-                curLevelEst = exp(cLDM.Value * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
-                baselineLevelEst = exp(bDM.Value * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
-                diffEst = bsxfun(@times, sW.Value, curLevelEst - baselineLevelEst);
+                curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+                baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+                diffEst = bsxfun(@times, summedWeights, curLevelEst - baselineLevelEst);
                 sumEst = curLevelEst + baselineLevelEst;
                 
-                apc(:, sim_ind) = accumarray(tT.Value, diffEst, [], [], NaN) ./ d.Value;
-                abs_apc(:, sim_ind) = accumarray(tT.Value, abs(diffEst), [], [], NaN) ./ d.Value;
-                norm_apc(:, sim_ind) = accumarray(tT.Value, diffEst ./ sumEst, [], [], NaN) ./ d.Value;
+                apc(:, sim_ind) = accumarray(trialTime, diffEst, [], [], NaN) ./ den;
+                abs_apc(:, sim_ind) = accumarray(trialTime, abs(diffEst), [], [], NaN) ./ den;
+                norm_apc(:, sim_ind) = accumarray(trialTime, diffEst ./ sumEst, [], [], NaN) ./ den;
             end
             avpred(neuron_ind).apc(counter_idx, :, :) = apc;
             avpred(neuron_ind).abs_apc(counter_idx, :, :) = abs_apc;
