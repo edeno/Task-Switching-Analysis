@@ -27,7 +27,7 @@ neuronFiles = dir(sprintf('%s/*_neuron_%s_*_GAMfit.mat', modelDir, sessionName))
 neuronFiles = {neuronFiles.name};
 load(sessionFile, 'gam', 'gamParams', 'numNeurons', 'spikeCov', 'designMatrix');
 assert(length(neuronFiles) == numNeurons);
-fprintf('\nNumber of Neurons: %d...\n', numNeurons);
+fprintf('\nNumber of Neurons: %d\n', numNeurons);
 
 % Get the names of the covariates for the current model
 model = modelFormulaParse(gamParams.regressionModel_str);
