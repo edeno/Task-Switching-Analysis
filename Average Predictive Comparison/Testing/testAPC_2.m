@@ -32,9 +32,11 @@ testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false);
 %%
+profile on;
 timePeriod = 'Testing';
 type = 'Rule';
 apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+profile viewer;
 %%
 trueDiff = (orientRate - colorRate) .* ones(size(apcJob{1}.trialTime));
 trueDiff(apcJob{1}.trialTime > 100) = ((orientRate * 2) - colorRate);

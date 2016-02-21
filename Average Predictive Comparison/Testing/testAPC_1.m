@@ -33,8 +33,9 @@ testComputeGAMfit_wrapper(model, trueRate, ...
 %%
 timePeriod = 'Testing';
 factorOfInterest = 'Rule';
-
-apcJob = computeAPC(model, timePeriod, factorOfInterest, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+profile on;
+apcJob = computeAPC(model, timePeriod, factorOfInterest, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false, 'numSamples', 1000);
+profile viewer;
 %%
 figure;
 subplot(1,3,1);
