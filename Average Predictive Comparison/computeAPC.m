@@ -17,6 +17,9 @@ inParser.addParameter('isWeighted', false, @islogical)
 inParser.addParameter('isLocal', false, @islogical)
 inParser.addParameter('overwrite', false, @islogical)
 inParser.addParameter('sessionNames', [], @iscell)
+inParser.addParameter('walltime', '150:00:00', @ischar);
+inParser.addParameter('mem', '124GB', @ischar);
+inParser.addParameter('numCores', 9, @(x) isnumeric(x) && x > 0);
 
 inParser.parse(regressionModel_str, timePeriod, factorOfInterest, varargin{:});
 
@@ -38,7 +41,7 @@ else
     % Use Cluster
     args = cellfun(@(x) {x; apcParams; covInfo}', sessionNames, 'UniformOutput', false);
     apcJob = TorqueJob('avrPredComp', args, ...
-        'walltime=24:00:00,mem=108GB');
+        sprintf('walltime=%s,mem=%s,nodes=1:ppn=12', apcParams.walltime, apcParams.mem), true, 'numOutputs', 0);
 end
 
 end
