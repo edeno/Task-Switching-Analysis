@@ -164,14 +164,14 @@ for history_ind = 1:numHistoryFactors,
         fprintf('\nComputing Level: %s...\n', curLevelName);
         for neuron_ind = 1:numNeurons,
             fprintf('\tNeuron: #%d...\n', neuron_ind);
-            curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-            baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-            for sim_ind = 1:apcParams.numSim,
+            parfor sim_ind = 1:apcParams.numSim,
                 if (mod(sim_ind, 100) == 0)
                     fprintf('\t\tSim #%d...\n', sim_ind);
                 end
-                diffEst = bsxfun(@times, summedWeights, curLevelEst(:, sim_ind) - baselineLevelEst(:, sim_ind));
-                sumEst = curLevelEst(:, sim_ind) + baselineLevelEst(:, sim_ind);
+                curLevelEst = exp(curLevelDesignMatrix * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+                baselineLevelEst = exp(baselineDesignMatrix * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+                diffEst = bsxfun(@times, summedWeights, curLevelEst - baselineLevelEst);
+                sumEst = curLevelEst + baselineLevelEst;
                 
                 apc(:, sim_ind) = accumarray(trialTime, diffEst, [], [], NaN) ./ den;
                 abs_apc(:, sim_ind) = accumarray(trialTime, abs(diffEst), [], [], NaN) ./ den;
