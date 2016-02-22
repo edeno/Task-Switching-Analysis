@@ -1,7 +1,7 @@
 clear variables;
 numSim = 1000;
 numSamples = [];
-overwrite = true;
+overwrite = false;
 timePeriods = {'Rule Response', 'Stimulus Reward'};
 walltime = '24:00:00';
 mem = '80GB';

@@ -20,6 +20,16 @@ fprintf('\t overwrite: %d\n', apcParams.overwrite);
 main_dir = getWorkingDir();
 modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
 load(modelList_name, 'modelList');
+
+saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
+if ~exist(saveFolder, 'dir'),
+    mkdir(saveFolder);
+end
+saveFileName = sprintf('%s/%s_APC.mat', saveFolder, sessionName);
+if exist(saveFileName, 'file') && ~apcParams.overwrite,
+    fprintf('/nFile already exists...exiting/n');
+    return;
+end
 % Load fitting data
 modelDir = sprintf('%s/Processed Data/%s/Models/%s/',  main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str));
 sessionFile = sprintf('%s/%s_GAMfit.mat', modelDir, sessionName);
@@ -226,12 +236,7 @@ baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
 [avpred.trialTime] = deal(min(gam.trialTime):max(gam.trialTime(sample_ind)));
 
 fprintf('\nSaving...\n');
-saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
-if ~exist(saveFolder, 'dir'),
-    mkdir(saveFolder);
-end
-save_file_name = sprintf('%s/%s_APC.mat', saveFolder, sessionName);
-save(save_file_name, 'avpred', '-v7.3');
+save(saveFileName, 'avpred', '-v7.3');
 fprintf('\nFinished: %s\n', datestr(now));
 
 end
