@@ -3,8 +3,8 @@
 
 for model_ind = 1:length(model)
     % Parse Model string for covariates
-    parsedModelstr = strtrim(regexp(regexp(model{model_ind}, '+', 'split'), '*', 'split'));
-    type = unique([parsedModelstr{:}]);
+    parsedModel = modelFormulaParse(model{model_ind});
+    type = unique(parsedModel.terms);
     fprintf('\n Model: %s\n', model{model_ind});
     for time_ind = 1:length(timePeriods),
         % Compute average predicitve comparson of rule at each level of the
