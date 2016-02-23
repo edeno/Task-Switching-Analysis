@@ -40,6 +40,7 @@ OVERWRITE=${OVERWRITE:-"0"}
 INCLUDEFIXATIONBREAKS=${INCLUDEFIXATIONBREAKS:-"0"}
 INCLUDETIMEBEFOREZERO=${INCLUDETIMEBEFOREZERO:-"0"}
 ISPREDICTION=${ISPREDICTION:-"0"}
+NUMCORES=${NUMCORES:-"9"}
 
 # Strip escaped commas ',' from the model string
 MODEL=$(echo "$MODEL" | sed -e "s/','/,/g")
@@ -55,6 +56,7 @@ echo "Overwrite: $OVERWRITE"
 echo "Include fixation breaks: $INCLUDEFIXATIONBREAKS"
 echo "Include time before zero: $INCLUDETIMEBEFOREZERO"
 echo "Prediction: $ISPREDICTION"
+echo "Number of Cores: $NUMCORES"
 
 ./GAMClusterExecR2015a "$session_ind" "$MODEL" "$TIMEPERIOD" \
 "numFolds" "$NUMFOLDS" \
@@ -64,4 +66,5 @@ echo "Prediction: $ISPREDICTION"
 "overwrite" "$OVERWRITE" \
 "includeFixationBreaks" "$INCLUDEFIXATIONBREAKS" \
 "includeTimeBeforeZero" "$INCLUDETIMEBEFOREZERO" \
-"isPrediction" "$ISPREDICTION"
+"isPrediction" "$ISPREDICTION" \
+"numCores" "$NUMCORES"

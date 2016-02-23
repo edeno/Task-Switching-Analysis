@@ -17,8 +17,6 @@ fprintf('Time Period: %s\n', timePeriod);
 fprintf('vargain: %s\n', varargin{:});
 fprintf('---------\n');
 
-% Specify number of processors
-NPROCS = 9;
 % Numbers are passed as strings. Need to convert to correct type
 session_ind = str2double(session_ind);
 if ~isempty(varargin),
@@ -60,7 +58,7 @@ if getenv('ENVIRONMENT')    % true if this is a batch job
     myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
 end
 
-parpool(myCluster, NPROCS);
+parpool(myCluster, gamParams.numCores);
 ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 
 exit;
