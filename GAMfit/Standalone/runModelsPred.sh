@@ -13,8 +13,8 @@ do
   curModel="${modelList[$i]}"
   printf "\tProcessing Model: %s \n" "$curModel"
   # Update model list
-  matlab -nodisplay -r "gamParams.timePeriod = \"$timeperiod\"; \
-  gamParams.regressionModel_str = \"$curModel\"; \
+  matlab -nodisplay -r "gamParams.timePeriod = '$timeperiod'; \
+  gamParams.regressionModel_str = '$curModel'; \
   addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper Functions'); \
   updateModelList(gamParams); exit;"
   # Escape commas in model string with single quotes
