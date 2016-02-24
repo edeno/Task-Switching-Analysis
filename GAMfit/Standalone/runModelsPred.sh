@@ -1,6 +1,7 @@
 #!/bin/sh
-modelList[0]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
-modelList[1]="s(Rule \* Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule \* Rule Repetition, Trial Time, knotDiff=50) + s(Rule \* Congruency, Trial Time, knotDiff=50)"
+set -f # Turn off wildcard expansion
+modelList[0]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Rule * Congruency, Trial Time, knotDiff=50)"
+modelList[1]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
 
 numFiles=34;
 # Time Period: Rule Response
@@ -33,3 +34,5 @@ do
        -v NUMCORES="10" \
        ./runGAMCluster2015a.sh;
 done
+
+set +f # Turn on wildcard expansion
