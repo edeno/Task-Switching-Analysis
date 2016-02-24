@@ -13,10 +13,13 @@ do
   curModel="${modelList[$i]}"
   printf "\tProcessing Model: %s \n" "$curModel"
   # Update model list
-  matlab -nodisplay -r "gamParams.timePeriod = '$timeperiod'; \
-  gamParams.regressionModel_str = '$curModel'; \
+  export CURMODEL="$curModel";
+  modelCmd="gamParams.timePeriod = '$timeperiod'; \
+  gamParams.regressionModel_str = getenv('CURMODEL'); \
   addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper Functions'); \
   updateModelList(gamParams); exit;"
+
+  matlab -nodisplay -r "$modelCmd"
   # Escape commas in model string with single quotes
   # because qsub splits passed variables with commas
   curModel=$(echo "$curModel" | sed -e "s/,/','/g")
