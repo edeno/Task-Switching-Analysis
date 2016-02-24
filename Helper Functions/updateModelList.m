@@ -16,6 +16,8 @@ if exist(sprintf('%s/Models/modelList.mat', timePeriod_dir), 'file'),
         fprintf('Adding model %s to list...\n', gamParams.regressionModel_str);
         fprintf('Folder name: %s\n', sprintf('M%d', modelList.length + 1));
         modelList(gamParams.regressionModel_str) = sprintf('M%d', modelList.length + 1);
+    else
+        fprintf('\nModel key already exists: %s - %s\n', gamParams.regressionModel_str, modelList(gamParams.regressionModel_str));
     end
 else
     fprintf('Adding model %s to list...\n', gamParams.regressionModel_str);
