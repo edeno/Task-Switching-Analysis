@@ -1,5 +1,4 @@
 #!/bin/sh
-GLOBIGNORE="*" # Turn off wildcard expansion
 modelList[0]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Rule * Congruency, Trial Time, knotDiff=50)"
 modelList[1]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
 
@@ -26,7 +25,7 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N GAMfit \
-       -l h_rt=150:00:00 \
+       -l h_rt=90:00:00 \
        -l mem_total=125G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
@@ -34,8 +33,6 @@ do
        -v OVERWRITE="0" \
        -v ISPREDICTION="1" \
        -v SMOOTHLAMBDA="10.^(-3:4)" \
-       -v NUMCORES="10" \
+       -v NUMCORES="8" \
        ./runGAMCluster2015a.sh;
 done
-
-unset GLOBIGNORE # Turn on wildcard expansion
