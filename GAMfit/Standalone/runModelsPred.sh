@@ -1,6 +1,13 @@
 #!/bin/sh
 modelList[0]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Rule * Congruency, Trial Time, knotDiff=50)"
-modelList[1]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+modelList[1]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50)"
+modelList[2]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
+modelList[3]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
+modelList[4]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
+modelList[5]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
+modelList[6]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
+modelList[7]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+modelList[8]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)"
 
 numFiles=34;
 # Time Period: Rule Response
@@ -25,14 +32,14 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N GAMfit \
-       -l h_rt=90:00:00 \
+       -l h_rt=24:00:00 \
        -l mem_total=125G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v OVERWRITE="0" \
        -v ISPREDICTION="1" \
-       -v SMOOTHLAMBDA="10.^(-3:4)" \
-       -v NUMCORES="5" \
+       -v SMOOTHLAMBDA="10.^(-2)" \
+       -v NUMCORES="9" \
        ./runGAMCluster2015a.sh;
 done
