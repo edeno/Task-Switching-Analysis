@@ -40,6 +40,6 @@ do
        -v OVERWRITE="0" \
        -v ISPREDICTION="1" \
        -v SMOOTHLAMBDA="10.^(-2)" \
-       -v NUMCORES="9" \
+       -v NUMCORES="3" \
        ./runGAMCluster2015a.sh;
 done
