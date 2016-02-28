@@ -1,7 +1,7 @@
 function [designMatrix, gam] = gamModelMatrix(regressionModel_str, covariateData, covariateInfo, varargin)
 
 inParser = inputParser;
-inParser.addParamValue('level_reference', 'Full', @ischar);
+inParser.addParameter('level_reference', 'Full', @ischar);
 
 inParser.parse(varargin{:});
 
