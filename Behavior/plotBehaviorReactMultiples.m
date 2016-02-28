@@ -18,7 +18,7 @@ monkey = bsxfun(@or, strcmpi({params.Monkey}, behavior('Monkey')), strcmpi(param
 sessions = bsxfun(@or, strcmpi({params.Session}, behavior('Session Name')), strcmpi(params.Session, 'All'));
 filter_ind = monkey & sessions;
 if params.correctTrialsOnly,
-   filter_ind = filter_ind & behavior('Correct');
+    filter_ind = filter_ind & behavior('Correct');
 end
 
 [designMatrix, gam] = gamModelMatrix(model, behavior, covInfo, 'level_reference', 'Reference');
@@ -41,7 +41,20 @@ for session_ind = 1:numSessions,
     parameterEstBySession(session_ind, :) = glmfit(designMatrix(sesssionID, :), reactionTime(sesssionID, :), 'normal', 'link', 'log', 'constant', 'off');
 end
 
-covNames = unique(gam.covNames, 'stable');
+covNames = gam.covNames;
+covNames = unique(covNames, 'stable');
+removeInteraction = false(length(covNames), 1);
+for cov_ind = 1:length(covNames)
+    removeInteraction(cov_ind) = any(cellfun(@(x) ~isempty(x), regexp(covNames, sprintf('(%s:.)|(.:%s)', covNames{cov_ind}, covNames{cov_ind}))));
+end
+covNames(removeInteraction) = [];
+
+levelByCov = cell(size(covNames));
+for cov_ind = 1:length(covNames),
+    levelByCov{cov_ind} = gam.levelNames(ismember(gam.covNames, covNames{cov_ind}));
+end
+isInteraction = cellfun(@(x) ~isempty(x), regexp(covNames, ':'));
+
 subplotSize = numSubplots(length(covNames));
 plotHandles = cell(size(covNames));
 yTicksExpScale = 0.85:0.05:1.15;
@@ -63,35 +76,64 @@ for plot_ind = 1:length(covNames)
         plotHandles{plot_ind}.LineWidth = 3;
         vline(exp(parameterEstAll(1)), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
-%         xlim(quantile(reactionTime, [0 1]));
+        %         xlim(quantile(reactionTime, [0 1]));
         xlim([0 500]);
         title('All Reaction Times');
         box off;
         hold all;
     else
-        levelNames = covInfo(covNames{plot_ind}).levels;
-        level_ind = ismember(gam.levelNames, levelNames);
-        numLevels = sum(level_ind);
-        if sum(level_ind) > 1,
-            x = repmat([1:numLevels, NaN], [numSessions, 1]);
-            y = [parameterEstBySession(:, level_ind), nan(numSessions, 1)];
-            p = patch(x', y', params.Color);
-            p.EdgeColor = params.Color;
-            p.EdgeAlpha = transparency;
-            hold all;
-            plotHandles{plot_ind} = plot(1:sum(level_ind), parameterEstAll(level_ind), '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color);
+        if isInteraction(plot_ind),
+            curLevels = cellfun(@(x) covInfo(x).levels, strsplit(covNames{plot_ind}, ':'), 'UniformOutput', false);
+            numLevels = length(curLevels{2});
+            % NOTE: Only really handles a single interaction.
+            for level1_ind = 1:length(curLevels{1}),
+                y_all = nan(size(curLevels{2}));
+                for level2_ind = 1:length(curLevels{2}),
+                    possibleLevels = [
+                        curLevels{1}(level1_ind), ...
+                        curLevels{2}(level2_ind), ...
+                        sprintf('%s:%s', curLevels{1}{level1_ind}, curLevels{2}{level2_ind}), ...
+                        sprintf('%s:%s', curLevels{2}{level2_ind}, curLevels{1}{level1_ind}) ...
+                        ];
+                    level_ind = ismember(gam.levelNames, possibleLevels);
+                    y_all(level2_ind) = sum(parameterEstAll(level_ind));
+                end
+                plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
+                t = text(length(y_all) + .1, y_all(end), sprintf('%s - Monkey %s', curLevels{1}{level1_ind}, params.Monkey));
+                t.Color = params.Color;
+            end
+            
+            set(gca, 'XTick', 1:numLevels);
+            set(gca, 'XTickLabel', curLevels{2});
+            
         else
-            s  = scatter(0.9 + 0.2 * rand(numSessions,1), parameterEstBySession(:, level_ind), 40, params.Color, 'filled');
-            alpha(s, transparency);
-            hold all;
-            plotHandles{plot_ind} = scatter(1, parameterEstAll(level_ind), 120, params.Color, 'filled');
+            levelNames = covInfo(covNames{plot_ind}).levels;
+            level_ind = ismember(gam.levelNames, levelNames);
+            numLevels = sum(level_ind);
+            if sum(level_ind) > 1,
+                x = repmat([1:numLevels, NaN], [numSessions, 1]);
+                y = [parameterEstBySession(:, level_ind), nan(numSessions, 1)];
+                p = patch(x', y', params.Color);
+                p.EdgeColor = params.Color;
+                p.EdgeAlpha = transparency;
+                hold all;
+                plotHandles{plot_ind} = plot(1:sum(level_ind), parameterEstAll(level_ind), '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color);
+            else
+                s  = scatter(0.9 + 0.2 * rand(numSessions,1), parameterEstBySession(:, level_ind), 40, params.Color, 'filled');
+                alpha(s, transparency);
+                hold all;
+                plotHandles{plot_ind} = scatter(1, parameterEstAll(level_ind), 120, params.Color, 'filled');
+            end
+            t = text(numLevels + 0.2, parameterEstAll(find(level_ind, 1, 'last')), sprintf('Monkey %s', params.Monkey));
+            t.Color = params.Color;
+            set(gca, 'XTick', 1:numLevels);
+        set(gca, 'XTickLabel', gam.levelNames(level_ind));
         end
         ylim(quantile(yTicksLinearScale, [0 1]))
-        xlim([0.5, numLevels+.5]);
+        xlim([0, numLevels+1]);
         set(gca, 'YTick', yTicksLinearScale)
         set(gca, 'YTickLabel', yTicksPercentScale)
-        set(gca, 'XTick', 1:numLevels);
-        set(gca, 'XTickLabel', gam.levelNames(level_ind));
+        
         fasterTextHandle = text(0.55, min(yTicksLinearScale) + .01, {'Faster RT', '\downarrow'});
         fasterTextHandle.FontSize = 11;
         fasterTextHandle.Color = [153, 153, 153] / 255;
