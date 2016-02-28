@@ -76,7 +76,6 @@ for plot_ind = 1:length(covNames)
         plotHandles{plot_ind}.LineWidth = 3;
         vline(nanmean(correct), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
-        %         xlim(quantile(reactionTime, [0 1]));
         xlim([0 1]);
         title('Percent Correct By Session');
         box off;
@@ -100,6 +99,7 @@ for plot_ind = 1:length(covNames)
                 end
                 plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
                 t = text(length(y_all) + .1, y_all(end), sprintf('%s - Monkey %s', curLevels{1}{level1_ind}, params.Monkey));
+                t.FontSize = 11;
                 t.Color = params.Color;
             end
             
@@ -126,19 +126,20 @@ for plot_ind = 1:length(covNames)
             end
             t = text(numLevels + 0.2, parameterEstAll(find(level_ind, 1, 'last')), sprintf('Monkey %s', params.Monkey));
             t.Color = params.Color;
+            t.FontSize = 11;
             set(gca, 'XTick', 1:numLevels);
-        set(gca, 'XTickLabel', gam.levelNames(level_ind));
+            set(gca, 'XTickLabel', gam.levelNames(level_ind));
         end
         ylim(quantile(yTicksLinearScale, [0 1]))
         xlim([0, numLevels+1]);
         set(gca, 'YTick', yTicksLinearScale)
         set(gca, 'YTickLabel', yTicksPercentScale)
         
-        fasterTextHandle = text(0.55, min(yTicksLinearScale) + .01, {'Decrease in Odds of Correct Response', '\downarrow'});
+        fasterTextHandle = text(0.1, min(yTicksLinearScale) + .01, {'Decrease in Odds of Correct Response', '\downarrow'});
         fasterTextHandle.FontSize = 11;
         fasterTextHandle.Color = [153, 153, 153] / 255;
         fasterTextHandle.VerticalAlignment = 'bottom';
-        slowerTextHandle = text(0.55, max(yTicksLinearScale) - .01, {'\uparrow', 'Increase in Odds of Correct Response'});
+        slowerTextHandle = text(0.1, max(yTicksLinearScale) - .01, {'\uparrow', 'Increase in Odds of Correct Response'});
         slowerTextHandle.FontSize = 11;
         slowerTextHandle.Color = [153, 153, 153] / 255;
         slowerTextHandle.VerticalAlignment = 'top';

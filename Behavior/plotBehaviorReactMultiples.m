@@ -101,6 +101,7 @@ for plot_ind = 1:length(covNames)
                 plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
                 t = text(length(y_all) + .1, y_all(end), sprintf('%s - Monkey %s', curLevels{1}{level1_ind}, params.Monkey));
                 t.Color = params.Color;
+                t.FontSize = 11;
             end
             
             set(gca, 'XTick', 1:numLevels);
@@ -126,19 +127,20 @@ for plot_ind = 1:length(covNames)
             end
             t = text(numLevels + 0.2, parameterEstAll(find(level_ind, 1, 'last')), sprintf('Monkey %s', params.Monkey));
             t.Color = params.Color;
+            t.FontSize = 11;
             set(gca, 'XTick', 1:numLevels);
-        set(gca, 'XTickLabel', gam.levelNames(level_ind));
+            set(gca, 'XTickLabel', gam.levelNames(level_ind));
         end
         ylim(quantile(yTicksLinearScale, [0 1]))
         xlim([0, numLevels+1]);
         set(gca, 'YTick', yTicksLinearScale)
         set(gca, 'YTickLabel', yTicksPercentScale)
         
-        fasterTextHandle = text(0.55, min(yTicksLinearScale) + .01, {'Faster RT', '\downarrow'});
+        fasterTextHandle = text(0.1, min(yTicksLinearScale) + .01, {'Faster RT', '\downarrow'});
         fasterTextHandle.FontSize = 11;
         fasterTextHandle.Color = [153, 153, 153] / 255;
         fasterTextHandle.VerticalAlignment = 'bottom';
-        slowerTextHandle = text(0.55, max(yTicksLinearScale) - .01, {'\uparrow', 'Slower RT'});
+        slowerTextHandle = text(0.1, max(yTicksLinearScale) - .01, {'\uparrow', 'Slower RT'});
         slowerTextHandle.FontSize = 11;
         slowerTextHandle.Color = [153, 153, 153] / 255;
         slowerTextHandle.VerticalAlignment = 'top';
