@@ -8,7 +8,7 @@ plotBehaviorReactMultiples(model, 'Monkey', 'CC', 'Color', ccColor, 'correctTria
 plotBehaviorReactMultiples(model, 'Monkey', 'ISA', 'Color', isaColor, 'correctTrialsOnly', true)
 
 %%
-model = 'Rule * Previous Error History + Rule Repetition + Congruency + Normalized Preparation Time';
+model = 'Rule + Previous Error History + Rule Repetition + Congruency + Normalized Preparation Time';
 figure;
 plotBehaviorCorrectMultiples(model, 'Monkey', 'CC', 'Color', ccColor, 'correctTrialsOnly', false)
 plotBehaviorCorrectMultiples(model, 'Monkey', 'ISA', 'Color', isaColor, 'correctTrialsOnly', false)
