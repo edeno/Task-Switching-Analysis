@@ -1,6 +1,7 @@
 clear variables;
 
-models = {'s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)'};
+models = {'s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)', ...
+          's(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)'};
 timePeriods = {'Rule Response'};
 apcType = 'norm_apc';
 
