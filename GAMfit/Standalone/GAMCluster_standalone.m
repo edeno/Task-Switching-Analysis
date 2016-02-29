@@ -53,12 +53,6 @@ inParser.parse(regressionModel_str, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 gamParams = inParser.Results;
-myCluster = parcluster('local');
-if getenv('ENVIRONMENT')    % true if this is a batch job
-    myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
-end
-
-parpool(myCluster, gamParams.numCores);
 ComputeGAMfit(sessionNames{session_ind}, gamParams, covInfo);
 
 exit;
