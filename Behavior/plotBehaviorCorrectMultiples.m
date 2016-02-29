@@ -87,6 +87,7 @@ for plot_ind = 1:length(covNames)
             % NOTE: Only really handles a single interaction.
             for level1_ind = 1:length(curLevels{1}),
                 y_all = nan(size(curLevels{2}));
+                y_session = nan(length(curLevels{2}), numSessions);
                 for level2_ind = 1:length(curLevels{2}),
                     possibleLevels = [
                         curLevels{1}(level1_ind), ...
@@ -96,8 +97,16 @@ for plot_ind = 1:length(covNames)
                         ];
                     level_ind = ismember(gam.levelNames, possibleLevels);
                     y_all(level2_ind) = sum(parameterEstAll(level_ind));
+                    y_session(level2_ind, :) = sum(parameterEstBySession(:, level_ind), 2); 
                 end
-                plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
+                
+                x = repmat([1:numLevels, NaN], [numSessions, 1]);
+                y_session = [y_session', nan(numSessions, 1)];
+                p = patch(x', y_session', params.Color);
+                p.EdgeColor = params.Color;
+                p.EdgeAlpha = transparency;
+                hold all;
+                plotHandles{plot_ind} = plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
                 t = text(length(y_all) + .1, y_all(end), sprintf('%s - Monkey %s', curLevels{1}{level1_ind}, params.Monkey));
                 t.FontSize = 11;
                 t.Color = params.Color;
