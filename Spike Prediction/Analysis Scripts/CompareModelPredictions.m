@@ -1,10 +1,10 @@
 function CompareModelPredictions(filename)
 load(filename);
+pred = pred(~ismember(models, 'Constant'), :, :);
 models = models(~ismember(models, 'Constant'));
 numModels = length(models);
 predType = predType(1:2);
 numPred = length(predType);
-pred = pred(~ismember(models, 'Constant'), :, :);
 
 %% Parallel Histograms
 for pred_ind = 1:length(predType),
