@@ -76,7 +76,6 @@ for plot_ind = 1:length(covNames)
         plotHandles{plot_ind}.LineWidth = 3;
         vline(exp(parameterEstAll(1)), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
-        %         xlim(quantile(reactionTime, [0 1]));
         xlim([0 500]);
         title('All Reaction Times');
         box off;
@@ -84,11 +83,13 @@ for plot_ind = 1:length(covNames)
     else
         if isInteraction(plot_ind),
             curLevels = cellfun(@(x) covInfo(x).levels, strsplit(covNames{plot_ind}, ':'), 'UniformOutput', false);
+            baselineLevel = cellfun(@(x) covInfo(x).baselineLevel, strsplit(covNames{plot_ind}, ':'), 'UniformOutput', false);
+            curLevels{2} = curLevels{2}(~ismember(curLevels{2}, baselineLevel));
             numLevels = length(curLevels{2});
             % NOTE: Only really handles a single interaction.
             for level1_ind = 1:length(curLevels{1}),
                 y_all = nan(size(curLevels{2}));
-                y_session = nan(length(curLevels{2}), numSessions);
+                y_se = nan(length(curLevels{2}), 2);
                 for level2_ind = 1:length(curLevels{2}),
                     possibleLevels = [
                         curLevels{1}(level1_ind), ...
@@ -98,15 +99,13 @@ for plot_ind = 1:length(covNames)
                         ];
                     level_ind = ismember(gam.levelNames, possibleLevels);
                     y_all(level2_ind) = sum(parameterEstAll(level_ind));
-                    y_session(level2_ind, :) = sum(parameterEstBySession(:, level_ind), 2); 
+                    y_se(level2_ind, 1) = sum(parameterEstAll(level_ind) + stats.se(level_ind));
+                    y_se(level2_ind, 2) = sum(parameterEstAll(level_ind) - stats.se(level_ind));
                 end
                 
-                x = repmat([1:numLevels, NaN], [numSessions, 1]);
-                y_session = [y_session', nan(numSessions, 1)];
-                p = patch(x', y_session', params.Color);
-                p.EdgeColor = params.Color;
-                p.EdgeAlpha = transparency;
-                plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color); hold on;
+                l = line([1:length(y_all); 1:length(y_all)], y_se');
+                [l.Color] = deal(params.Color); hold all;
+                plot(1:length(y_all), y_all, '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color);
                 t = text(length(y_all) + .1, y_all(end), sprintf('%s - Monkey %s', curLevels{1}{level1_ind}, params.Monkey));
                 t.Color = params.Color;
                 t.FontSize = 11;
@@ -120,19 +119,16 @@ for plot_ind = 1:length(covNames)
             level_ind = ismember(gam.levelNames, levelNames);
             numLevels = sum(level_ind);
             if sum(level_ind) > 1,
-                x = repmat([1:numLevels, NaN], [numSessions, 1]);
-                y = [parameterEstBySession(:, level_ind), nan(numSessions, 1)];
-                p = patch(x', y', params.Color);
-                p.EdgeColor = params.Color;
-                p.EdgeAlpha = transparency;
-                hold all;
                 plotHandles{plot_ind} = plot(1:sum(level_ind), parameterEstAll(level_ind), '.-', 'MarkerSize', 20, 'LineWidth', 4, 'Color', params.Color);
+                hold all;
             else
                 s  = scatter(0.9 + 0.2 * rand(numSessions,1), parameterEstBySession(:, level_ind), 40, params.Color, 'filled');
                 alpha(s, transparency);
                 hold all;
                 plotHandles{plot_ind} = scatter(1, parameterEstAll(level_ind), 120, params.Color, 'filled');
             end
+            l = line([1:numLevels; 1:numLevels], [parameterEstAll(level_ind) - stats.se(level_ind), parameterEstAll(level_ind) + stats.se(level_ind)]');
+            [l.Color] = deal(params.Color);
             t = text(numLevels + 0.2, parameterEstAll(find(level_ind, 1, 'last')), sprintf('Monkey %s', params.Monkey));
             t.Color = params.Color;
             t.FontSize = 11;
