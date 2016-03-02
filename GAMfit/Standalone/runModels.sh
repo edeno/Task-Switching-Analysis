@@ -2,8 +2,8 @@
 modelList[0]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
 
 numFiles=34;
-# Time Period: Stimulus Reward
-timeperiod="Stimulus Reward"
+# Time Period: Rule Response
+timeperiod="Rule Response"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
 
 for (( i = 0; i < ${#modelList[@]}; i++ ))
