@@ -27,7 +27,7 @@ do
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
        -v OVERWRITE="0" \
-       -v SMOOTHLAMBDA="10.^(-3:4)" \
+       -v SMOOTHLAMBDA="10.^(-2)" \
        -v NUMCORES="10" \
        ./runGAMCluster2015a.sh;
 done
