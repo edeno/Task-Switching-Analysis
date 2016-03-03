@@ -31,7 +31,13 @@ end
 edges = linspace(-1*max(abs(quantile(diffMI(:), [0 1]))), max(abs(quantile(diffMI(:), [0 1]))), numBins + 1);
 binSize = edges(2) - edges(1);
 axisLim = quantile(reshape(pred([comparison_ind, MOI_ind], :, pred_ind), [], 1), [0 1]);
-axisLim(axisLim < 0) = 0;
+
+switch(predictor)
+    case 'mutualInformation'
+        axisLim(axisLim < 0) = 0;
+    case 'AUC'
+        axisLim(axisLim < 0.5) = 0.5;
+end
 %%
 f = figure;
 f.Name = file;
