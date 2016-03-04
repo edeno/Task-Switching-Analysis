@@ -29,8 +29,8 @@ do
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v INCLUDETIMEBEFOREZERO="1" \
-       -v OVERWRITE="1" \
+       -v OVERWRITE="0" \
        -v SMOOTHLAMBDA="10.^(-2)" \
-       -v NUMCORES="4" \
+       -v NUMCORES="3" \
        ./runGAMCluster2015a.sh;
 done
