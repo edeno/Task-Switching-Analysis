@@ -45,7 +45,8 @@ for m_ind = 1:numModels,
     % Scatter Plot
     subplot(2, numModels, m_ind);
     bin_ind = discretize(diffMI(m_ind, :), edges);
-    scatter(pred(MOI_ind(m_ind), :, pred_ind), pred(comparison_ind, :, pred_ind), 40, colors(bin_ind, :), 'filled');
+    bin_ind(isnan(bin_ind)) = round(size(colors, 1) / 2);
+    scatter(pred(MOI_ind(m_ind), :, pred_ind), pred(comparison_ind, :, pred_ind), 40, repmat([186,186,186]./255, [numNeurons, 1]), 'filled');
     ylim(axisLim);
     xlim(axisLim);
     l = line(axisLim, axisLim);
@@ -60,12 +61,13 @@ for m_ind = 1:numModels,
     
     % Histogram of Differences
     subplot(2, numModels, m_ind + numModels);
-    for edge_ind = 1:(length(edges) - 1),
-        b = bar(edges(edge_ind) + (binSize / 2), 100 * sum(bin_ind == edge_ind) / numNeurons, binSize);
-        b.FaceColor = colors(edge_ind, :);
-        hold all;
-    end
+%     for edge_ind = 1:(length(edges) - 1),
+%         b = bar(edges(edge_ind) + (binSize / 2), 100 * nansum(bin_ind == edge_ind) / numNeurons, binSize);
+%         b.FaceColor = colors(edge_ind, :);
+%         hold all;
+%     end
     
+    histogram(diffMI(m_ind, :), 'binWidth', 0.1); hold all;
     vline(0, 'Color', 'black', 'LineType', '-');
     vline(meanDiffMI(m_ind));
     xlim(quantile(edges, [0 1]));
