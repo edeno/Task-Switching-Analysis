@@ -124,7 +124,7 @@ myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
 
 poolobj = gcp('nocreate'); % If no pool, do not create new one.
 if isempty(poolobj)
-     parpool(myCluster, min([numNeurons, gamParams.numCores, myCluster.NumWorkers]));
+    parpool(myCluster, min([numNeurons, gamParams.numCores, myCluster.NumWorkers]));
 end
 
 %Transfer static assets to each worker only once
@@ -195,19 +195,21 @@ parfor curNeuron = 1:numNeurons,
     parSave(neuronSaveName, neuron, stat, '-v7.3');
 end % End Neuron Loop
 
-if all(gamParams.ridgeLambda == 0)
-    referenceLevel = 'Reference';
-else
-    referenceLevel = 'Full';
+if ~isPrediction
+    if all(gamParams.ridgeLambda == 0)
+        referenceLevel = 'Reference';
+    else
+        referenceLevel = 'Full';
+    end
+    [designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', referenceLevel);
+    gam.trialID = trialID;
+    gam.trialTime = trialTime;
+    %% Save to file
+    fprintf('\nSaving GAMs ...\n');
+    save(saveFileName, ...
+        'gam', 'num*', 'gamParams', ...
+        'designMatrix', 'spikeCov', '-v7.3');
 end
-[designMatrix, gam] = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', referenceLevel);
-gam.trialID = trialID;
-gam.trialTime = trialTime;
-%% Save to file
-fprintf('\nSaving GAMs ...\n');
-save(saveFileName, ...
-    'gam', 'num*', 'gamParams', ...
-    'designMatrix', 'spikeCov', '-v7.3');
 
 fprintf('\nFinished: %s\n', datestr(now));
 end
