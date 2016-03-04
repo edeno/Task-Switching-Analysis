@@ -3,11 +3,9 @@ modelList[0]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Dir
 modelList[1]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50)"
 modelList[2]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
 modelList[3]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
-modelList[4]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
-modelList[5]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
-modelList[6]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50) + s(Rule, Trial Time, knotDiff=50)"
-modelList[7]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
-modelList[8]="s(Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)"
+modelList[4]="s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
+modelList[5]="s(Congruency, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50)"
+modelList[6]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Test Stimulus, Trial Time, knotDiff=50)"
 
 numFiles=34;
 # Time Period: Rule Response
@@ -40,6 +38,6 @@ do
        -v OVERWRITE="0" \
        -v ISPREDICTION="1" \
        -v SMOOTHLAMBDA="10.^(-2)" \
-       -v NUMCORES="8" \
+       -v NUMCORES="3" \
        ./runGAMCluster2015a.sh;
 done

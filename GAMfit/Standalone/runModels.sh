@@ -31,6 +31,6 @@ do
        -v INCLUDETIMEBEFOREZERO="1" \
        -v OVERWRITE="0" \
        -v SMOOTHLAMBDA="10.^(-2)" \
-       -v NUMCORES="10" \
+       -v NUMCORES="3" \
        ./runGAMCluster2015a.sh;
 done
