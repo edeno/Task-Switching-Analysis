@@ -23,22 +23,24 @@ for brain_ind = 1:length(brainAreas),
         
         files = find(cellfun(@(x) ~isempty(x), strfind(gamPredFileNames, brainArea)));
         numModels = length(models);
-        numNeurons = length(fileNames);
+        numNeurons = length(files);
         numPred = length(predType);
         pred = nan(numModels, numNeurons, numPred);
         
         for model_ind = 1:numModels,
             curFolder = sprintf('%s/%s', modelsFolder, modelList(models{model_ind}));
-            fprintf('\tModel: %s\n', models{model_ind});            
+            fprintf('\tModel: %s\n', models{model_ind});
+            count = 1;
             for file_ind = files,
                 try
                     load(sprintf('%s/%s', curFolder, fileNames{file_ind}), 'neuron');
                     fprintf('\t\t...%s\n', fileNames{file_ind});
                     for pred_ind = 1:numPred,
-                        pred(model_ind, file_ind, pred_ind) = nanmean(neuron.(predType{pred_ind}));
+                        pred(model_ind, count, pred_ind) = nanmean(neuron.(predType{pred_ind}));
                     end
                 catch
                 end
+                count = count + 1;
             end
         end   
         fprintf('\nSaving...\n');
