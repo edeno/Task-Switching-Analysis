@@ -4,7 +4,7 @@ clear variables; close all; clc; profile off;
 isOverwrite = true;
 numFolds = 5;
 ridgeLambda = 1;
-smoothLambda = 10.^(-3:3);
+smoothLambda = 10.^(-2);
 
 % Simulate Session
 numTrials = 1000;
@@ -36,7 +36,7 @@ trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Lef
 trueRate(level_ind('Rule', 'Orientation') & level_ind('Response Direction', 'Left') & trialTime > 100) = orientLeftRate * 2;
 %%
 model = 's(Rule * Response Direction, Trial Time)';
-[neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
+testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false);
 %%
