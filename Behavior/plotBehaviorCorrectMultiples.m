@@ -84,7 +84,7 @@ for plot_ind = 1:length(covNames)
         if isInteraction(plot_ind),
             curLevels = cellfun(@(x) covInfo(x).levels, strsplit(covNames{plot_ind}, ':'), 'UniformOutput', false);
             baselineLevel = cellfun(@(x) covInfo(x).baselineLevel, strsplit(covNames{plot_ind}, ':'), 'UniformOutput', false);
-            curLevels{2} = curLevels{2}(~ismember(curLevels{2}, baselineLevel));
+            curLevels{2} = curLevels{2}(~ismember(curLevels{2}, baselineLevel{2}));
             numLevels = length(curLevels{2});
             % NOTE: Only really handles a single interaction.
             for level1_ind = 1:length(curLevels{1}),
