@@ -35,7 +35,7 @@ testComputeGAMfit_wrapper(model, trueRate, ...
 profile on;
 timePeriod = 'Testing';
 type = 'Rule';
-apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false, 'overwrite', true);
 profile viewer;
 %%
 trueDiff = (orientRate - colorRate) .* ones(size(apcJob{1}.trialTime));

@@ -30,7 +30,7 @@ trueRate(level_ind('Response Direction', 'Left')) = trueRate(level_ind('Response
 
 %%
 model = 's(Rule, Trial Time) + s(Response Direction, Trial Time)';
-[neurons, stats, gam, designMatrix, spikes, gamParams] = testComputeGAMfit_wrapper(model, trueRate, ...
+testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false);
 
@@ -38,7 +38,7 @@ model = 's(Rule, Trial Time) + s(Response Direction, Trial Time)';
 timePeriod = 'Testing';
 type = 'Rule';
 
-apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+apcJob = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false, 'overwrite', true);
 %%
 trueDiff = (orientRate - colorRate) .* ones(size(apcJob{1}.trialTime));
 trueDiff(apcJob{1}.trialTime > 100) = ((orientRate * 2) - colorRate);
