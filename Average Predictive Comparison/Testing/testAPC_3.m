@@ -76,7 +76,7 @@ suptitle(sprintf('%s: %s', type, apcJob{1}.comparisonNames{1}));
 %%
 timePeriod = 'Testing';
 type = 'Response Direction';
-apcJob(2) = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false);
+apcJob(2) = computeAPC(model, timePeriod, type, 'isLocal', true, 'sessionNames', {'test'}, 'isWeighted', false, 'overwrite', true);
 %%
 figure;
 subplot(1,3,1);
