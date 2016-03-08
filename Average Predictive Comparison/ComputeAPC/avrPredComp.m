@@ -184,24 +184,29 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
         %Transfer static assets to each worker only once
-        fprintf('\nTransferring static assets to each worker...\n');
-        if verLessThan('matlab', '8.6'),
-            cLDM = WorkerObjWrapper(curLevelDesignMatrix);
-            bDM = WorkerObjWrapper(baselineDesignMatrix);
-            tT = WorkerObjWrapper(trialTime);
-            d = WorkerObjWrapper(den);
-            sW = WorkerObjWrapper(summedWeights);
-        else
-            cLDM = parallel.pool.Constant(curLevelDesignMatrix);
-            bDM = parallel.pool.Constant(baselineDesignMatrix);
-            tT = parallel.pool.Constant(trialTime);
-            d = parallel.pool.Constant(den);
-            sW = parallel.pool.Constant(summedWeights);
-        end
+%         fprintf('\nTransferring static assets to each worker...\n');
+%         if verLessThan('matlab', '8.6'),
+%             cLDM = WorkerObjWrapper(curLevelDesignMatrix);
+%             bDM = WorkerObjWrapper(baselineDesignMatrix);
+%             tT = WorkerObjWrapper(trialTime);
+%             d = WorkerObjWrapper(den);
+%             sW = WorkerObjWrapper(summedWeights);
+%         else
+%             cLDM = parallel.pool.Constant(curLevelDesignMatrix);
+%             bDM = parallel.pool.Constant(baselineDesignMatrix);
+%             tT = parallel.pool.Constant(trialTime);
+%             d = parallel.pool.Constant(den);
+%             sW = parallel.pool.Constant(summedWeights);
+%         end
+        cLDM.Value = curLevelDesignMatrix;
+        bDM.Value = baselineDesignMatrix;
+        tT.Value = trialTime;
+        d.Value = den;
+        sW.Value = summedWeights;
         fprintf('\nComputing Level: %s...\n', curLevelName);
         for neuron_ind = 1:numNeurons,
             fprintf('\tNeuron: #%d...\n', neuron_ind);
-            parfor sim_ind = 1:apcParams.numSim,
+            for sim_ind = 1:apcParams.numSim,
                 if (mod(sim_ind, 100) == 0)
                     fprintf('\t\tSim #%d...\n', sim_ind);
                 end
