@@ -25,7 +25,7 @@ do
        -l mem_total=80G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
-       -v CURFACTOR="$curFactor" \
+       -v FACTOROFINTEREST="$curFactor" \
        -v NUMCORES="12" \
        ./runComputeAPC2015a.sh;
 done
