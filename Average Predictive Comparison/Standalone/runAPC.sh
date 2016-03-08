@@ -1,5 +1,5 @@
 #!/bin/sh
-curModel="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+curModel="Rule * Previous Error + Response Direction + Rule * Rule Repetition + Congruency"
 factorList[0]="Rule"
 factorList[1]="Previous Error"
 factorList[2]="Response Direction"
