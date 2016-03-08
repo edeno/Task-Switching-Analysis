@@ -53,7 +53,7 @@ if getenv('ENVIRONMENT')    % true if this is a batch job
     myCluster.JobStorageLocation = getenv('TMPDIR');  % points to TMPDIR
 end
 
-parpool(myCluster, gamParams.numCores);
+parpool(myCluster, apcParams.numCores);
 avrPredComp(sessionNames{session_ind}, apcParams, covInfo);
 
 exit;
