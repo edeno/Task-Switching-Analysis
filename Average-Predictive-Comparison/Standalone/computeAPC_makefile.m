@@ -7,7 +7,7 @@ main = 'computeAPC_standalone'; % or myApp if not to use myStandalone
                        % Then, place myApp.m in current folder
 
 %%2 Location of the rest of your m-files
-srcFolder = sprintf('%s/Average Predictive Comparison/ComputeAPC/', main_dir); % more files to compile live here
+srcFolder = sprintf('%s/Average-Predictive-Comparison/ComputeAPC/', main_dir); % more files to compile live here
 
 %%3 Your executable base name
 exec = 'computeAPCExec';   % MATLAB release appended later
