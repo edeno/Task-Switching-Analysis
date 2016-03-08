@@ -153,21 +153,36 @@ for by_id = 1:length(byLevels),
     colorDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     colorDesignMatrix = colorDesignMatrix(sample_ind, :) * gam.constraints';
     
+    %Transfer static assets to each worker only once
+    fprintf('\nTransferring static assets to each worker...\n');
+    if verLessThan('matlab', '8.6'),
+        cDM = WorkerObjWrapper(colorDesignMatrix);
+        oDM = WorkerObjWrapper(orientationDesignMatrix);
+        tT = WorkerObjWrapper(trialTime);
+        d = WorkerObjWrapper(den);
+        sW = WorkerObjWrapper(summedWeights);
+    else
+        cDM = parallel.pool.Constant(colorDesignMatrix);
+        oDM = parallel.pool.Constant(orientationDesignMatrix);
+        tT = parallel.pool.Constant(trialTime);
+        d = parallel.pool.Constant(den);
+        sW = parallel.pool.Constant(summedWeights);
+    end
+    
     for neuron_ind = 1:numNeurons,
-        colorEst = exp(colorDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
-        orientationEst = exp(orientationDesignMatrix * squeeze(parEst(:, neuron_ind, :))) * 1000;
         
         parfor sim_ind = 1:apcParams.numSim,
-            diffEst = bsxfun(@times, summedWeights, orientationEst(:, sim_ind) - colorEst(:, sim_ind));
-            sumEst = orientationEst(:, sim_ind) + colorEst(:, sim_ind);
+            if (mod(sim_ind, 100) == 0)
+                fprintf('\t\tSim #%d...\n', sim_ind);
+            end
+            colorEst = exp(cDM.Value * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+            orientationEst = exp(oDM.Value * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
+            diffEst = bsxfun(@times, sW.Value, orientationEst - colorEst);
+            sumEst = orientationEst + colorEst;
             
-            num = accumarray(trialTime, diffEst);
-            absNum = accumarray(trialTime, abs(diffEst));
-            normNum = accumarray(trialTime, diffEst ./ sumEst);
-            
-            apc(:, sim_ind) = num ./ den;
-            abs_apc(:, sim_ind) = absNum ./ den;
-            norm_apc(:, sim_ind) = normNum ./ den;
+            apc(:, sim_ind) = accumarray(tT.Value, diffEst, [], [], NaN) ./ d.Value;
+            abs_apc(:, sim_ind) = accumarray(tT.Value, abs(diffEst), [], [], NaN) ./ d.Value;
+            norm_apc(:, sim_ind) = accumarray(tT.Value, diffEst ./ sumEst, [], [], NaN) ./ d.Value;
         end
         avpred(neuron_ind).apc(by_id, :, :) = apc;
         avpred(neuron_ind).abs_apc(by_id, :, :) = abs_apc;

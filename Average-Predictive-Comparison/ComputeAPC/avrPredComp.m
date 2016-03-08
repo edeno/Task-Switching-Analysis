@@ -46,13 +46,13 @@ covNames = spikeCov.keys;
 numData = size(designMatrix, 1);
 
 % Simulate from posterior
-for neuron_ind = 1:numNeurons,
+parfor neuron_ind = 1:numNeurons,
     curFile = load(sprintf('%s/%s', modelDir, neuronFiles{neuron_ind}));
     if neuron_ind == 1,
         numPredictors = length(curFile.neuron.parEst);
         parEst = nan(numPredictors, numNeurons, apcParams.numSim);
     end
-    
+
     avpred(neuron_ind).wireNumber = curFile.neuron.wireNumber;
     avpred(neuron_ind).unitNumber = curFile.neuron.unitNumber;
     avpred(neuron_ind).brainArea = curFile.neuron.brainArea;
@@ -79,12 +79,12 @@ otherNames = covNames(ismember(covNames, model.terms) & ~ismember(covNames, apcP
 factorData = spikeCov(apcParams.factorOfInterest);
 if ~isempty(otherNames),
     otherData = cellfun(@(x) spikeCov(x), otherNames, 'UniformOutput', false);
-    
+
     isCategorical = cell2mat(cellfun(@(x) covInfo(x).isCategorical, otherNames, 'UniformOutput', false));
     isCategorical(ismember(otherNames, {'Rule Repetition', 'Previous Error History Indicator'})) = false;
-    
+
     otherData(isCategorical) = cellfun(@(x) dummyvar(x), otherData(isCategorical), 'UniformOutput', false);
-    
+
     isCategorical = cellfun(@(categorical, data) repmat(categorical, [1 size(data, 2)]), num2cell(isCategorical), otherData, 'UniformOutput', false);
 else
     isCategorical = {};
@@ -139,7 +139,7 @@ for history_ind = 1:numHistoryFactors,
         history = [];
         curLevels = levels';
     end
-    
+
     other_inputs = [otherData{:} history];
     if ~isempty(other_inputs),
         other_inputs = other_inputs(sample_ind, :);
@@ -164,7 +164,7 @@ for history_ind = 1:numHistoryFactors,
     else
         levelData = [-1 1];
     end
-    
+
     % Compute the firing rate holding thne last level constant (only need to do this once)
     cov = origCov;
     cov(:, history_ind) = levelData(baselineLevel_ind);
@@ -172,11 +172,11 @@ for history_ind = 1:numHistoryFactors,
     baselineDesignMatrix = gamModelMatrix(gamParams.regressionModel_str, spikeCov, covInfo, 'level_reference', gam.level_reference);
     baselineDesignMatrix = baselineDesignMatrix(sample_ind, :) * gam.constraints';
     baselineLevelName = curLevels{baselineLevel_ind, history_ind};
-    
+
     % Number of levels to iterate over.
     levelID = find(~ismember(covInfo(apcParams.factorOfInterest).levels, covInfo(apcParams.factorOfInterest).baselineLevel));
     numLevels = length(levelID);
-    
+
     for level_ind = 1:numLevels,
         cov(:, history_ind) = levelData(levelID(level_ind));
         spikeCov(apcParams.factorOfInterest) = cov;
@@ -184,29 +184,29 @@ for history_ind = 1:numHistoryFactors,
         curLevelDesignMatrix = curLevelDesignMatrix(sample_ind, :) * gam.constraints';
         curLevelName = curLevels{levelID(level_ind), history_ind};
         %Transfer static assets to each worker only once
-%         fprintf('\nTransferring static assets to each worker...\n');
-%         if verLessThan('matlab', '8.6'),
-%             cLDM = WorkerObjWrapper(curLevelDesignMatrix);
-%             bDM = WorkerObjWrapper(baselineDesignMatrix);
-%             tT = WorkerObjWrapper(trialTime);
-%             d = WorkerObjWrapper(den);
-%             sW = WorkerObjWrapper(summedWeights);
-%         else
-%             cLDM = parallel.pool.Constant(curLevelDesignMatrix);
-%             bDM = parallel.pool.Constant(baselineDesignMatrix);
-%             tT = parallel.pool.Constant(trialTime);
-%             d = parallel.pool.Constant(den);
-%             sW = parallel.pool.Constant(summedWeights);
-%         end
-        cLDM.Value = curLevelDesignMatrix;
-        bDM.Value = baselineDesignMatrix;
-        tT.Value = trialTime;
-        d.Value = den;
-        sW.Value = summedWeights;
+        fprintf('\nTransferring static assets to each worker...\n');
+        if verLessThan('matlab', '8.6'),
+            cLDM = WorkerObjWrapper(curLevelDesignMatrix);
+            bDM = WorkerObjWrapper(baselineDesignMatrix);
+            tT = WorkerObjWrapper(trialTime);
+            d = WorkerObjWrapper(den);
+            sW = WorkerObjWrapper(summedWeights);
+        else
+            cLDM = parallel.pool.Constant(curLevelDesignMatrix);
+            bDM = parallel.pool.Constant(baselineDesignMatrix);
+            tT = parallel.pool.Constant(trialTime);
+            d = parallel.pool.Constant(den);
+            sW = parallel.pool.Constant(summedWeights);
+        end
+%         cLDM.Value = curLevelDesignMatrix;
+%         bDM.Value = baselineDesignMatrix;
+%         tT.Value = trialTime;
+%         d.Value = den;
+%         sW.Value = summedWeights;
         fprintf('\nComputing Level: %s...\n', curLevelName);
         for neuron_ind = 1:numNeurons,
             fprintf('\tNeuron: #%d...\n', neuron_ind);
-            for sim_ind = 1:apcParams.numSim,
+            parfor sim_ind = 1:apcParams.numSim,
                 if (mod(sim_ind, 100) == 0)
                     fprintf('\t\tSim #%d...\n', sim_ind);
                 end
@@ -214,7 +214,7 @@ for history_ind = 1:numHistoryFactors,
                 baselineLevelEst = exp(bDM.Value * squeeze(parEst(:, neuron_ind, sim_ind))) * 1000;
                 diffEst = bsxfun(@times, sW.Value, curLevelEst - baselineLevelEst);
                 sumEst = curLevelEst + baselineLevelEst;
-                
+
                 apc(:, sim_ind) = accumarray(tT.Value, diffEst, [], [], NaN) ./ d.Value;
                 abs_apc(:, sim_ind) = accumarray(tT.Value, abs(diffEst), [], [], NaN) ./ d.Value;
                 norm_apc(:, sim_ind) = accumarray(tT.Value, diffEst ./ sumEst, [], [], NaN) ./ d.Value;
@@ -223,12 +223,12 @@ for history_ind = 1:numHistoryFactors,
             avpred(neuron_ind).abs_apc(counter_idx, :, :) = abs_apc;
             avpred(neuron_ind).norm_apc(counter_idx, :, :) = norm_apc;
         end
-        
+
         comparisonNames{counter_idx} = sprintf('%s - %s', curLevelName, baselineLevelName);
-        
+
         counter_idx = counter_idx + 1;
     end
-    
+
 end
 
 [avpred.numSamples] = deal(apcParams.numSamples);
