@@ -27,5 +27,6 @@ do
        -v TIMEPERIOD="$timeperiod" \
        -v FACTOROFINTEREST="$curFactor" \
        -v NUMCORES="12" \
+       -v ISWEIGHTED="0" \
        ./runComputeAPC2015a.sh;
 done
