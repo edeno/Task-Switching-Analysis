@@ -34,11 +34,9 @@ inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)) || st
 inParser.addRequired('factorOfInterest',  @(x) ischar(x) && covInfo.isKey(x));
 inParser.addParameter('numSim', 1000, @(x) isnumeric(x) && x > 0)
 inParser.addParameter('numSamples', [], @(x) isnumeric(x))
-inParser.addParameter('isWeighted', false, @islogical)
-inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('isWeighted', false, @isnumeric)
+inParser.addParameter('overwrite', false, @isnumeric)
 inParser.addParameter('sessionNames', [], @iscell)
-inParser.addParameter('walltime', '150:00:00', @ischar);
-inParser.addParameter('mem', '124GB', @ischar);
 inParser.addParameter('numCores', 12, @(x) isnumeric(x) && x > 0);
 
 inParser.parse(regressionModel_str, timePeriod, factorOfInterest, varargin{:});
