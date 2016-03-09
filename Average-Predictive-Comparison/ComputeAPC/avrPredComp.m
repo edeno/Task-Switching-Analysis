@@ -46,7 +46,7 @@ covNames = spikeCov.keys;
 numData = size(designMatrix, 1);
 
 % Simulate from posterior
-parfor neuron_ind = 1:numNeurons,
+for neuron_ind = 1:numNeurons,
     curFile = load(sprintf('%s/%s', modelDir, neuronFiles{neuron_ind}));
     if neuron_ind == 1,
         numPredictors = length(curFile.neuron.parEst);
