@@ -169,6 +169,7 @@ for by_id = 1:length(byLevels),
         sW = parallel.pool.Constant(summedWeights);
     end
     
+    fprintf('\nComputing Level: %s...\n', byLevels{by_id});
     for neuron_ind = 1:numNeurons,
         fprintf('\tNeuron: #%d...\n', neuron_ind);
         parfor sim_ind = 1:apcParams.numSim,
