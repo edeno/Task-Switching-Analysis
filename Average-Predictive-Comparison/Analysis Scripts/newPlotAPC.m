@@ -1,6 +1,9 @@
 brainArea = {avpred.brainArea};
 isACC = ismember(brainArea, 'ACC');
 isDLPFC = ~isACC;
+monkeyNames = {avpred.monkeyNames};
+isCC = ismember(monkeyNames, 'cc');
+isISA = ismember(monkeyNames, 'isa');
 
 apc = cat(4, avpred.apc);
 apc = squeeze(apc(:, 1, :, :));
@@ -28,123 +31,71 @@ for level_ind = 1:numLevels,
 end
 
 %% By Neuron
-abs_apc_byNeuron = quantile(abs_apc, [0.025 0.5 0.975], 2);
-apc_byNeuron = quantile(apc, [0.025 0.5 0.975], 2);
+individualIntervals = @(metric) quantile(metric, [0.025, 0.5, 0.975], 2);
 
-normSum_apc_byNeuron = quantile(normSum_apc, [0.025 0.5 0.975], 2);
-normSum_abs_apc_byNeuron = quantile(normSum_abs_apc, [0.025 0.5 0.975], 2);
+apc_byNeuron = individualIntervals(apc);
+abs_apc_byNeuron = individualIntervals(abs_apc);
 
-normBaseline_abs_apc_byNeuron = quantile(normBaseline_abs_apc, [0.025 0.5 0.975], 2);
-normBaseline_apc_byNeuron = quantile(normBaseline_apc, [0.025 0.5 0.975], 2);
+normSum_apc_byNeuron = individualIntervals(normSum_apc);
+normSum_abs_apc_byNeuron = individualIntervals(normSum_abs_apc);
+
+normBaseline_abs_apc_byNeuron = individualIntervals(normBaseline_abs_apc);
+normBaseline_apc_byNeuron = individualIntervals(normBaseline_apc);
 
 %% Population
-% ACC
-abs_apc_ACC = quantile(nanmedian(abs_apc(:, :, isACC), 3), [0.025, 0.05, 0.975], 2);
-apc_ACC = quantile(nanmedian(apc(:, :, isACC), 3), [0.025 0.5 0.975], 2);
+curArea = 'ACC';
+curMonkey = 'cc';
+filter_ind = ismember(monkeyNames, curMonkey) & ismember(brainArea, curArea);
+popIntervals = @(metric) quantile(nanmedian(metric(:, :, filter_ind), 3), [0.025, 0.5, 0.975], 2);
 
-normSum_apc_ACC = quantile(nanmedian(normSum_apc(:, :, isACC), 3), [0.025 0.5 0.975], 2);
-normSum_abs_apc_ACC = quantile(nanmedian(normSum_abs_apc(:, :, isACC), 3), [0.025 0.5 0.975], 2);
+apc_pop = popIntervals(apc);
+abs_apc_pop = popIntervals(abs_apc);
 
-normBaseline_abs_apc_ACC = quantile(nanmedian(normBaseline_abs_apc(:, :, isACC), 3), [0.025 0.5 0.975], 2);
-normBaseline_apc_ACC = quantile(nanmedian(normBaseline_apc(:, :, isACC), 3), [0.025 0.5 0.975], 2);
+normSum_apc_pop = popIntervals(normSum_apc);
+normSum_abs_apc_pop = popIntervals(normSum_abs_apc);
 
-% DLPFC
-abs_apc_DLPFC = quantile(nanmedian(abs_apc(:, :, isDLPFC), 3), [0.025, 0.05, 0.975], 2);
-apc_DLPFC = quantile(nanmedian(apc(:, :, isDLPFC), 3), [0.025 0.5 0.975], 2);
+normBaseline_apc_pop = popIntervals(normBaseline_apc);
+normBaseline_abs_apc_pop = popIntervals(normBaseline_abs_apc);
 
-normSum_apc_DLPFC = quantile(nanmedian(normSum_apc(:, :, isDLPFC), 3), [0.025 0.5 0.975], 2);
-normSum_abs_apc_DLPFC = quantile(nanmedian(normSum_abs_apc(:, :, isDLPFC), 3), [0.025 0.5 0.975], 2);
-
-normBaseline_abs_apc_DLPFC = quantile(nanmedian(normBaseline_abs_apc(:, :, isDLPFC), 3), [0.025 0.5 0.975], 2);
-normBaseline_apc_DLPFC = quantile(nanmedian(normBaseline_apc(:, :, isDLPFC), 3), [0.025 0.5 0.975], 2);
-
-%% Plot ACC
 figure;
 subplot(3,2,1);
-plot(apc_ACC, 1:numLevels, 'k');
+plot(apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC apc');
+title('apc');
 
 subplot(3,2,2);
-plot(abs_apc_ACC, 1:numLevels, 'k');
+plot(abs_apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC abs apc');
+title('abs apc');
 
 subplot(3,2,3);
-plot(normSum_apc_ACC, 1:numLevels, 'k');
+plot(normSum_apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC normSum apc');
+title('normSum apc');
 
 subplot(3,2,4);
-plot(normSum_abs_apc_ACC, 1:numLevels, 'k');
+plot(normSum_abs_apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC normSum apc');
+title('normSum apc');
 
 subplot(3,2,5);
-plot(normBaseline_apc_ACC, 1:numLevels, 'k');
+plot(normBaseline_apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC normBaseline apc');
+title('normBaseline apc');
 
 subplot(3,2,6);
-plot(normBaseline_abs_apc_ACC, 1:numLevels, 'k');
+plot(normBaseline_abs_apc_pop, 1:numLevels, 'k');
 ax = gca;
 ax.YTick = 1:numLevels;
 ax.YTickLabel = levels;
-title('ACC normBaseline abs apc');
-
-%% Plot dlPFC
-figure;
-subplot(3,2,1);
-plot(apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC apc');
-
-subplot(3,2,2);
-plot(abs_apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC abs apc');
-
-subplot(3,2,3);
-plot(normSum_apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC normSum apc');
-
-subplot(3,2,4);
-plot(normSum_abs_apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC normSum apc');
-
-subplot(3,2,5);
-plot(normBaseline_apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC normBaseline apc');
-
-subplot(3,2,6);
-plot(normBaseline_abs_apc_DLPFC, 1:numLevels, 'k');
-ax = gca;
-ax.YTick = 1:numLevels;
-ax.YTickLabel = levels;
-title('dlPFC normBaseline abs apc');
-
-%%
-
+title('normBaseline abs apc');
