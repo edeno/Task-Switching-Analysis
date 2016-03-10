@@ -76,6 +76,8 @@ isPrediction = gamParams.isPrediction;
 
 covNames = spikeCov.keys;
 
+fprintf('\nNumber of Neurons: %d\n', numNeurons);
+
 if ~gamParams.includeIncorrect
     for cov_ind = 1:length(covNames),
         if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
