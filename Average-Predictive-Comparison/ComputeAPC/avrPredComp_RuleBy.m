@@ -170,7 +170,7 @@ for by_id = 1:length(byLevels),
     end
     
     for neuron_ind = 1:numNeurons,
-        
+        fprintf('\tNeuron: #%d...\n', neuron_ind);
         parfor sim_ind = 1:apcParams.numSim,
             if (mod(sim_ind, 100) == 0)
                 fprintf('\t\tSim #%d...\n', sim_ind);
