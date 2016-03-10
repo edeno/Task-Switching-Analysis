@@ -1,5 +1,5 @@
 #!/bin/sh
-curModel="Rule * Previous Error + Response Direction + Rule * Rule Repetition + Congruency"
+curModel="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
 factorList[0]="Previous Error"
 factorList[1]="Rule Repetition"
 numFiles=34;
@@ -19,7 +19,7 @@ do
   qsub -t "1-$numFiles" \
        -N "APC_RuleBy$curFactor" \
        -l h_rt=24:00:00 \
-       -l mem_total=80G \
+       -l mem_total=124G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v FACTOROFINTEREST="$curFactor" \
