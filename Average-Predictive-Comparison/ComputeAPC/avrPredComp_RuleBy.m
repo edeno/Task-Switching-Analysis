@@ -9,7 +9,7 @@ main_dir = getWorkingDir();
 modelList_name = sprintf('%s/Processed Data/%s/Models/modelList.mat', main_dir, apcParams.timePeriod);
 load(modelList_name, 'modelList');
 
-saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
+saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/RuleBy%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
 if ~exist(saveFolder, 'dir'),
     mkdir(saveFolder);
 end
