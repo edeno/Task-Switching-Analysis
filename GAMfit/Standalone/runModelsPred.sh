@@ -29,7 +29,7 @@ do
   curModel=$(echo "$curModel" | sed -e "s/,/','/g")
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
-       -N GAMfit \
+       -N GAMpred \
        -l h_rt=24:00:00 \
        -l mem_total=125G \
        -v MODEL="$curModel" \
