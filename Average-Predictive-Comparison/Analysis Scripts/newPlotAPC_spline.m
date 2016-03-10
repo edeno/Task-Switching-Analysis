@@ -36,14 +36,16 @@ colors = [ ...
     166,216,84; ...
     ] ./ 255;
 %% By Neuron
-abs_apc_byNeuron = quantile(abs_apc, [0.025 0.5 0.975], 3);
-apc_byNeuron = quantile(apc, [0.025 0.5 0.975], 3);
+individualIntervals = @(metric) quantile(metric, [0.025, 0.5, 0.975], 3);
 
-normSum_apc_byNeuron = quantile(normSum_apc, [0.025 0.5 0.975], 3);
-normSum_abs_apc_byNeuron = quantile(normSum_abs_apc, [0.025 0.5 0.975], 3);
+apc_byNeuron = individualIntervals(apc);
+abs_apc_byNeuron = individualIntervals(abs_apc);
 
-normBaseline_abs_apc_byNeuron = quantile(normBaseline_abs_apc, [0.025 0.5 0.975], 3);
-normBaseline_apc_byNeuron = quantile(normBaseline_apc, [0.025 0.5 0.975], 3);
+normSum_apc_byNeuron = individualIntervals(normSum_apc);
+normSum_abs_apc_byNeuron = individualIntervals(normSum_abs_apc);
+
+normBaseline_abs_apc_byNeuron = individualIntervals(normBaseline_abs_apc);
+normBaseline_apc_byNeuron = individualIntervals(normBaseline_apc);
 
 %% Population
 curArea = 'ACC';
