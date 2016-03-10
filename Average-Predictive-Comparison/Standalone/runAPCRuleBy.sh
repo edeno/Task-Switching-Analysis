@@ -1,7 +1,7 @@
 #!/bin/sh
 curModel="Rule * Previous Error + Response Direction + Rule * Rule Repetition + Congruency"
-factorList[1]="Previous Error"
-factorList[3]="Rule Repetition"
+factorList[0]="Previous Error"
+factorList[1]="Rule Repetition"
 numFiles=34;
 # Time Period
 timeperiod="Rule Response"
