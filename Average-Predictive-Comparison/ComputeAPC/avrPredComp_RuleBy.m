@@ -195,19 +195,12 @@ end
 [avpred.numSim] = deal(apcParams.numSim);
 [avpred.sessionName] = deal(sessionName);
 [avpred.regressionModel_str] = deal(apcParams.regressionModel_str);
-[avpred.wireNumber] = deal(neuron.wireNumber);
-[avpred.unitNumber] = deal(neuron.unitNumber);
-[avpred.brainArea] = deal(neuron.brainArea);
-[avpred.monkeyNames] = deal(neuron.monkeyName);
 baseline = num2cell(exp(parEst(1, :, :)) * 1000, 3);
 [avpred.baselineFiringRate] = deal(baseline{:});
 [avpred.byLevels] = deal(byLevels);
-[avpred.trialTime] = deal(unique(gam.trialTime));
+[avpred.trialTime] = deal(min(gam.trialTime):max(gam.trialTime(sample_ind)));
 
-saveFolder = sprintf('%s/Processed Data/%s/Models/%s/APC/RuleBy_%s/', main_dir, apcParams.timePeriod, modelList(apcParams.regressionModel_str), apcParams.factorOfInterest);
-if ~exist(saveFolder, 'dir'),
-    mkdir(saveFolder);
-end
-save_file_name = sprintf('%s/%s_APC.mat', saveFolder, sessionName);
-save(save_file_name, 'avpred');
+fprintf('\nSaving...\n');
+save(saveFileName, 'avpred', '-v7.3');
+fprintf('\nFinished: %s\n', datestr(now));
 end
