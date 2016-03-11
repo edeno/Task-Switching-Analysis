@@ -25,6 +25,5 @@ for folder_ind = 1:length(folderNames),
     if ~exist(saveDir, 'dir'),
         mkdir(saveDir);
     end
-    fprintf('/nSaving.../n');
-    save(sprintf('%s/apcCollected.mat', saveDir), 'avpred', '-v7.3');
+    summarizeAPC(avpred, saveDir);
 end
