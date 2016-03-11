@@ -62,10 +62,10 @@ for folder_ind = 1:length(folderNames),
         166,216,84; ...
         ] ./ 255;
     for monkey_ind = 1:length(uniqueMonkeyNames),
-        curMonkey = monkeyNames{monkey_ind};
+        curMonkey = uniqueMonkeyNames{monkey_ind};
         fprintf('\nMonkey: %s\n', curMonkey);
         for area_ind = 1:length(uniqueBrainArea),
-            curArea = brainArea{area_ind};
+            curArea = uniqueBrainArea{area_ind};
             fprintf('\nBrain Area: %s\n', curArea);
             
             filter_ind = ismember(monkeyNames, curMonkey) & ismember(brainArea, curArea);
