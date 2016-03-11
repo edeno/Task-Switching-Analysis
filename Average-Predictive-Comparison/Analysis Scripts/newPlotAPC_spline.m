@@ -5,7 +5,14 @@ monkeyNames = {avpred.monkeyNames};
 isCC = ismember(monkeyNames, 'cc');
 isISA = ismember(monkeyNames, 'isa');
 
+timeLength = max(arrayfun(@(x) length(x.trialTime), avpred));
 numNeurons = length(avpred);
+
+for neuron_ind = 1:numNeurons,
+   avpred(neuron_ind).apc = padarray(avpred(neuron_ind).apc, [0, timeLength-length(avpred(neuron_ind).trialTime), 0], NaN, 'post'); 
+   avpred(neuron_ind).abs_apc = padarray(avpred(neuron_ind).abs_apc, [0, timeLength-length(avpred(neuron_ind).trialTime), 0], NaN, 'post'); 
+   avpred(neuron_ind).norm_apc = padarray(avpred(neuron_ind).norm_apc, [0, timeLength-length(avpred(neuron_ind).trialTime), 0], NaN, 'post'); 
+end
 
 apc = cat(4, avpred.apc);
 abs_apc = cat(4, avpred.abs_apc);
@@ -16,7 +23,6 @@ baselineFiringRate = squeeze([avpred.baselineFiringRate])';
 
 levels = avpred(1).byLevels;
 numLevels = length(levels);
-trialTime = avpred(1).trialTime;
 
 normBaseline_apc = nan(size(apc));
 normBaseline_abs_apc = nan(size(apc));
@@ -51,6 +57,7 @@ normBaseline_apc_byNeuron = individualIntervals(normBaseline_apc);
 curArea = 'ACC';
 curMonkey = 'cc';
 filter_ind = ismember(monkeyNames, curMonkey) & ismember(brainArea, curArea);
+trialTime = min(avpred(1).trialTime):(timeLength - min(avpred(1).trialTime));
 popIntervals = @(metric) quantile(nanmedian(metric(:, :, :, filter_ind), 4), [0.025, 0.5, 0.975], 3);
 
 apc_pop = popIntervals(apc);
