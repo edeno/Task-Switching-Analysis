@@ -13,6 +13,7 @@ for folder_ind = 1:length(folderNames),
     fprintf('\nFolder: %s\n', folderNames{folder_ind});
     collectedDir = sprintf('%s/%s/apcCollected/', apcDir, folderNames{folder_ind});
     load(sprintf('%s/apcCollected.mat', collectedDir));
+    fprintf('\nFile Loaded...\n');
     
     brainArea = {avpred.brainArea};
     monkeyNames = {avpred.monkeyNames};
@@ -81,8 +82,8 @@ for folder_ind = 1:length(folderNames),
             normBaseline_apc_byNeuron = individualIntervals(normBaseline_apc(:, :, :, filter_ind));
             
             %% Population
-            trialTime = min(avpred(1).trialTime):(timeLength - min(avpred(1).trialTime));
-            popIntervals = @(metric) quantile(nanmedian(metric(:, :, :, filter_ind), 4), [0.025, 0.5, 0.975], 3);
+            trialTime = min(avpred(find(filter_ind, 1)).trialTime):943-abs(min(avpred(find(filter_ind, 1)).trialTime))-1;
+            popIntervals = @(metric) squeeze(quantile(nanmedian(metric(:, :, :, filter_ind), 4), [0.025, 0.5, 0.975], 3));
             
             apc_pop = popIntervals(apc);
             abs_apc_pop = popIntervals(abs_apc);
@@ -92,7 +93,7 @@ for folder_ind = 1:length(folderNames),
             
             normBaseline_apc_pop = popIntervals(normBaseline_apc);
             normBaseline_abs_apc_pop = popIntervals(normBaseline_abs_apc);
-            
+            fprintf('\nSaving...\n');
             save(sprintf('%s/%s_%s_summary.mat', collectedDir, curMonkey, curArea), '*_byNeuron', '*_pop', 'trialTime', 'levels');
         end
     end
