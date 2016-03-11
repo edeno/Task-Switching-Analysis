@@ -57,9 +57,12 @@ for folder_ind = 1:length(folderNames),
         166,216,84; ...
         ] ./ 255;
     for monkey_ind = 1:length(uniqueMonkeyNames),
+        curMonkey = monkeyNames{monkey_ind};
+        fprintf('\nMonkey: %s\n', curMonkey);
         for area_ind = 1:length(uniqueBrainArea),
             curArea = brainArea{area_ind};
-            curMonkey = monkeyNames{monkey_ind};
+            fprintf('\nBrain Area: %s\n', curArea);
+            
             filter_ind = ismember(monkeyNames, curMonkey) & ismember(brainArea, curArea);
             %% By Neuron
             individualIntervals = @(metric) quantile(metric, [0.025, 0.5, 0.975], 3);
