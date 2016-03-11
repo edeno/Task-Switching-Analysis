@@ -11,13 +11,14 @@ folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
 
 for folder_ind = 1:length(folderNames),
     fprintf('\nFolder: %s\n', folderNames{folder_ind});
-    APC_files = dir(sprintf('%s/%s/*_APC.mat', apcDir, folderNames{folder_ind}));
+    curFactorDir = sprintf('%s/%s/', apcDir, folderNames{folder_ind});
+    APC_files = dir(sprintf('%s/*_APC.mat', curFactorDir));
     APC_files = {APC_files.name};
     avpred = [];
 
     for file_ind = 1:length(APC_files),
         fprintf('\t...%s\n', APC_files{file_ind})
-        curAPC = load(APC_files{file_ind});
+        curAPC = load(sprintf('%s/%s', curFactorDir, APC_files{file_ind}));
         avpred = [avpred, curAPC.avpred];
     end
 
