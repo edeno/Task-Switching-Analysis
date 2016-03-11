@@ -36,7 +36,11 @@ for folder_ind = 1:length(folderNames),
     
     baselineFiringRate = squeeze([avpred.baselineFiringRate])';
     
-    levels = avpred(1).byLevels;
+    try
+        levels = avpred(1).byLevels;
+    catch
+        levels = avpred(1).comparisonNames;
+    end
     numLevels = length(levels);
     
     normBaseline_apc = nan(size(apc));
@@ -89,7 +93,7 @@ for folder_ind = 1:length(folderNames),
             normBaseline_apc_pop = popIntervals(normBaseline_apc);
             normBaseline_abs_apc_pop = popIntervals(normBaseline_abs_apc);
             
-            save(sprintf('%s/%s_%s_summary.mat', collectedDir, curMonkey, curArea), '*_byNeuron', '*_pop', 'trialTime');
+            save(sprintf('%s/%s_%s_summary.mat', collectedDir, curMonkey, curArea), '*_byNeuron', '*_pop', 'trialTime', 'levels');
         end
     end
 end
