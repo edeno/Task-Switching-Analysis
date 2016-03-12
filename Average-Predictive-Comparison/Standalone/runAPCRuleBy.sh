@@ -23,7 +23,7 @@ do
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
        -v FACTOROFINTEREST="$curFactor" \
-       -v NUMCORES="3" \
+       -v NUMCORES="2" \
        -v ISWEIGHTED="0" \
        ./runComputeAPCRuleBy2015a.sh;
 done
