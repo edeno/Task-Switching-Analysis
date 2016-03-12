@@ -1,5 +1,5 @@
 #!/bin/sh
-curModel="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+model="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
 factorList[0]="Previous Error"
 factorList[1]="Rule Repetition"
 numFiles=34;
@@ -14,7 +14,7 @@ do
   printf "\t\tProcessing Factor: %s \n" "$curFactor"
   # Escape commas in model string with single quotes
   # because qsub splits passed variables with commas
-  curModel=$(echo "$curModel" | sed -e "s/,/','/g")
+  curModel=$(echo "$model" | sed -e "s/,/','/g")
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N "APC_RuleBy$curFactor" \
