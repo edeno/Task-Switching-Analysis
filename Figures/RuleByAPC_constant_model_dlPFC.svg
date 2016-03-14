@@ -4,19 +4,19 @@
 	 viewBox="0 0 1600 894" style="enable-background:new 0 0 1600 894;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;stroke-opacity:0.149;}
-	.st1{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;}
-	.st2{fill:#262626;}
-	.st3{font-family:'MyriadPro-Regular';}
-	.st4{font-size:13px;}
-	.st5{fill:none;stroke:#66C2A5;stroke-linecap:square;stroke-miterlimit:10;}
-	.st6{fill:#66C2A5;}
-	.st7{fill:none;stroke:#000000;stroke-width:1.3333;stroke-linejoin:bevel;stroke-miterlimit:1;stroke-dasharray:1,3;}
-	.st8{fill:none;stroke:#7570B3;stroke-linecap:square;stroke-miterlimit:10;}
-	.st9{fill:#7570B3;}
-	.st10{font-size:15px;}
+	.st1{fill:none;stroke:#000000;stroke-linecap:square;stroke-miterlimit:10;}
+	.st2{font-family:'ArialMT';}
+	.st3{font-size:13px;}
+	.st4{fill:none;stroke:#66C2A5;stroke-linecap:square;stroke-miterlimit:10;}
+	.st5{fill:#66C2A5;}
+	.st6{fill:none;stroke:#7570B3;stroke-linecap:square;stroke-miterlimit:10;}
+	.st7{fill:#7570B3;}
+	.st8{fill:none;stroke:#000000;stroke-width:1.3333;stroke-linejoin:bevel;stroke-miterlimit:1;stroke-dasharray:1,3;}
+	.st9{font-size:15px;}
+	.st10{font-size:36px;}
 	.st11{font-size:14px;}
-	.st12{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
-	.st13{font-size:36px;}
+	.st12{fill:none;}
+	.st13{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
 </style>
 <line class="st0" x1="781" y1="236.6" x2="220" y2="236.6"/>
 <line class="st0" x1="781" y1="207.9" x2="220" y2="207.9"/>
@@ -25,110 +25,97 @@
 <line class="st0" x1="781" y1="121.8" x2="220" y2="121.8"/>
 <line class="st0" x1="781" y1="83.1" x2="220" y2="83.1"/>
 <line class="st0" x1="781" y1="54.4" x2="220" y2="54.4"/>
-<line class="st1" x1="220" y1="251" x2="781" y2="251"/>
-<line class="st1" x1="220" y1="251" x2="220" y2="245.4"/>
-<line class="st1" x1="282.3" y1="251" x2="282.3" y2="245.4"/>
-<line class="st1" x1="344.7" y1="251" x2="344.7" y2="245.4"/>
-<line class="st1" x1="407" y1="251" x2="407" y2="245.4"/>
-<line class="st1" x1="469.3" y1="251" x2="469.3" y2="245.4"/>
-<line class="st1" x1="531.7" y1="251" x2="531.7" y2="245.4"/>
-<line class="st1" x1="594" y1="251" x2="594" y2="245.4"/>
-<line class="st1" x1="656.3" y1="251" x2="656.3" y2="245.4"/>
-<line class="st1" x1="718.7" y1="251" x2="718.7" y2="245.4"/>
-<line class="st1" x1="781" y1="251" x2="781" y2="245.4"/>
+<path class="st1" d="M220,251h561H220z"/>
 <g transform="translate(220,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.6</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.6</text>
 </g>
 <g transform="translate(282.3333,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.5</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.5</text>
 </g>
 <g transform="translate(344.6667,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.4</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.4</text>
 </g>
 <g transform="translate(407,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.3</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.3</text>
 </g>
 <g transform="translate(469.3333,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.2</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.2</text>
 </g>
 <g transform="translate(531.6667,276.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.1</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.1</text>
 </g>
 <g transform="translate(594,276.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(656.3333,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.1</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.1</text>
 </g>
 <g transform="translate(718.6667,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.2</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.2</text>
 </g>
 <g transform="translate(781,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.3</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.3</text>
 </g>
 <g transform="translate(214.6667,256.6429)">
-	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(214.6667,227.9286)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(214.6667,199.2143)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(214.6667,170.5)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(214.6667,141.7857)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(214.6667,113.0714)">
-	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(214.6667,84.3571)">
-	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
-<line class="st5" x1="591" y1="236.6" x2="657.8" y2="236.6"/>
-<line class="st5" x1="362" y1="207.9" x2="734.7" y2="207.9"/>
-<line class="st5" x1="445.2" y1="179.2" x2="755.2" y2="179.2"/>
-<line class="st5" x1="331.3" y1="150.5" x2="664.4" y2="150.5"/>
-<line class="st5" x1="395.2" y1="121.8" x2="749.3" y2="121.8"/>
-<line class="st5" x1="276.8" y1="83.1" x2="636.4" y2="83.1"/>
-<line class="st5" x1="588.7" y1="54.4" x2="656" y2="54.4"/>
-<path class="st6" d="M625.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L625.4,236.5z"/>
-<path class="st6" d="M566.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L566.4,207.5z"/>
-<path class="st6" d="M616.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L616.4,179.5z"/>
-<path class="st6" d="M514.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L514.4,150.5z"/>
-<path class="st6" d="M587.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,121.5z"/>
-<path class="st6" d="M474.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L474.4,83.5z"/>
-<path class="st6" d="M624.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L624.4,54.5z"/>
+<line class="st4" x1="591" y1="236.6" x2="657.8" y2="236.6"/>
+<line class="st4" x1="362" y1="207.9" x2="734.7" y2="207.9"/>
+<line class="st4" x1="445.2" y1="179.2" x2="755.2" y2="179.2"/>
+<line class="st4" x1="331.3" y1="150.5" x2="664.4" y2="150.5"/>
+<line class="st4" x1="395.2" y1="121.8" x2="749.3" y2="121.8"/>
+<line class="st4" x1="276.8" y1="83.1" x2="636.4" y2="83.1"/>
+<line class="st4" x1="588.7" y1="54.4" x2="656" y2="54.4"/>
+<path class="st5" d="M625.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L625.4,236.5z"/>
+<path class="st5" d="M566.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L566.4,207.5z"/>
+<path class="st5" d="M616.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L616.4,179.5z"/>
+<path class="st5" d="M514.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L514.4,150.5z"/>
+<path class="st5" d="M587.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,121.5z"/>
+<path class="st5" d="M474.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L474.4,83.5z"/>
+<path class="st5" d="M624.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L624.4,54.5z"/>
 <g>
-	<line class="st5" x1="468.3" y1="83.1" x2="618.4" y2="54.4"/>
-	<path class="st5" d="M619.8,226.6l-59.4-28.7l50.5-28.7l-102.2-28.7l72.6-28.7"/>
+	<line class="st4" x1="468.3" y1="83.1" x2="618.4" y2="54.4"/>
+	<path class="st4" d="M619.8,226.6l-59.4-28.7l50.5-28.7l-102.2-28.7l72.6-28.7"/>
 </g>
+<line class="st6" x1="594.6" y1="236.6" x2="621.2" y2="236.6"/>
+<line class="st6" x1="518.4" y1="207.9" x2="614.5" y2="207.9"/>
+<line class="st6" x1="538.1" y1="179.2" x2="648.8" y2="179.2"/>
+<line class="st6" x1="543.3" y1="150.5" x2="645.2" y2="150.5"/>
+<line class="st6" x1="484.2" y1="121.8" x2="596.8" y2="121.8"/>
+<line class="st6" x1="552.8" y1="83.1" x2="648.1" y2="83.1"/>
+<line class="st6" x1="591.6" y1="54.4" x2="619.5" y2="54.4"/>
+<path class="st7" d="M612.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,236.5z"/>
+<path class="st7" d="M575.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L575.4,207.5z"/>
+<path class="st7" d="M596.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L596.4,179.5z"/>
+<path class="st7" d="M600.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L600.4,150.5z"/>
+<path class="st7" d="M548.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L548.4,121.5z"/>
+<path class="st7" d="M608.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,83.5z"/>
+<path class="st7" d="M610.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L610.4,54.5z"/>
+<line class="st6" x1="603" y1="83.1" x2="604.5" y2="54.4"/>
+<path class="st6" d="M606.7,236.6L569,207.9l21.6-28.7l3.6-28.7l-51.4-28.7"/>
 <g>
-	<line class="st7" x1="594" y1="241" x2="594" y2="40"/>
-</g>
-<line class="st8" x1="594.6" y1="236.6" x2="621.2" y2="236.6"/>
-<line class="st8" x1="518.4" y1="207.9" x2="614.5" y2="207.9"/>
-<line class="st8" x1="538.1" y1="179.2" x2="648.8" y2="179.2"/>
-<line class="st8" x1="543.3" y1="150.5" x2="645.2" y2="150.5"/>
-<line class="st8" x1="484.2" y1="121.8" x2="596.8" y2="121.8"/>
-<line class="st8" x1="552.8" y1="83.1" x2="648.1" y2="83.1"/>
-<line class="st8" x1="591.6" y1="54.4" x2="619.5" y2="54.4"/>
-<path class="st9" d="M612.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,236.5z"/>
-<path class="st9" d="M575.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L575.4,207.5z"/>
-<path class="st9" d="M596.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L596.4,179.5z"/>
-<path class="st9" d="M600.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L600.4,150.5z"/>
-<path class="st9" d="M548.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L548.4,121.5z"/>
-<path class="st9" d="M608.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,83.5z"/>
-<path class="st9" d="M610.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L610.4,54.5z"/>
-<line class="st8" x1="603" y1="83.1" x2="604.5" y2="54.4"/>
-<path class="st8" d="M606.7,236.6L569,207.9l21.6-28.7l3.6-28.7l-51.4-28.7"/>
-<g>
-	<line class="st7" x1="594" y1="241" x2="594" y2="40"/>
+	<line class="st8" x1="594" y1="251" x2="594" y2="50"/>
 </g>
 <g transform="translate(500.5005,67.25)">
-	<text transform="matrix(1 0 0 1 3.488 -27.27)" class="st3 st10">Change in Firing Rate (Spikes / s)</text>
+	<text transform="matrix(1 0 0 1 -111.2954 -27.27)" class="st2 st9">Change in Firing Rate (spikes / s)</text>
 </g>
 <line class="st0" x1="1520" y1="236.6" x2="960" y2="236.6"/>
 <line class="st0" x1="1520" y1="207.9" x2="960" y2="207.9"/>
@@ -137,100 +124,90 @@
 <line class="st0" x1="1520" y1="121.8" x2="960" y2="121.8"/>
 <line class="st0" x1="1520" y1="83.1" x2="960" y2="83.1"/>
 <line class="st0" x1="1520" y1="54.4" x2="960" y2="54.4"/>
-<line class="st1" x1="960" y1="251" x2="1520" y2="251"/>
-<line class="st1" x1="960" y1="251" x2="960" y2="245.4"/>
-<line class="st1" x1="1022.2" y1="251" x2="1022.2" y2="245.4"/>
-<line class="st1" x1="1084.4" y1="251" x2="1084.4" y2="245.4"/>
-<line class="st1" x1="1146.7" y1="251" x2="1146.7" y2="245.4"/>
-<line class="st1" x1="1208.9" y1="251" x2="1208.9" y2="245.4"/>
-<line class="st1" x1="1271.1" y1="251" x2="1271.1" y2="245.4"/>
-<line class="st1" x1="1333.3" y1="251" x2="1333.3" y2="245.4"/>
-<line class="st1" x1="1395.6" y1="251" x2="1395.6" y2="245.4"/>
-<line class="st1" x1="1457.8" y1="251" x2="1457.8" y2="245.4"/>
-<line class="st1" x1="1520" y1="251" x2="1520" y2="245.4"/>
+<path class="st1" d="M960,251h560H960z"/>
 <g transform="translate(960,276.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(1022.2222,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.2</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.2</text>
 </g>
 <g transform="translate(1084.4445,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.4</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.4</text>
 </g>
 <g transform="translate(1146.6666,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.6</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.6</text>
 </g>
 <g transform="translate(1208.8889,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.8</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.8</text>
 </g>
 <g transform="translate(1271.1111,276.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">1</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">1</text>
 </g>
 <g transform="translate(1333.3334,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">1.2</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">1.2</text>
 </g>
 <g transform="translate(1395.5555,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">1.4</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">1.4</text>
 </g>
 <g transform="translate(1457.7778,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">1.6</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">1.6</text>
 </g>
 <g transform="translate(1520,276.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">1.8</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">1.8</text>
 </g>
 <g transform="translate(954.6667,256.6429)">
-	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(954.6667,227.9286)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(954.6667,199.2143)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(954.6667,170.5)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(954.6667,141.7857)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(954.6667,113.0714)">
-	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(954.6667,84.3571)">
-	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
-<line class="st5" x1="1083.8" y1="236.6" x2="1136.4" y2="236.6"/>
-<line class="st5" x1="1264.3" y1="207.9" x2="1429" y2="207.9"/>
-<line class="st5" x1="1272.3" y1="179.2" x2="1454.6" y2="179.2"/>
-<line class="st5" x1="1279.6" y1="150.5" x2="1473.3" y2="150.5"/>
-<line class="st5" x1="1308.4" y1="121.8" x2="1503.6" y2="121.8"/>
-<line class="st5" x1="1276" y1="83.1" x2="1422" y2="83.1"/>
-<line class="st5" x1="1120" y1="54.4" x2="1172.6" y2="54.4"/>
-<path class="st6" d="M1115.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1115.4,236.5z"/>
-<path class="st6" d="M1344.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1344.4,207.5z"/>
-<path class="st6" d="M1362.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1362.4,179.5z"/>
-<path class="st6" d="M1371.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1371.4,150.5z"/>
-<path class="st6" d="M1400.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1400.4,121.5z"/>
-<path class="st6" d="M1349.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1349.4,83.5z"/>
-<path class="st6" d="M1151.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1151.4,54.5z"/>
-<line class="st5" x1="1343.3" y1="83.1" x2="1145.5" y2="54.4"/>
-<path class="st5" d="M1109,236.6l229.9-28.7l17.1-28.7l9.6-28.7l29.1-28.7"/>
-<line class="st8" x1="1033" y1="236.6" x2="1053.7" y2="236.6"/>
-<line class="st8" x1="1128.2" y1="207.9" x2="1214.9" y2="207.9"/>
-<line class="st8" x1="1110.9" y1="179.2" x2="1184.5" y2="179.2"/>
-<line class="st8" x1="1128.6" y1="150.5" x2="1207.6" y2="150.5"/>
-<line class="st8" x1="1154.7" y1="121.8" x2="1241" y2="121.8"/>
-<line class="st8" x1="1119.9" y1="83.1" x2="1183.8" y2="83.1"/>
-<line class="st8" x1="1047.3" y1="54.4" x2="1070.2" y2="54.4"/>
-<path class="st9" d="M1048.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1048.4,236.5z"/>
-<path class="st9" d="M1175.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1175.4,207.5z"/>
-<path class="st9" d="M1149.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1149.4,179.5z"/>
-<path class="st9" d="M1172.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1172.4,150.5z"/>
-<path class="st9" d="M1200.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1200.4,121.5z"/>
-<path class="st9" d="M1156.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1156.4,83.5z"/>
-<path class="st9" d="M1064.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1064.4,54.5z"/>
-<line class="st8" x1="1150.4" y1="83.1" x2="1058.2" y2="54.4"/>
-<path class="st8" d="M1042.6,236.6l127.1-28.7l-26.2-28.7l22.7-28.7l28.7-28.7"/>
+<line class="st4" x1="1083.8" y1="236.6" x2="1136.4" y2="236.6"/>
+<line class="st4" x1="1264.3" y1="207.9" x2="1429" y2="207.9"/>
+<line class="st4" x1="1272.3" y1="179.2" x2="1454.6" y2="179.2"/>
+<line class="st4" x1="1279.6" y1="150.5" x2="1473.3" y2="150.5"/>
+<line class="st4" x1="1308.4" y1="121.8" x2="1503.6" y2="121.8"/>
+<line class="st4" x1="1276" y1="83.1" x2="1422" y2="83.1"/>
+<line class="st4" x1="1120" y1="54.4" x2="1172.6" y2="54.4"/>
+<path class="st5" d="M1115.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1115.4,236.5z"/>
+<path class="st5" d="M1344.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1344.4,207.5z"/>
+<path class="st5" d="M1362.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1362.4,179.5z"/>
+<path class="st5" d="M1371.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1371.4,150.5z"/>
+<path class="st5" d="M1400.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1400.4,121.5z"/>
+<path class="st5" d="M1349.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1349.4,83.5z"/>
+<path class="st5" d="M1151.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1151.4,54.5z"/>
+<line class="st4" x1="1343.3" y1="83.1" x2="1145.5" y2="54.4"/>
+<path class="st4" d="M1109,236.6l229.9-28.7l17.1-28.7l9.6-28.7l29.1-28.7"/>
+<line class="st6" x1="1033" y1="236.6" x2="1053.7" y2="236.6"/>
+<line class="st6" x1="1128.2" y1="207.9" x2="1214.9" y2="207.9"/>
+<line class="st6" x1="1110.9" y1="179.2" x2="1184.5" y2="179.2"/>
+<line class="st6" x1="1128.6" y1="150.5" x2="1207.6" y2="150.5"/>
+<line class="st6" x1="1154.7" y1="121.8" x2="1241" y2="121.8"/>
+<line class="st6" x1="1119.9" y1="83.1" x2="1183.8" y2="83.1"/>
+<line class="st6" x1="1047.3" y1="54.4" x2="1070.2" y2="54.4"/>
+<path class="st7" d="M1048.4,236.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1048.4,236.5z"/>
+<path class="st7" d="M1175.4,207.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1175.4,207.5z"/>
+<path class="st7" d="M1149.4,179.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1149.4,179.5z"/>
+<path class="st7" d="M1172.4,150.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1172.4,150.5z"/>
+<path class="st7" d="M1200.4,121.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1200.4,121.5z"/>
+<path class="st7" d="M1156.4,83.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1156.4,83.5z"/>
+<path class="st7" d="M1064.4,54.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1064.4,54.5z"/>
+<line class="st6" x1="1150.4" y1="83.1" x2="1058.2" y2="54.4"/>
+<path class="st6" d="M1042.6,236.6l127.1-28.7l-26.2-28.7l22.7-28.7l28.7-28.7"/>
 <line class="st0" x1="781" y1="516.6" x2="220" y2="516.6"/>
 <line class="st0" x1="781" y1="487.9" x2="220" y2="487.9"/>
 <line class="st0" x1="781" y1="459.2" x2="220" y2="459.2"/>
@@ -238,104 +215,92 @@
 <line class="st0" x1="781" y1="401.8" x2="220" y2="401.8"/>
 <line class="st0" x1="781" y1="363.1" x2="220" y2="363.1"/>
 <line class="st0" x1="781" y1="334.4" x2="220" y2="334.4"/>
-<line class="st1" x1="220" y1="531" x2="781" y2="531"/>
-<line class="st1" x1="220" y1="531" x2="220" y2="525.4"/>
-<line class="st1" x1="290.1" y1="531" x2="290.1" y2="525.4"/>
-<line class="st1" x1="360.3" y1="531" x2="360.3" y2="525.4"/>
-<line class="st1" x1="430.4" y1="531" x2="430.4" y2="525.4"/>
-<line class="st1" x1="500.5" y1="531" x2="500.5" y2="525.4"/>
-<line class="st1" x1="570.6" y1="531" x2="570.6" y2="525.4"/>
-<line class="st1" x1="640.8" y1="531" x2="640.8" y2="525.4"/>
-<line class="st1" x1="710.9" y1="531" x2="710.9" y2="525.4"/>
-<line class="st1" x1="781" y1="531" x2="781" y2="525.4"/>
+<path class="st1" d="M220,531h561H220z"/>
 <g transform="translate(220,556.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.05</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.05</text>
 </g>
 <g transform="translate(290.125,556.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.04</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.04</text>
 </g>
 <g transform="translate(360.25,556.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.03</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.03</text>
 </g>
 <g transform="translate(430.375,556.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.02</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.02</text>
 </g>
 <g transform="translate(500.5,556.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.01</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.01</text>
 </g>
 <g transform="translate(570.625,556.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(640.75,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.01</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.01</text>
 </g>
 <g transform="translate(710.875,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.02</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.02</text>
 </g>
 <g transform="translate(781,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.03</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.03</text>
 </g>
 <g transform="translate(214.6667,536.6429)">
-	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(214.6667,507.9286)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(214.6667,479.2143)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(214.6667,450.5)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(214.6667,421.7857)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(214.6667,393.0714)">
-	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(214.6667,364.3571)">
-	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
-<line class="st5" x1="563.5" y1="516.6" x2="659.7" y2="516.6"/>
-<line class="st5" x1="378.6" y1="487.9" x2="698.4" y2="487.9"/>
-<line class="st5" x1="416.8" y1="459.2" x2="770.5" y2="459.2"/>
-<line class="st5" x1="305.9" y1="430.5" x2="655.9" y2="430.5"/>
-<line class="st5" x1="368.1" y1="401.8" x2="726.5" y2="401.8"/>
-<line class="st5" x1="286.9" y1="363.1" x2="624" y2="363.1"/>
-<line class="st5" x1="563.3" y1="334.4" x2="649.8" y2="334.4"/>
-<path class="st6" d="M612.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,516.5z"/>
-<path class="st6" d="M542.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L542.4,487.5z"/>
-<path class="st6" d="M606.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L606.4,459.5z"/>
-<path class="st6" d="M489.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L489.4,430.5z"/>
-<path class="st6" d="M556.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L556.4,401.5z"/>
-<path class="st6" d="M467.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L467.4,363.5z"/>
-<path class="st6" d="M611.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L611.4,334.5z"/>
-<line class="st5" x1="461.4" y1="363.1" x2="605.3" y2="334.4"/>
-<path class="st5" d="M606.1,516.6l-70-28.7l64.2-28.7l-116.7-28.7l67.1-28.7"/>
+<line class="st4" x1="563.5" y1="516.6" x2="659.7" y2="516.6"/>
+<line class="st4" x1="378.6" y1="487.9" x2="698.4" y2="487.9"/>
+<line class="st4" x1="416.8" y1="459.2" x2="770.5" y2="459.2"/>
+<line class="st4" x1="305.9" y1="430.5" x2="655.9" y2="430.5"/>
+<line class="st4" x1="368.1" y1="401.8" x2="726.5" y2="401.8"/>
+<line class="st4" x1="286.9" y1="363.1" x2="624" y2="363.1"/>
+<line class="st4" x1="563.3" y1="334.4" x2="649.8" y2="334.4"/>
+<path class="st5" d="M612.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,516.5z"/>
+<path class="st5" d="M542.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L542.4,487.5z"/>
+<path class="st5" d="M606.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L606.4,459.5z"/>
+<path class="st5" d="M489.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L489.4,430.5z"/>
+<path class="st5" d="M556.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L556.4,401.5z"/>
+<path class="st5" d="M467.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L467.4,363.5z"/>
+<path class="st5" d="M611.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L611.4,334.5z"/>
+<line class="st4" x1="461.4" y1="363.1" x2="605.3" y2="334.4"/>
+<path class="st4" d="M606.1,516.6l-70-28.7l64.2-28.7l-116.7-28.7l67.1-28.7"/>
+<line class="st6" x1="570.4" y1="516.6" x2="638.4" y2="516.6"/>
+<line class="st6" x1="360.9" y1="487.9" x2="637.6" y2="487.9"/>
+<line class="st6" x1="435.1" y1="459.2" x2="695.1" y2="459.2"/>
+<line class="st6" x1="435.6" y1="430.5" x2="707" y2="430.5"/>
+<line class="st6" x1="277.5" y1="401.8" x2="565.2" y2="401.8"/>
+<line class="st6" x1="476.2" y1="363.1" x2="681.8" y2="363.1"/>
+<line class="st6" x1="560.3" y1="334.4" x2="630.5" y2="334.4"/>
+<path class="st7" d="M608.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,516.5z"/>
+<path class="st7" d="M503.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L503.4,487.5z"/>
+<path class="st7" d="M568.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L568.4,459.5z"/>
+<path class="st7" d="M582.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L582.4,430.5z"/>
+<path class="st7" d="M428.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L428.4,401.5z"/>
+<path class="st7" d="M587.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,363.5z"/>
+<path class="st7" d="M600.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L600.4,334.5z"/>
+<line class="st6" x1="581.9" y1="363.1" x2="594.6" y2="334.4"/>
+<path class="st6" d="M602.5,516.6L497,487.9l65.7-28.7l14.2-28.7l-154.6-28.7"/>
 <g>
-	<line class="st7" x1="570.6" y1="521" x2="570.6" y2="320"/>
-</g>
-<line class="st8" x1="570.4" y1="516.6" x2="638.4" y2="516.6"/>
-<line class="st8" x1="360.9" y1="487.9" x2="637.6" y2="487.9"/>
-<line class="st8" x1="435.1" y1="459.2" x2="695.1" y2="459.2"/>
-<line class="st8" x1="435.6" y1="430.5" x2="707" y2="430.5"/>
-<line class="st8" x1="277.5" y1="401.8" x2="565.2" y2="401.8"/>
-<line class="st8" x1="476.2" y1="363.1" x2="681.8" y2="363.1"/>
-<line class="st8" x1="560.3" y1="334.4" x2="630.5" y2="334.4"/>
-<path class="st9" d="M608.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,516.5z"/>
-<path class="st9" d="M503.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L503.4,487.5z"/>
-<path class="st9" d="M568.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L568.4,459.5z"/>
-<path class="st9" d="M582.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L582.4,430.5z"/>
-<path class="st9" d="M428.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L428.4,401.5z"/>
-<path class="st9" d="M587.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,363.5z"/>
-<path class="st9" d="M600.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L600.4,334.5z"/>
-<line class="st8" x1="581.9" y1="363.1" x2="594.6" y2="334.4"/>
-<path class="st8" d="M602.5,516.6L497,487.9l65.7-28.7l14.2-28.7l-154.6-28.7"/>
-<g>
-	<line class="st7" x1="570.6" y1="521" x2="570.6" y2="320"/>
+	<line class="st8" x1="570.6" y1="531" x2="570.6" y2="330"/>
 </g>
 <g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 -91.2358 -34)" class="st3 st10">Normalized Change in Firing Rate (Difference Index)</text>
+	<text transform="matrix(1 0 0 1 -174.5258 -34)" class="st2 st9">Normalized Change in Firing Rate (Difference Index)</text>
 </g>
 <line class="st0" x1="1520" y1="516.6" x2="960" y2="516.6"/>
 <line class="st0" x1="1520" y1="487.9" x2="960" y2="487.9"/>
@@ -344,92 +309,84 @@
 <line class="st0" x1="1520" y1="401.8" x2="960" y2="401.8"/>
 <line class="st0" x1="1520" y1="363.1" x2="960" y2="363.1"/>
 <line class="st0" x1="1520" y1="334.4" x2="960" y2="334.4"/>
-<line class="st1" x1="960" y1="531" x2="1520" y2="531"/>
-<line class="st1" x1="960" y1="531" x2="960" y2="525.4"/>
-<line class="st1" x1="1040" y1="531" x2="1040" y2="525.4"/>
-<line class="st1" x1="1120" y1="531" x2="1120" y2="525.4"/>
-<line class="st1" x1="1200" y1="531" x2="1200" y2="525.4"/>
-<line class="st1" x1="1280" y1="531" x2="1280" y2="525.4"/>
-<line class="st1" x1="1360" y1="531" x2="1360" y2="525.4"/>
-<line class="st1" x1="1440" y1="531" x2="1440" y2="525.4"/>
-<line class="st1" x1="1520" y1="531" x2="1520" y2="525.4"/>
+<path class="st1" d="M960,531h560H960z"/>
 <g transform="translate(960,556.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(1040,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.02</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.02</text>
 </g>
 <g transform="translate(1120,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.04</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.04</text>
 </g>
 <g transform="translate(1200,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.06</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.06</text>
 </g>
 <g transform="translate(1280,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.08</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.08</text>
 </g>
 <g transform="translate(1360,556.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.1</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.1</text>
 </g>
 <g transform="translate(1440,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.12</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.12</text>
 </g>
 <g transform="translate(1520,556.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.14</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.14</text>
 </g>
 <g transform="translate(954.6667,536.6429)">
-	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(954.6667,507.9286)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(954.6667,479.2143)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(954.6667,450.5)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(954.6667,421.7857)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(954.6667,393.0714)">
-	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(954.6667,364.3571)">
-	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
-<line class="st5" x1="1075.1" y1="516.6" x2="1121.1" y2="516.6"/>
-<line class="st5" x1="1252.9" y1="487.9" x2="1417.4" y2="487.9"/>
-<line class="st5" x1="1278.5" y1="459.2" x2="1452.2" y2="459.2"/>
-<line class="st5" x1="1254.6" y1="430.5" x2="1413.4" y2="430.5"/>
-<line class="st5" x1="1285.9" y1="401.8" x2="1449" y2="401.8"/>
-<line class="st5" x1="1224.6" y1="363.1" x2="1371.1" y2="363.1"/>
-<line class="st5" x1="1066.8" y1="334.4" x2="1114.2" y2="334.4"/>
-<path class="st6" d="M1103.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1103.4,516.5z"/>
-<path class="st6" d="M1333.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1333.4,487.5z"/>
-<path class="st6" d="M1363.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1363.4,459.5z"/>
-<path class="st6" d="M1335.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1335.4,430.5z"/>
-<path class="st6" d="M1371.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1371.4,401.5z"/>
-<path class="st6" d="M1299.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1299.4,363.5z"/>
-<path class="st6" d="M1093.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1093.4,334.5z"/>
-<line class="st5" x1="1293.6" y1="363.1" x2="1087.4" y2="334.4"/>
-<path class="st5" d="M1097.2,516.6l230.4-28.7l29.5-28.7l-27.4-28.7l35.4-28.7"/>
-<line class="st8" x1="1102.3" y1="516.6" x2="1138.9" y2="516.6"/>
-<line class="st8" x1="1326.1" y1="487.9" x2="1466" y2="487.9"/>
-<line class="st8" x1="1284" y1="459.2" x2="1414.4" y2="459.2"/>
-<line class="st8" x1="1314.3" y1="430.5" x2="1453.9" y2="430.5"/>
-<line class="st8" x1="1355" y1="401.8" x2="1504.9" y2="401.8"/>
-<line class="st8" x1="1227.5" y1="363.1" x2="1331" y2="363.1"/>
-<line class="st8" x1="1105.2" y1="334.4" x2="1144.5" y2="334.4"/>
-<path class="st9" d="M1125.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1125.4,516.5z"/>
-<path class="st9" d="M1399.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1399.4,487.5z"/>
-<path class="st9" d="M1350.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1350.4,459.5z"/>
-<path class="st9" d="M1385.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1385.4,430.5z"/>
-<path class="st9" d="M1432.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1432.4,401.5z"/>
-<path class="st9" d="M1280.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1280.4,363.5z"/>
-<path class="st9" d="M1129.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1129.4,334.5z"/>
-<line class="st8" x1="1274.7" y1="363.1" x2="1123.6" y2="334.4"/>
-<path class="st8" d="M1119.8,516.6l273.3-28.7l-48.1-28.7l34.5-28.7l47.1-28.7"/>
+<line class="st4" x1="1075.1" y1="516.6" x2="1121.1" y2="516.6"/>
+<line class="st4" x1="1252.9" y1="487.9" x2="1417.4" y2="487.9"/>
+<line class="st4" x1="1278.5" y1="459.2" x2="1452.2" y2="459.2"/>
+<line class="st4" x1="1254.6" y1="430.5" x2="1413.4" y2="430.5"/>
+<line class="st4" x1="1285.9" y1="401.8" x2="1449" y2="401.8"/>
+<line class="st4" x1="1224.6" y1="363.1" x2="1371.1" y2="363.1"/>
+<line class="st4" x1="1066.8" y1="334.4" x2="1114.2" y2="334.4"/>
+<path class="st5" d="M1103.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1103.4,516.5z"/>
+<path class="st5" d="M1333.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1333.4,487.5z"/>
+<path class="st5" d="M1363.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1363.4,459.5z"/>
+<path class="st5" d="M1335.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1335.4,430.5z"/>
+<path class="st5" d="M1371.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1371.4,401.5z"/>
+<path class="st5" d="M1299.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1299.4,363.5z"/>
+<path class="st5" d="M1093.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1093.4,334.5z"/>
+<line class="st4" x1="1293.6" y1="363.1" x2="1087.4" y2="334.4"/>
+<path class="st4" d="M1097.2,516.6l230.4-28.7l29.5-28.7l-27.4-28.7l35.4-28.7"/>
+<line class="st6" x1="1102.3" y1="516.6" x2="1138.9" y2="516.6"/>
+<line class="st6" x1="1326.1" y1="487.9" x2="1466" y2="487.9"/>
+<line class="st6" x1="1284" y1="459.2" x2="1414.4" y2="459.2"/>
+<line class="st6" x1="1314.3" y1="430.5" x2="1453.9" y2="430.5"/>
+<line class="st6" x1="1355" y1="401.8" x2="1504.9" y2="401.8"/>
+<line class="st6" x1="1227.5" y1="363.1" x2="1331" y2="363.1"/>
+<line class="st6" x1="1105.2" y1="334.4" x2="1144.5" y2="334.4"/>
+<path class="st7" d="M1125.4,516.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1125.4,516.5z"/>
+<path class="st7" d="M1399.4,487.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1399.4,487.5z"/>
+<path class="st7" d="M1350.4,459.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1350.4,459.5z"/>
+<path class="st7" d="M1385.4,430.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1385.4,430.5z"/>
+<path class="st7" d="M1432.4,401.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1432.4,401.5z"/>
+<path class="st7" d="M1280.4,363.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1280.4,363.5z"/>
+<path class="st7" d="M1129.4,334.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1129.4,334.5z"/>
+<line class="st6" x1="1274.7" y1="363.1" x2="1123.6" y2="334.4"/>
+<path class="st6" d="M1119.8,516.6l273.3-28.7l-48.1-28.7l34.5-28.7l47.1-28.7"/>
 <line class="st0" x1="781" y1="795.6" x2="220" y2="795.6"/>
 <line class="st0" x1="781" y1="766.9" x2="220" y2="766.9"/>
 <line class="st0" x1="781" y1="738.2" x2="220" y2="738.2"/>
@@ -437,106 +394,94 @@
 <line class="st0" x1="781" y1="670.8" x2="220" y2="670.8"/>
 <line class="st0" x1="781" y1="642.1" x2="220" y2="642.1"/>
 <line class="st0" x1="781" y1="613.4" x2="220" y2="613.4"/>
-<line class="st1" x1="220" y1="810" x2="781" y2="810"/>
-<line class="st1" x1="220" y1="810" x2="220" y2="804.4"/>
-<line class="st1" x1="290.1" y1="810" x2="290.1" y2="804.4"/>
-<line class="st1" x1="360.3" y1="810" x2="360.3" y2="804.4"/>
-<line class="st1" x1="430.4" y1="810" x2="430.4" y2="804.4"/>
-<line class="st1" x1="500.5" y1="810" x2="500.5" y2="804.4"/>
-<line class="st1" x1="570.6" y1="810" x2="570.6" y2="804.4"/>
-<line class="st1" x1="640.8" y1="810" x2="640.8" y2="804.4"/>
-<line class="st1" x1="710.9" y1="810" x2="710.9" y2="804.4"/>
-<line class="st1" x1="781" y1="810" x2="781" y2="804.4"/>
+<path class="st1" d="M220,810h561H220z"/>
 <g transform="translate(220,835.3333)">
-	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3 st4">-0.1</text>
+	<text transform="matrix(1 0 0 1 -11.5 -6)" class="st2 st3">-0.1</text>
 </g>
 <g transform="translate(290.125,835.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.08</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.08</text>
 </g>
 <g transform="translate(360.25,835.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.06</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.06</text>
 </g>
 <g transform="translate(430.375,835.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.04</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.04</text>
 </g>
 <g transform="translate(500.5,835.3333)">
-	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3 st4">-0.02</text>
+	<text transform="matrix(1 0 0 1 -15 -6)" class="st2 st3">-0.02</text>
 </g>
 <g transform="translate(570.625,835.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(640.75,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.02</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.02</text>
 </g>
 <g transform="translate(710.875,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.04</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.04</text>
 </g>
 <g transform="translate(781,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.06</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.06</text>
 </g>
 <g transform="translate(214.6667,815.6429)">
-	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -105.7481 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(214.6667,786.9286)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(214.6667,758.2143)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(214.6667,729.5)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(214.6667,700.7857)">
-	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -98 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(214.6667,672.0714)">
-	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -109.8692 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(214.6667,643.3571)">
-	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -128.3159 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
-<line class="st5" x1="564.5" y1="795.6" x2="657.8" y2="795.6"/>
-<line class="st5" x1="382.1" y1="766.9" x2="698.5" y2="766.9"/>
-<line class="st5" x1="426.4" y1="738.2" x2="765.1" y2="738.2"/>
-<line class="st5" x1="312.2" y1="709.5" x2="657.6" y2="709.5"/>
-<line class="st5" x1="362.5" y1="670.8" x2="739.5" y2="670.8"/>
-<line class="st5" x1="278.6" y1="642.1" x2="629.1" y2="642.1"/>
-<line class="st5" x1="561.3" y1="613.4" x2="648.6" y2="613.4"/>
-<path class="st6" d="M612.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,795.5z"/>
-<path class="st6" d="M544.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L544.4,766.5z"/>
-<path class="st6" d="M604.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L604.4,738.5z"/>
-<path class="st6" d="M492.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L492.4,709.5z"/>
-<path class="st6" d="M556.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L556.4,680.5z"/>
-<path class="st6" d="M467.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L467.4,642.5z"/>
-<path class="st6" d="M608.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,613.5z"/>
-<line class="st5" x1="461.9" y1="642.1" x2="602.6" y2="613.4"/>
-<path class="st5" d="M606.2,795.6l-67.9-28.7l59.7-28.7l-111.2-28.7l63.8-28.7"/>
+<line class="st4" x1="564.5" y1="795.6" x2="657.8" y2="795.6"/>
+<line class="st4" x1="382.1" y1="766.9" x2="698.5" y2="766.9"/>
+<line class="st4" x1="426.4" y1="738.2" x2="765.1" y2="738.2"/>
+<line class="st4" x1="312.2" y1="709.5" x2="657.6" y2="709.5"/>
+<line class="st4" x1="362.5" y1="670.8" x2="739.5" y2="670.8"/>
+<line class="st4" x1="278.6" y1="642.1" x2="629.1" y2="642.1"/>
+<line class="st4" x1="561.3" y1="613.4" x2="648.6" y2="613.4"/>
+<path class="st5" d="M612.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L612.4,795.5z"/>
+<path class="st5" d="M544.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L544.4,766.5z"/>
+<path class="st5" d="M604.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L604.4,738.5z"/>
+<path class="st5" d="M492.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L492.4,709.5z"/>
+<path class="st5" d="M556.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L556.4,680.5z"/>
+<path class="st5" d="M467.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L467.4,642.5z"/>
+<path class="st5" d="M608.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L608.4,613.5z"/>
+<line class="st4" x1="461.9" y1="642.1" x2="602.6" y2="613.4"/>
+<path class="st4" d="M606.2,795.6l-67.9-28.7l59.7-28.7l-111.2-28.7l63.8-28.7"/>
+<line class="st6" x1="567.2" y1="795.6" x2="632.3" y2="795.6"/>
+<line class="st6" x1="366.3" y1="766.9" x2="629.9" y2="766.9"/>
+<line class="st6" x1="442.9" y1="738.2" x2="688.5" y2="738.2"/>
+<line class="st6" x1="435.5" y1="709.5" x2="704.6" y2="709.5"/>
+<line class="st6" x1="274.7" y1="670.8" x2="564.7" y2="670.8"/>
+<line class="st6" x1="473.7" y1="642.1" x2="687.5" y2="642.1"/>
+<line class="st6" x1="558" y1="613.4" x2="625.2" y2="613.4"/>
+<path class="st7" d="M604.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L604.4,795.5z"/>
+<path class="st7" d="M504.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L504.4,766.5z"/>
+<path class="st7" d="M569.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L569.4,738.5z"/>
+<path class="st7" d="M579.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L579.4,709.5z"/>
+<path class="st7" d="M424.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L424.4,680.5z"/>
+<path class="st7" d="M587.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,642.5z"/>
+<path class="st7" d="M596.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L596.4,613.5z"/>
 <g>
-	<line class="st7" x1="570.6" y1="800" x2="570.6" y2="599"/>
-</g>
-<line class="st8" x1="567.2" y1="795.6" x2="632.3" y2="795.6"/>
-<line class="st8" x1="366.3" y1="766.9" x2="629.9" y2="766.9"/>
-<line class="st8" x1="442.9" y1="738.2" x2="688.5" y2="738.2"/>
-<line class="st8" x1="435.5" y1="709.5" x2="704.6" y2="709.5"/>
-<line class="st8" x1="274.7" y1="670.8" x2="564.7" y2="670.8"/>
-<line class="st8" x1="473.7" y1="642.1" x2="687.5" y2="642.1"/>
-<line class="st8" x1="558" y1="613.4" x2="625.2" y2="613.4"/>
-<path class="st9" d="M604.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L604.4,795.5z"/>
-<path class="st9" d="M504.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L504.4,766.5z"/>
-<path class="st9" d="M569.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L569.4,738.5z"/>
-<path class="st9" d="M579.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L579.4,709.5z"/>
-<path class="st9" d="M424.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L424.4,680.5z"/>
-<path class="st9" d="M587.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L587.4,642.5z"/>
-<path class="st9" d="M596.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L596.4,613.5z"/>
-<g>
-	<line class="st8" x1="581.9" y1="652.1" x2="590.7" y2="623.4"/>
-	<path class="st8" d="M598.1,795.6l-99.2-28.7l64.6-28.7l9.7-28.7l-154.4-28.7"/>
+	<line class="st6" x1="581.9" y1="652.1" x2="590.7" y2="623.4"/>
+	<path class="st6" d="M598.1,795.6l-99.2-28.7l64.6-28.7l9.7-28.7l-154.4-28.7"/>
 </g>
 <g>
-	<line class="st7" x1="570.6" y1="800" x2="570.6" y2="599"/>
+	<line class="st8" x1="570.6" y1="810" x2="570.6" y2="609"/>
 </g>
 <g transform="translate(500.5005,626.25)">
-	<text transform="matrix(1 0 0 1 -100.5356 -27.25)" class="st3 st10">Normalized Change in Firing Rate (Average Firing Rate)</text>
+	<text transform="matrix(1 0 0 1 -186.6108 -27.25)" class="st2 st9">Normalized Change in Firing Rate (Average Firing Rate)</text>
 </g>
 <line class="st0" x1="1520" y1="795.6" x2="960" y2="795.6"/>
 <line class="st0" x1="1520" y1="766.9" x2="960" y2="766.9"/>
@@ -545,122 +490,166 @@
 <line class="st0" x1="1520" y1="680.8" x2="960" y2="680.8"/>
 <line class="st0" x1="1520" y1="642.1" x2="960" y2="642.1"/>
 <line class="st0" x1="1520" y1="613.4" x2="960" y2="613.4"/>
-<line class="st1" x1="960" y1="810" x2="1520" y2="810"/>
-<line class="st1" x1="960" y1="810" x2="960" y2="804.4"/>
-<line class="st1" x1="1053.3" y1="810" x2="1053.3" y2="804.4"/>
-<line class="st1" x1="1146.7" y1="810" x2="1146.7" y2="804.4"/>
-<line class="st1" x1="1240" y1="810" x2="1240" y2="804.4"/>
-<line class="st1" x1="1333.3" y1="810" x2="1333.3" y2="804.4"/>
-<line class="st1" x1="1426.7" y1="810" x2="1426.7" y2="804.4"/>
-<line class="st1" x1="1520" y1="810" x2="1520" y2="804.4"/>
+<path class="st1" d="M960,810h560H960z"/>
 <g transform="translate(960,835.3333)">
-	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3 st4">0</text>
+	<text transform="matrix(1 0 0 1 -4 -6)" class="st2 st3">0</text>
 </g>
 <g transform="translate(1053.3334,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.05</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.05</text>
 </g>
 <g transform="translate(1146.6666,835.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.1</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.1</text>
 </g>
 <g transform="translate(1240,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.15</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.15</text>
 </g>
 <g transform="translate(1333.3334,835.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.2</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.2</text>
 </g>
 <g transform="translate(1426.6666,835.3333)">
-	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3 st4">0.25</text>
+	<text transform="matrix(1 0 0 1 -13 -6)" class="st2 st3">0.25</text>
 </g>
 <g transform="translate(1520,835.3333)">
-	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3 st4">0.3</text>
+	<text transform="matrix(1 0 0 1 -9.5 -6)" class="st2 st3">0.3</text>
 </g>
 <g transform="translate(954.6667,815.6429)">
-	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -103.748 -14.5)" class="st2 st3">Rule@Repetition5+</text>
 </g>
 <g transform="translate(954.6667,786.9286)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition4</text>
 </g>
 <g transform="translate(954.6667,758.2143)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition3</text>
 </g>
 <g transform="translate(954.6667,729.5)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition2</text>
 </g>
 <g transform="translate(954.6667,700.7857)">
-	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -96 -14.5)" class="st2 st3">Rule@Repetition1</text>
 </g>
 <g transform="translate(954.6667,672.0714)">
-	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3 st4">Rule@Previous Error</text>
+	<text transform="matrix(1 0 0 1 -107.8691 -24.5)" class="st2 st3">Rule@Previous Error</text>
 </g>
 <g transform="translate(954.6667,643.3571)">
-	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -126.3164 -24.5)" class="st2 st3">Rule@No Previous Error</text>
 </g>
 <g>
-	<line class="st5" x1="1077.2" y1="795.6" x2="1123" y2="795.6"/>
-	<line class="st5" x1="1235.9" y1="766.9" x2="1386.6" y2="766.9"/>
-	<line class="st5" x1="1254.2" y1="738.2" x2="1408.3" y2="738.2"/>
-	<line class="st5" x1="1241.3" y1="709.5" x2="1386.2" y2="709.5"/>
-	<line class="st5" x1="1279.7" y1="680.8" x2="1446" y2="680.8"/>
-	<line class="st5" x1="1240.6" y1="652.1" x2="1374.9" y2="652.1"/>
-	<line class="st5" x1="1109.8" y1="623.4" x2="1158" y2="623.4"/>
+	<line class="st4" x1="1077.2" y1="795.6" x2="1123" y2="795.6"/>
+	<line class="st4" x1="1235.9" y1="766.9" x2="1386.6" y2="766.9"/>
+	<line class="st4" x1="1254.2" y1="738.2" x2="1408.3" y2="738.2"/>
+	<line class="st4" x1="1241.3" y1="709.5" x2="1386.2" y2="709.5"/>
+	<line class="st4" x1="1279.7" y1="680.8" x2="1446" y2="680.8"/>
+	<line class="st4" x1="1240.6" y1="652.1" x2="1374.9" y2="652.1"/>
+	<line class="st4" x1="1109.8" y1="623.4" x2="1158" y2="623.4"/>
 </g>
-<path class="st6" d="M1104.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1104.4,795.5z"/>
-<path class="st6" d="M1312.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1312.4,766.5z"/>
-<path class="st6" d="M1330.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1330.4,738.5z"/>
-<path class="st6" d="M1317.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1317.4,709.5z"/>
-<path class="st6" d="M1362.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1362.4,680.5z"/>
-<path class="st6" d="M1310.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1310.4,642.5z"/>
-<path class="st6" d="M1136.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1136.4,613.5z"/>
+<path class="st5" d="M1104.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1104.4,795.5z"/>
+<path class="st5" d="M1312.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1312.4,766.5z"/>
+<path class="st5" d="M1330.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1330.4,738.5z"/>
+<path class="st5" d="M1317.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1317.4,709.5z"/>
+<path class="st5" d="M1362.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1362.4,680.5z"/>
+<path class="st5" d="M1310.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1310.4,642.5z"/>
+<path class="st5" d="M1136.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1136.4,613.5z"/>
 <g>
-	<line class="st5" x1="1304.7" y1="652.1" x2="1130.4" y2="623.4"/>
-	<path class="st5" d="M1098.9,795.6l207.4-28.7l17.8-28.7l-13-28.7l45.1-28.7"/>
+	<line class="st4" x1="1304.7" y1="652.1" x2="1130.4" y2="623.4"/>
+	<path class="st4" d="M1098.9,795.6l207.4-28.7l17.8-28.7l-13-28.7l45.1-28.7"/>
 </g>
-<line class="st8" x1="1102.2" y1="795.6" x2="1134.7" y2="795.6"/>
-<line class="st8" x1="1292.9" y1="766.9" x2="1418.8" y2="766.9"/>
-<line class="st8" x1="1261" y1="738.2" x2="1380.6" y2="738.2"/>
-<line class="st8" x1="1294.1" y1="709.5" x2="1425.2" y2="709.5"/>
-<line class="st8" x1="1340.2" y1="680.8" x2="1484.2" y2="680.8"/>
-<line class="st8" x1="1243" y1="642.1" x2="1345.4" y2="642.1"/>
-<line class="st8" x1="1129.9" y1="613.4" x2="1164.9" y2="613.4"/>
-<path class="st9" d="M1124.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1124.4,795.5z"/>
-<path class="st9" d="M1358.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1358.4,766.5z"/>
-<path class="st9" d="M1323.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1323.4,738.5z"/>
-<path class="st9" d="M1363.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1363.4,709.5z"/>
-<path class="st9" d="M1414.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1414.4,680.5z"/>
-<path class="st9" d="M1295.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1295.4,642.5z"/>
-<path class="st9" d="M1152.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1152.4,613.5z"/>
-<line class="st8" x1="1289.7" y1="642.1" x2="1146.6" y2="613.4"/>
-<path class="st8" d="M1118,795.6l234.3-28.7l-35.1-28.7l40.7-28.7l50.3-28.7"/>
-<text transform="matrix(1 0 0 1 578.9795 845)" class="st3 st11">Stronger for Orientation Rule</text>
-<text transform="matrix(1 0 0 1 435.5694 845)" class="st3 st11">Stronger for Color Rule</text>
+<line class="st6" x1="1102.2" y1="795.6" x2="1134.7" y2="795.6"/>
+<line class="st6" x1="1292.9" y1="766.9" x2="1418.8" y2="766.9"/>
+<line class="st6" x1="1261" y1="738.2" x2="1380.6" y2="738.2"/>
+<line class="st6" x1="1294.1" y1="709.5" x2="1425.2" y2="709.5"/>
+<line class="st6" x1="1340.2" y1="680.8" x2="1484.2" y2="680.8"/>
+<line class="st6" x1="1243" y1="642.1" x2="1345.4" y2="642.1"/>
+<line class="st6" x1="1129.9" y1="613.4" x2="1164.9" y2="613.4"/>
+<path class="st7" d="M1124.4,795.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1124.4,795.5z"/>
+<path class="st7" d="M1358.4,766.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1358.4,766.5z"/>
+<path class="st7" d="M1323.4,738.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1323.4,738.5z"/>
+<path class="st7" d="M1363.4,709.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1363.4,709.5z"/>
+<path class="st7" d="M1414.4,680.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1414.4,680.5z"/>
+<path class="st7" d="M1295.4,642.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1295.4,642.5z"/>
+<path class="st7" d="M1152.4,613.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1152.4,613.5z"/>
+<line class="st6" x1="1289.7" y1="642.1" x2="1146.6" y2="613.4"/>
+<path class="st6" d="M1118,795.6l234.3-28.7l-35.1-28.7l40.7-28.7l50.3-28.7"/>
 <g transform="translate(500.5005,626.25)">
-	<text transform="matrix(1 0 0 1 540.1924 -27.25)" class="st3 st10">Absolute Normalized Change in Firing Rate (Average Firing Rate)</text>
+	<text transform="matrix(1 0 0 1 521.6299 -27.25)" class="st2 st9">Absolute Normalized Change in Firing Rate (Average Firing Rate)</text>
 </g>
 <g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 549.4927 -34)" class="st3 st10">Absolute Normalized Change in Firing Rate (Difference Index)</text>
+	<text transform="matrix(1 0 0 1 533.7148 -34)" class="st2 st9">Absolute Normalized Change in Firing Rate (Difference Index)</text>
 </g>
 <g transform="translate(500.5005,67.25)">
-	<text transform="matrix(1 0 0 1 609.6801 -27.27)" class="st3 st10">Absolute Change in Firing Rate (Spikes / s)</text>
+	<text transform="matrix(1 0 0 1 596.9448 -27.27)" class="st2 st9">Absolute Change in Firing Rate (spikes / s)</text>
 </g>
+<text transform="matrix(1 0 0 1 800 883)" class="st2 st10">dLPFC</text>
+<text transform="matrix(1 0 0 1 60.2213 27.7603)" class="st2 st10">a</text>
+<text transform="matrix(1 0 0 1 800.2213 27.7604)" class="st2 st10">b</text>
+<text transform="matrix(1 0 0 1 579.1856 848.6002)" class="st2 st11">Stronger for Orientation Rule</text>
+<text transform="matrix(1 0 0 1 415.7755 848.6002)" class="st2 st11">Stronger for Color Rule</text>
 <g>
-	<line x1="430.4" y1="841" x2="395.2" y2="841"/>
+	<line class="st12" x1="505.3" y1="864.6" x2="470.2" y2="864.6"/>
 	<g>
-		<line class="st12" x1="430.4" y1="841" x2="404.1" y2="841"/>
+		<line class="st13" x1="505.3" y1="864.6" x2="479" y2="864.6"/>
 		<g>
-			<polygon points="406.1,838.1 395.2,841 406.1,843.9 			"/>
+			<polygon points="481,861.7 470.2,864.6 481,867.5 			"/>
 		</g>
 	</g>
 </g>
 <g>
-	<line x1="750.9" y1="841" x2="786.1" y2="841"/>
+	<line class="st12" x1="651.1" y1="864.6" x2="686.2" y2="864.6"/>
 	<g>
-		<line class="st12" x1="750.9" y1="841" x2="777.2" y2="841"/>
+		<line class="st13" x1="651.1" y1="864.6" x2="677.4" y2="864.6"/>
 		<g>
-			<polygon points="775.2,843.9 786.1,841 775.2,838.1 			"/>
+			<polygon points="675.4,867.5 686.2,864.6 675.4,861.7 			"/>
 		</g>
 	</g>
 </g>
-<text transform="matrix(1 0 0 1 800 883)" class="st3 st13">dLPFC</text>
-<text transform="matrix(1 0 0 1 60.2213 27.7603)" class="st3 st13">a</text>
-<text transform="matrix(1 0 0 1 800.2213 27.7604)" class="st3 st13">b</text>
+<g transform="translate(1262.0667,187.7187)">
+	<path class="st5" d="M-287.5,671.8h1.5l2.3,6.7l2.3-6.7h1.5v7.9h-1V675c0-0.2,0-0.4,0-0.8c0-0.4,0-0.8,0-1.2l-2.3,6.7h-1l-2.3-6.7
+		v0.2c0,0.2,0,0.5,0,0.9s0,0.7,0,0.9v4.7h-1C-287.5,679.7-287.5,671.8-287.5,671.8z M-274.8,678.3c0.2-0.5,0.4-1,0.4-1.6
+		c0-0.5-0.1-1-0.3-1.3c-0.3-0.5-0.7-0.8-1.4-0.8c-0.6,0-1,0.2-1.3,0.7c-0.3,0.5-0.4,1-0.4,1.6c0,0.6,0.1,1.1,0.4,1.5
+		c0.3,0.4,0.7,0.6,1.3,0.6C-275.5,679.1-275.1,678.8-274.8,678.3z M-274.2,674.5c0.5,0.5,0.7,1.2,0.7,2.2c0,0.9-0.2,1.7-0.7,2.3
+		c-0.5,0.6-1.2,0.9-2.1,0.9c-0.8,0-1.4-0.3-1.9-0.8c-0.4-0.5-0.6-1.2-0.6-2.1c0-1,0.2-1.7,0.7-2.3c0.5-0.6,1.1-0.9,2-0.9
+		C-275.4,673.8-274.7,674-274.2,674.5z M-272.3,673.9h0.9v0.8c0.3-0.3,0.6-0.6,0.9-0.7c0.3-0.1,0.6-0.2,1-0.2c0.8,0,1.4,0.3,1.7,0.9
+		c0.2,0.3,0.2,0.8,0.2,1.3v3.7h-1v-3.6c0-0.4-0.1-0.6-0.2-0.8c-0.1-0.4-0.4-0.6-0.9-0.6c-0.2,0-0.4,0-0.6,0.1
+		c-0.3,0.1-0.5,0.2-0.7,0.5c-0.2,0.2-0.3,0.4-0.3,0.6c0,0.1,0,0.4,0,0.8v3h-1V673.9z M-266.2,671.8h0.9v4.6l2.5-2.4h1.2l-2.2,2.2
+		l2.4,3.5h-1.2l-1.8-2.9l-0.9,0.7v2.2h-0.9V671.8z M-257.1,674.1c0.4,0.2,0.7,0.4,0.9,0.7c0.2,0.3,0.3,0.6,0.4,1
+		c0.1,0.3,0.1,0.7,0.1,1.3h-4.2c0,0.6,0.2,1.1,0.4,1.4c0.3,0.4,0.7,0.5,1.2,0.5s0.9-0.2,1.2-0.5c0.2-0.2,0.3-0.4,0.4-0.7h1
+		c0,0.2-0.1,0.4-0.2,0.7c-0.1,0.3-0.3,0.5-0.5,0.6c-0.3,0.3-0.7,0.5-1.1,0.6c-0.2,0.1-0.5,0.1-0.8,0.1c-0.7,0-1.3-0.3-1.8-0.8
+		s-0.7-1.3-0.7-2.2c0-0.9,0.3-1.7,0.8-2.3c0.5-0.6,1.2-0.9,2-0.9C-257.9,673.8-257.5,673.9-257.1,674.1z M-256.8,676.4
+		c0-0.4-0.1-0.8-0.3-1c-0.2-0.5-0.6-0.7-1.3-0.7c-0.4,0-0.8,0.2-1.1,0.5c-0.3,0.3-0.5,0.7-0.5,1.2
+		C-260,676.4-256.8,676.4-256.8,676.4z M-251,673.9h1.1c-0.1,0.4-0.4,1.2-0.9,2.5c-0.4,1-0.6,1.8-0.9,2.4c-0.6,1.5-1,2.4-1.2,2.7
+		c-0.2,0.3-0.6,0.5-1.2,0.5c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3-0.1v-0.8c0.2,0,0.3,0.1,0.4,0.1c0.1,0,0.1,0,0.2,0
+		c0.2,0,0.3,0,0.4-0.1c0.1-0.1,0.2-0.1,0.2-0.2c0,0,0.1-0.2,0.2-0.4c0.1-0.3,0.2-0.5,0.2-0.6l-2.1-5.9h1.1l1.5,4.7L-251,673.9z
+		 M-240.2,672.4c0.6,0.5,0.9,1.1,0.9,1.8h-1c-0.1-0.5-0.4-0.9-0.7-1.2c-0.4-0.3-0.8-0.4-1.5-0.4c-0.8,0-1.4,0.3-1.9,0.8
+		s-0.7,1.4-0.7,2.5c0,0.9,0.2,1.7,0.6,2.2c0.4,0.5,1.1,0.9,1.9,0.9s1.4-0.3,1.8-0.9c0.2-0.4,0.4-0.8,0.5-1.3h1
+		c-0.1,0.8-0.4,1.5-0.9,2.1c-0.6,0.7-1.5,1-2.5,1c-0.9,0-1.7-0.3-2.3-0.8c-0.8-0.7-1.2-1.9-1.2-3.4c0-1.2,0.3-2.1,0.9-2.9
+		c0.7-0.8,1.6-1.2,2.8-1.2C-241.6,671.6-240.8,671.9-240.2,672.4z M-232.3,672.4c0.6,0.5,0.9,1.1,0.9,1.8h-1
+		c-0.1-0.5-0.4-0.9-0.7-1.2c-0.4-0.3-0.8-0.4-1.5-0.4c-0.8,0-1.4,0.3-1.9,0.8s-0.7,1.4-0.7,2.5c0,0.9,0.2,1.7,0.6,2.2
+		c0.4,0.6,1.1,0.9,1.9,0.9s1.4-0.3,1.8-0.9c0.3-0.4,0.4-0.8,0.6-1.3h1c-0.1,0.8-0.4,1.5-0.9,2.1c-0.6,0.7-1.5,1-2.5,1
+		c-0.9,0-1.7-0.3-2.3-0.8c-0.9-0.8-1.3-1.9-1.3-3.4c0-1.2,0.3-2.1,0.9-2.9c0.7-0.8,1.6-1.2,2.8-1.2
+		C-233.6,671.6-232.8,671.9-232.3,672.4z"/>
+</g>
+<g transform="translate(1262.0667,201.0195)">
+	<path class="st7" d="M-287.5,671.8h1.5l2.3,6.7l2.3-6.7h1.5v7.9h-1V675c0-0.2,0-0.4,0-0.8c0-0.4,0-0.8,0-1.2l-2.3,6.7h-1l-2.3-6.7
+		v0.2c0,0.2,0,0.5,0,0.9c0,0.4,0,0.7,0,0.9v4.7h-1C-287.5,679.7-287.5,671.8-287.5,671.8z M-274.8,678.3c0.2-0.5,0.4-1,0.4-1.6
+		c0-0.5-0.1-1-0.3-1.3c-0.3-0.5-0.7-0.8-1.4-0.8c-0.6,0-1,0.2-1.3,0.7c-0.3,0.5-0.4,1-0.4,1.6s0.1,1.1,0.4,1.5
+		c0.3,0.4,0.7,0.6,1.3,0.6C-275.5,679.1-275.1,678.8-274.8,678.3z M-274.2,674.5c0.5,0.5,0.7,1.2,0.7,2.2c0,0.9-0.2,1.7-0.7,2.3
+		c-0.5,0.6-1.2,0.9-2.1,0.9c-0.8,0-1.4-0.3-1.9-0.8c-0.4-0.5-0.6-1.2-0.6-2.2s0.2-1.7,0.7-2.3c0.5-0.6,1.1-0.9,2-0.9
+		C-275.4,673.8-274.7,674-274.2,674.5z M-272.3,673.9h0.9v0.8c0.3-0.3,0.6-0.6,0.9-0.7c0.3-0.1,0.6-0.2,1-0.2c0.8,0,1.4,0.3,1.7,0.9
+		c0.2,0.3,0.2,0.8,0.2,1.3v3.7h-1v-3.6c0-0.4-0.1-0.6-0.2-0.8c-0.1-0.4-0.4-0.6-0.9-0.6c-0.2,0-0.4,0-0.6,0.1
+		c-0.3,0.1-0.5,0.2-0.7,0.5c-0.2,0.2-0.3,0.4-0.3,0.6c0,0.1,0,0.4,0,0.8v3h-1V673.9z M-266.2,671.8h0.9v4.6l2.5-2.4h1.2l-2.2,2.2
+		l2.4,3.5h-1.2l-1.8-2.9l-0.9,0.7v2.2h-0.9V671.8z M-257.1,674.1c0.4,0.2,0.7,0.4,0.9,0.7c0.2,0.3,0.3,0.6,0.4,1
+		c0.1,0.3,0.1,0.7,0.1,1.3h-4.2c0,0.6,0.2,1.1,0.4,1.4c0.3,0.4,0.7,0.5,1.2,0.5s0.9-0.2,1.2-0.5c0.2-0.2,0.3-0.4,0.4-0.7h1
+		c0,0.2-0.1,0.4-0.2,0.7c-0.1,0.3-0.3,0.5-0.5,0.6c-0.3,0.3-0.7,0.5-1.1,0.6c-0.2,0.1-0.5,0.1-0.8,0.1c-0.7,0-1.3-0.3-1.8-0.8
+		s-0.7-1.3-0.7-2.2c0-0.9,0.3-1.7,0.8-2.3c0.5-0.6,1.2-0.9,2-0.9C-257.9,673.8-257.5,673.9-257.1,674.1z M-256.8,676.4
+		c0-0.4-0.1-0.8-0.3-1c-0.2-0.5-0.6-0.7-1.3-0.7c-0.4,0-0.8,0.2-1.1,0.5c-0.3,0.3-0.5,0.7-0.5,1.2
+		C-260,676.4-256.8,676.4-256.8,676.4z M-251,673.9h1.1c-0.1,0.4-0.4,1.2-0.9,2.5c-0.4,1-0.6,1.8-0.9,2.4c-0.6,1.5-1,2.4-1.2,2.7
+		c-0.2,0.3-0.6,0.5-1.2,0.5c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3-0.1v-0.8c0.2,0,0.3,0.1,0.4,0.1c0.1,0,0.1,0,0.2,0
+		c0.2,0,0.3,0,0.4-0.1c0.1-0.1,0.2-0.1,0.2-0.2c0,0,0.1-0.2,0.2-0.4c0.1-0.3,0.2-0.5,0.2-0.6l-2.1-5.9h1.1l1.5,4.7L-251,673.9z
+		 M-245.6,671.8h1.1v7.9h-1.1V671.8z M-242.1,677.2c0,0.4,0.1,0.8,0.3,1.1c0.4,0.5,1,0.8,1.9,0.8c0.4,0,0.8-0.1,1.1-0.2
+		c0.6-0.2,1-0.6,1-1.2c0-0.4-0.1-0.7-0.4-0.9c-0.3-0.2-0.7-0.3-1.3-0.5l-1.1-0.2c-0.7-0.2-1.2-0.4-1.5-0.6c-0.5-0.3-0.8-0.8-0.8-1.5
+		c0-0.7,0.2-1.3,0.7-1.7c0.5-0.5,1.2-0.7,2.1-0.7c0.8,0,1.5,0.2,2.1,0.6c0.6,0.4,0.9,1,0.9,1.9h-1c-0.1-0.4-0.2-0.7-0.3-1
+		c-0.4-0.4-0.9-0.6-1.7-0.6c-0.6,0-1.1,0.1-1.4,0.4s-0.4,0.6-0.4,0.9c0,0.4,0.2,0.7,0.5,0.8c0.2,0.1,0.7,0.3,1.4,0.4l1.1,0.3
+		c0.6,0.2,1,0.4,1.3,0.6c0.5,0.4,0.8,0.9,0.8,1.6c0,0.9-0.3,1.5-1,1.9c-0.6,0.4-1.4,0.6-2.2,0.6c-1,0-1.7-0.3-2.3-0.8
+		c-0.6-0.5-0.8-1.2-0.8-2C-243.1,677.2-242.1,677.2-242.1,677.2z M-231.4,676.5l-1.2-3.5l-1.3,3.5
+		C-233.9,676.5-231.4,676.5-231.4,676.5z M-233.2,671.8h1.2l2.9,7.9h-1.2l-0.8-2.4h-3.1l-0.9,2.4h-1.1L-233.2,671.8z"/>
+</g>
 </svg>

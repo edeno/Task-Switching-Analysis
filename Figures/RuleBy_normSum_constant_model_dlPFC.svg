@@ -5,18 +5,19 @@
 <style type="text/css">
 	.st0{fill:none;stroke:#000000;stroke-width:1.3333;stroke-linejoin:bevel;stroke-miterlimit:1;stroke-dasharray:1,3;}
 	.st1{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;stroke-opacity:0.149;}
-	.st2{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;}
-	.st3{fill:#262626;}
-	.st4{font-family:'MyriadPro-Regular';}
+	.st2{fill:none;stroke:#000000;stroke-linecap:square;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;}
+	.st4{font-family:'ArialMT';}
 	.st5{font-size:13px;}
 	.st6{fill:none;stroke:#66C2A5;stroke-linecap:square;stroke-miterlimit:10;}
 	.st7{fill:#66C2A5;}
 	.st8{fill:none;stroke:#7570B3;stroke-linecap:square;stroke-miterlimit:10;}
 	.st9{fill:#7570B3;}
-	.st10{font-size:14px;}
-	.st11{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
-	.st12{font-size:24px;}
-	.st13{font-size:36px;}
+	.st10{font-size:24px;}
+	.st11{font-size:36px;}
+	.st12{font-size:14px;}
+	.st13{fill:none;}
+	.st14{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
 </style>
 <line class="st0" x1="570.6" y1="780" x2="570.6" y2="45.1"/>
 <line class="st1" x1="781" y1="735.7" x2="220" y2="735.7"/>
@@ -27,31 +28,23 @@
 <line class="st1" x1="781" y1="182.9" x2="220" y2="182.9"/>
 <line class="st1" x1="781" y1="74.3" x2="220" y2="74.3"/>
 <line class="st2" x1="220" y1="790" x2="781" y2="790"/>
-<line class="st2" x1="220" y1="790" x2="220" y2="782.4"/>
-<line class="st2" x1="290.1" y1="790" x2="290.1" y2="782.4"/>
-<line class="st2" x1="360.3" y1="790" x2="360.3" y2="782.4"/>
-<line class="st2" x1="430.4" y1="790" x2="430.4" y2="782.4"/>
-<line class="st2" x1="500.5" y1="790" x2="500.5" y2="782.4"/>
-<line class="st2" x1="570.6" y1="790" x2="570.6" y2="782.4"/>
-<line class="st2" x1="640.8" y1="790" x2="640.8" y2="782.4"/>
-<line class="st2" x1="710.9" y1="790" x2="710.9" y2="782.4"/>
-<line class="st2" x1="781" y1="790" x2="781" y2="782.4"/>
-<text transform="matrix(1 0 0 1 205 803.3333)" class="st3 st4 st5">-0.05</text>
-<text transform="matrix(1 0 0 1 275.125 803.3333)" class="st3 st4 st5">-0.04</text>
-<text transform="matrix(1 0 0 1 345.25 803.3333)" class="st3 st4 st5">-0.03</text>
-<text transform="matrix(1 0 0 1 415.375 803.3333)" class="st3 st4 st5">-0.02</text>
-<text transform="matrix(1 0 0 1 485.5 803.3333)" class="st3 st4 st5">-0.01</text>
-<text transform="matrix(1 0 0 1 566.625 803.3333)" class="st3 st4 st5">0</text>
-<text transform="matrix(1 0 0 1 627.75 803.3333)" class="st3 st4 st5">0.01</text>
-<text transform="matrix(1 0 0 1 697.875 803.3333)" class="st3 st4 st5">0.02</text>
-<text transform="matrix(1 0 0 1 768 803.3333)" class="st3 st4 st5">0.03</text>
-<text transform="matrix(1 0 0 1 110.9186 741.2143)" class="st3 st4 st5">Rule@Repetition5+</text>
-<text transform="matrix(1 0 0 1 118.6667 632.6429)" class="st3 st4 st5">Rule@Repetition4</text>
-<text transform="matrix(1 0 0 1 118.6667 524.0714)" class="st3 st4 st5">Rule@Repetition3</text>
-<text transform="matrix(1 0 0 1 118.6667 415.5)" class="st3 st4 st5">Rule@Repetition2</text>
-<text transform="matrix(1 0 0 1 118.6667 306.9286)" class="st3 st4 st5">Rule@Repetition1</text>
-<text transform="matrix(1 0 0 1 106.7975 188.3571)" class="st3 st4 st5">Rule@Previous Error</text>
-<text transform="matrix(1 0 0 1 88.3508 79.7857)" class="st3 st4 st5">Rule@No Previous Error</text>
+<line class="st3" x1="570.6" y1="790" x2="570.6" y2="782.4"/>
+<text transform="matrix(1 0 0 1 205 803.3333)" class="st4 st5">-0.05</text>
+<text transform="matrix(1 0 0 1 275.125 803.3333)" class="st4 st5">-0.04</text>
+<text transform="matrix(1 0 0 1 345.25 803.3333)" class="st4 st5">-0.03</text>
+<text transform="matrix(1 0 0 1 415.375 803.3333)" class="st4 st5">-0.02</text>
+<text transform="matrix(1 0 0 1 485.5 803.3333)" class="st4 st5">-0.01</text>
+<text transform="matrix(1 0 0 1 566.625 803.3333)" class="st4 st5">0</text>
+<text transform="matrix(1 0 0 1 627.75 803.3333)" class="st4 st5">0.01</text>
+<text transform="matrix(1 0 0 1 697.875 803.3333)" class="st4 st5">0.02</text>
+<text transform="matrix(1 0 0 1 768 803.3333)" class="st4 st5">0.03</text>
+<text transform="matrix(1 0 0 1 110.9186 741.2143)" class="st4 st5">Rule@Repetition5+</text>
+<text transform="matrix(1 0 0 1 118.6667 632.6429)" class="st4 st5">Rule@Repetition4</text>
+<text transform="matrix(1 0 0 1 118.6667 524.0714)" class="st4 st5">Rule@Repetition3</text>
+<text transform="matrix(1 0 0 1 118.6667 415.5)" class="st4 st5">Rule@Repetition2</text>
+<text transform="matrix(1 0 0 1 118.6667 306.9286)" class="st4 st5">Rule@Repetition1</text>
+<text transform="matrix(1 0 0 1 106.7975 188.3571)" class="st4 st5">Rule@Previous Error</text>
+<text transform="matrix(1 0 0 1 88.3508 79.7857)" class="st4 st5">Rule@No Previous Error</text>
 <line class="st6" x1="563.5" y1="735.7" x2="659.7" y2="735.7"/>
 <line class="st6" x1="378.6" y1="627.1" x2="698.4" y2="627.1"/>
 <line class="st6" x1="416.8" y1="518.6" x2="770.5" y2="518.6"/>
@@ -92,29 +85,21 @@
 <line class="st1" x1="1470" y1="182.9" x2="910" y2="182.9"/>
 <line class="st1" x1="1470" y1="74.3" x2="910" y2="74.3"/>
 <line class="st2" x1="910" y1="790" x2="1470" y2="790"/>
-<line class="st2" x1="910" y1="790" x2="910" y2="782.4"/>
-<line class="st2" x1="990" y1="790" x2="990" y2="782.4"/>
-<line class="st2" x1="1070" y1="790" x2="1070" y2="782.4"/>
-<line class="st2" x1="1150" y1="790" x2="1150" y2="782.4"/>
-<line class="st2" x1="1230" y1="790" x2="1230" y2="782.4"/>
-<line class="st2" x1="1310" y1="790" x2="1310" y2="782.4"/>
-<line class="st2" x1="1390" y1="790" x2="1390" y2="782.4"/>
-<line class="st2" x1="1470" y1="790" x2="1470" y2="782.4"/>
-<text transform="matrix(1 0 0 1 906 803.3333)" class="st3 st4 st5">0</text>
-<text transform="matrix(1 0 0 1 977 803.3333)" class="st3 st4 st5">0.02</text>
-<text transform="matrix(1 0 0 1 1057 803.3333)" class="st3 st4 st5">0.04</text>
-<text transform="matrix(1 0 0 1 1137 803.3333)" class="st3 st4 st5">0.06</text>
-<text transform="matrix(1 0 0 1 1217 803.3333)" class="st3 st4 st5">0.08</text>
-<text transform="matrix(1 0 0 1 1300.5 803.3333)" class="st3 st4 st5">0.1</text>
-<text transform="matrix(1 0 0 1 1377 803.3333)" class="st3 st4 st5">0.12</text>
-<text transform="matrix(1 0 0 1 1457 803.3333)" class="st3 st4 st5">0.14</text>
-<text transform="matrix(1 0 0 1 800.9186 741.2143)" class="st3 st4 st5">Rule@Repetition5+</text>
-<text transform="matrix(1 0 0 1 808.6667 632.6429)" class="st3 st4 st5">Rule@Repetition4</text>
-<text transform="matrix(1 0 0 1 808.6667 524.0714)" class="st3 st4 st5">Rule@Repetition3</text>
-<text transform="matrix(1 0 0 1 808.6667 415.5)" class="st3 st4 st5">Rule@Repetition2</text>
-<text transform="matrix(1 0 0 1 808.6667 306.9286)" class="st3 st4 st5">Rule@Repetition1</text>
-<text transform="matrix(1 0 0 1 796.7975 188.3571)" class="st3 st4 st5">Rule@Previous Error</text>
-<text transform="matrix(1 0 0 1 778.3503 79.7857)" class="st3 st4 st5">Rule@No Previous Error</text>
+<text transform="matrix(1 0 0 1 906 803.3333)" class="st4 st5">0</text>
+<text transform="matrix(1 0 0 1 977 803.3333)" class="st4 st5">0.02</text>
+<text transform="matrix(1 0 0 1 1057 803.3333)" class="st4 st5">0.04</text>
+<text transform="matrix(1 0 0 1 1137 803.3333)" class="st4 st5">0.06</text>
+<text transform="matrix(1 0 0 1 1217 803.3333)" class="st4 st5">0.08</text>
+<text transform="matrix(1 0 0 1 1300.5 803.3333)" class="st4 st5">0.1</text>
+<text transform="matrix(1 0 0 1 1377 803.3333)" class="st4 st5">0.12</text>
+<text transform="matrix(1 0 0 1 1457 803.3333)" class="st4 st5">0.14</text>
+<text transform="matrix(1 0 0 1 800.9186 741.2143)" class="st4 st5">Rule@Repetition5+</text>
+<text transform="matrix(1 0 0 1 808.6667 632.6429)" class="st4 st5">Rule@Repetition4</text>
+<text transform="matrix(1 0 0 1 808.6667 524.0714)" class="st4 st5">Rule@Repetition3</text>
+<text transform="matrix(1 0 0 1 808.6667 415.5)" class="st4 st5">Rule@Repetition2</text>
+<text transform="matrix(1 0 0 1 808.6667 306.9286)" class="st4 st5">Rule@Repetition1</text>
+<text transform="matrix(1 0 0 1 796.7975 188.3571)" class="st4 st5">Rule@Previous Error</text>
+<text transform="matrix(1 0 0 1 778.3503 79.7857)" class="st4 st5">Rule@No Previous Error</text>
 <line class="st6" x1="1025.1" y1="735.7" x2="1071.1" y2="735.7"/>
 <line class="st6" x1="1202.9" y1="627.1" x2="1367.4" y2="627.1"/>
 <line class="st6" x1="1228.5" y1="518.6" x2="1402.2" y2="518.6"/>
@@ -147,31 +132,82 @@
 <path class="st9" d="M1079.4,74.5l-1.1-3.4l-2.9-2.1h-3.6l-2.9,2.1l-1.1,3.4l1.1,3.4l2.9,2.1h3.6l2.9-2.1L1079.4,74.5z"/>
 <line class="st8" x1="1224.7" y1="182.9" x2="1073.6" y2="74.3"/>
 <path class="st8" d="M1069.8,735.7L1343,627.1l-48.1-108.6l34.5-108.6l47.1-108.6"/>
-<text transform="matrix(1 0 0 1 573.9028 825.0352)" class="st4 st10">Stronger for Orientation Rule</text>
-<text transform="matrix(1 0 0 1 430.4927 825.0352)" class="st4 st10">Stronger for Color Rule</text>
+<g transform="translate(500.5005,347.25)">
+	<text transform="matrix(1 0 0 1 -115.8107 -308.25)" class="st4 st10">Change in Firing Rate Between Rules</text>
+</g>
+<g transform="translate(500.5005,347.25)">
+	<text transform="matrix(1 0 0 1 574.2938 -308.25)" class="st4 st10">Absolute Change in Firing Rate</text>
+</g>
+<text transform="matrix(1 0 0 1 806 853)" class="st4 st11">dLPFC</text>
+<text transform="matrix(1 0 0 1 581.7856 834.0946)" class="st4 st12">Stronger for Orientation Rule</text>
+<text transform="matrix(1 0 0 1 418.3755 834.0946)" class="st4 st12">Stronger for Color Rule</text>
 <g>
-	<line x1="425.3" y1="821" x2="390.1" y2="821"/>
+	<line class="st13" x1="507.9" y1="850.1" x2="472.8" y2="850.1"/>
 	<g>
-		<line class="st11" x1="425.3" y1="821" x2="399" y2="821"/>
+		<line class="st14" x1="507.9" y1="850.1" x2="481.6" y2="850.1"/>
 		<g>
-			<polygon points="401,818.1 390.1,821 401,823.9 			"/>
+			<polygon points="483.6,847.2 472.8,850.1 483.6,853 			"/>
 		</g>
 	</g>
 </g>
 <g>
-	<line x1="745.8" y1="821" x2="781" y2="821"/>
+	<line class="st13" x1="653.7" y1="850.1" x2="688.8" y2="850.1"/>
 	<g>
-		<line class="st11" x1="745.8" y1="821" x2="772.1" y2="821"/>
+		<line class="st14" x1="653.7" y1="850.1" x2="680" y2="850.1"/>
 		<g>
-			<polygon points="770.2,823.9 781,821 770.2,818.1 			"/>
+			<polygon points="678,853 688.8,850.1 678,847.2 			"/>
 		</g>
 	</g>
 </g>
-<g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 -115.8107 -308.25)" class="st4 st12">Change in Firing Rate Between Rules</text>
+<g transform="translate(1262.0667,187.7187)">
+	<path class="st7" d="M-295.4,634.7h1.5l2.3,6.7l2.3-6.7h1.5v7.9h-1v-4.7c0-0.2,0-0.4,0-0.8c0-0.4,0-0.8,0-1.2l-2.3,6.7h-1l-2.3-6.7
+		v0.2c0,0.2,0,0.5,0,0.9c0,0.4,0,0.7,0,0.9v4.7h-1C-295.4,642.6-295.4,634.7-295.4,634.7z M-282.7,641.2c0.2-0.5,0.4-1,0.4-1.6
+		c0-0.5-0.1-1-0.3-1.3c-0.3-0.5-0.7-0.8-1.4-0.8c-0.6,0-1,0.2-1.3,0.7c-0.3,0.5-0.4,1-0.4,1.6s0.1,1.1,0.4,1.5
+		c0.3,0.4,0.7,0.6,1.3,0.6C-283.4,642-283,641.7-282.7,641.2z M-282.1,637.4c0.5,0.5,0.7,1.2,0.7,2.2c0,0.9-0.2,1.7-0.7,2.3
+		c-0.5,0.6-1.2,0.9-2.1,0.9c-0.8,0-1.4-0.3-1.9-0.8c-0.4-0.5-0.6-1.2-0.6-2.1c0-1,0.2-1.7,0.7-2.3c0.5-0.6,1.1-0.9,2-0.9
+		C-283.3,636.7-282.6,636.9-282.1,637.4z M-280.2,636.8h0.9v0.8c0.3-0.3,0.6-0.6,0.9-0.7c0.3-0.1,0.6-0.2,1-0.2
+		c0.8,0,1.4,0.3,1.7,0.9c0.2,0.3,0.2,0.8,0.2,1.3v3.7h-1V639c0-0.4-0.1-0.6-0.2-0.8c-0.1-0.4-0.4-0.6-0.9-0.6c-0.2,0-0.4,0-0.6,0.1
+		c-0.3,0.1-0.5,0.2-0.7,0.5c-0.2,0.2-0.3,0.4-0.3,0.6c0,0.1,0,0.4,0,0.8v3h-1V636.8z M-274.1,634.7h0.9v4.6l2.5-2.4h1.2l-2.2,2.2
+		l2.4,3.5h-1.2l-1.8-2.9l-0.9,0.7v2.2h-0.9V634.7z M-265,637c0.4,0.2,0.7,0.4,0.9,0.7c0.2,0.3,0.3,0.6,0.4,1
+		c0.1,0.3,0.1,0.7,0.1,1.3h-4.2c0,0.6,0.2,1.1,0.4,1.4c0.3,0.4,0.7,0.5,1.2,0.5s0.9-0.2,1.2-0.5c0.2-0.2,0.3-0.4,0.4-0.7h1
+		c0,0.2-0.1,0.4-0.2,0.7c-0.1,0.3-0.3,0.5-0.5,0.6c-0.3,0.3-0.7,0.5-1.1,0.6c-0.2,0.1-0.5,0.1-0.8,0.1c-0.7,0-1.3-0.3-1.8-0.8
+		s-0.7-1.3-0.7-2.2c0-0.9,0.3-1.7,0.8-2.3c0.5-0.6,1.2-0.9,2-0.9C-265.8,636.7-265.4,636.8-265,637z M-264.7,639.3
+		c0-0.4-0.1-0.8-0.3-1c-0.2-0.5-0.6-0.7-1.3-0.7c-0.4,0-0.8,0.2-1.1,0.5c-0.3,0.3-0.5,0.7-0.5,1.2
+		C-267.9,639.3-264.7,639.3-264.7,639.3z M-258.9,636.8h1.1c-0.1,0.4-0.4,1.2-0.9,2.5c-0.4,1-0.6,1.8-0.9,2.4
+		c-0.6,1.5-1,2.4-1.2,2.7c-0.2,0.3-0.6,0.5-1.2,0.5c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3-0.1V644c0.2,0,0.3,0.1,0.4,0.1s0.1,0,0.2,0
+		c0.2,0,0.3,0,0.4-0.1c0.1-0.1,0.2-0.1,0.2-0.2c0,0,0.1-0.2,0.2-0.4c0.1-0.3,0.2-0.5,0.2-0.6l-2.1-5.9h1.1l1.5,4.7L-258.9,636.8z
+		 M-248.1,635.3c0.6,0.5,0.9,1.1,0.9,1.8h-1c-0.1-0.5-0.4-0.9-0.7-1.2c-0.4-0.3-0.8-0.4-1.5-0.4c-0.8,0-1.4,0.3-1.9,0.8
+		s-0.7,1.4-0.7,2.5c0,0.9,0.2,1.7,0.6,2.2c0.4,0.5,1.1,0.9,1.9,0.9s1.4-0.3,1.8-0.9c0.2-0.4,0.4-0.8,0.5-1.3h1
+		c-0.1,0.8-0.4,1.5-0.9,2.1c-0.6,0.7-1.5,1-2.5,1c-0.9,0-1.7-0.3-2.3-0.8c-0.8-0.7-1.2-1.9-1.2-3.4c0-1.2,0.3-2.1,0.9-2.9
+		c0.7-0.8,1.6-1.2,2.8-1.2C-249.5,634.5-248.7,634.8-248.1,635.3z M-240.2,635.3c0.6,0.5,0.9,1.1,0.9,1.8h-1
+		c-0.1-0.5-0.4-0.9-0.7-1.2c-0.4-0.3-0.8-0.4-1.5-0.4c-0.8,0-1.4,0.3-1.9,0.8s-0.7,1.4-0.7,2.5c0,0.9,0.2,1.7,0.6,2.2
+		c0.4,0.6,1.1,0.9,1.9,0.9s1.4-0.3,1.8-0.9c0.3-0.4,0.4-0.8,0.6-1.3h1c-0.1,0.8-0.4,1.5-0.9,2.1c-0.6,0.7-1.5,1-2.5,1
+		c-0.9,0-1.7-0.3-2.3-0.8c-0.9-0.8-1.3-1.9-1.3-3.4c0-1.2,0.3-2.1,0.9-2.9c0.7-0.8,1.6-1.2,2.8-1.2
+		C-241.5,634.5-240.7,634.8-240.2,635.3z"/>
 </g>
-<g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 574.2938 -308.25)" class="st4 st12">Absolute Change in Firing Rate</text>
+<g transform="translate(1262.0667,201.0195)">
+	<path class="st9" d="M-295.4,634.7h1.5l2.3,6.7l2.3-6.7h1.5v7.9h-1v-4.7c0-0.2,0-0.4,0-0.8c0-0.4,0-0.8,0-1.2l-2.3,6.7h-1l-2.3-6.7
+		v0.2c0,0.2,0,0.5,0,0.9c0,0.4,0,0.7,0,0.9v4.7h-1C-295.4,642.6-295.4,634.7-295.4,634.7z M-282.7,641.2c0.2-0.5,0.4-1,0.4-1.6
+		c0-0.5-0.1-1-0.3-1.3c-0.3-0.5-0.7-0.8-1.4-0.8c-0.6,0-1,0.2-1.3,0.7c-0.3,0.5-0.4,1-0.4,1.6s0.1,1.1,0.4,1.5
+		c0.3,0.4,0.7,0.6,1.3,0.6C-283.4,642-283,641.7-282.7,641.2z M-282.1,637.4c0.5,0.5,0.7,1.2,0.7,2.2c0,0.9-0.2,1.7-0.7,2.3
+		c-0.5,0.6-1.2,0.9-2.1,0.9c-0.8,0-1.4-0.3-1.9-0.8c-0.4-0.5-0.6-1.2-0.6-2.2s0.2-1.7,0.7-2.3c0.5-0.6,1.1-0.9,2-0.9
+		C-283.3,636.7-282.6,636.9-282.1,637.4z M-280.2,636.8h0.9v0.8c0.3-0.3,0.6-0.6,0.9-0.7c0.3-0.1,0.6-0.2,1-0.2
+		c0.8,0,1.4,0.3,1.7,0.9c0.2,0.3,0.2,0.8,0.2,1.3v3.7h-1V639c0-0.4-0.1-0.6-0.2-0.8c-0.1-0.4-0.4-0.6-0.9-0.6c-0.2,0-0.4,0-0.6,0.1
+		c-0.3,0.1-0.5,0.2-0.7,0.5c-0.2,0.2-0.3,0.4-0.3,0.6c0,0.1,0,0.4,0,0.8v3h-1V636.8z M-274.1,634.7h0.9v4.6l2.5-2.4h1.2l-2.2,2.2
+		l2.4,3.5h-1.2l-1.8-2.9l-0.9,0.7v2.2h-0.9V634.7z M-265,637c0.4,0.2,0.7,0.4,0.9,0.7c0.2,0.3,0.3,0.6,0.4,1
+		c0.1,0.3,0.1,0.7,0.1,1.3h-4.2c0,0.6,0.2,1.1,0.4,1.4c0.3,0.4,0.7,0.5,1.2,0.5s0.9-0.2,1.2-0.5c0.2-0.2,0.3-0.4,0.4-0.7h1
+		c0,0.2-0.1,0.4-0.2,0.7c-0.1,0.3-0.3,0.5-0.5,0.6c-0.3,0.3-0.7,0.5-1.1,0.6c-0.2,0.1-0.5,0.1-0.8,0.1c-0.7,0-1.3-0.3-1.8-0.8
+		s-0.7-1.3-0.7-2.2c0-0.9,0.3-1.7,0.8-2.3c0.5-0.6,1.2-0.9,2-0.9C-265.8,636.7-265.4,636.8-265,637z M-264.7,639.3
+		c0-0.4-0.1-0.8-0.3-1c-0.2-0.5-0.6-0.7-1.3-0.7c-0.4,0-0.8,0.2-1.1,0.5c-0.3,0.3-0.5,0.7-0.5,1.2
+		C-267.9,639.3-264.7,639.3-264.7,639.3z M-258.9,636.8h1.1c-0.1,0.4-0.4,1.2-0.9,2.5c-0.4,1-0.6,1.8-0.9,2.4
+		c-0.6,1.5-1,2.4-1.2,2.7c-0.2,0.3-0.6,0.5-1.2,0.5c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3-0.1V644c0.2,0,0.3,0.1,0.4,0.1s0.1,0,0.2,0
+		c0.2,0,0.3,0,0.4-0.1c0.1-0.1,0.2-0.1,0.2-0.2c0,0,0.1-0.2,0.2-0.4c0.1-0.3,0.2-0.5,0.2-0.6l-2.1-5.9h1.1l1.5,4.7L-258.9,636.8z
+		 M-253.5,634.7h1.1v7.9h-1.1V634.7z M-250,640.1c0,0.4,0.1,0.8,0.3,1.1c0.4,0.5,1,0.8,1.9,0.8c0.4,0,0.8-0.1,1.1-0.2
+		c0.6-0.2,1-0.6,1-1.2c0-0.4-0.1-0.7-0.4-0.9c-0.3-0.2-0.7-0.3-1.3-0.5l-1.1-0.2c-0.7-0.2-1.2-0.4-1.5-0.6c-0.5-0.3-0.8-0.8-0.8-1.5
+		c0-0.7,0.2-1.3,0.7-1.7c0.5-0.5,1.2-0.7,2.1-0.7c0.8,0,1.5,0.2,2.1,0.6c0.6,0.4,0.9,1,0.9,1.9h-1c-0.1-0.4-0.2-0.7-0.3-1
+		c-0.4-0.4-0.9-0.6-1.7-0.6c-0.6,0-1.1,0.1-1.4,0.4s-0.4,0.6-0.4,0.9c0,0.4,0.2,0.7,0.5,0.8c0.2,0.1,0.7,0.3,1.4,0.4l1.1,0.3
+		c0.6,0.2,1,0.4,1.3,0.6c0.5,0.4,0.8,0.9,0.8,1.6c0,0.9-0.3,1.5-1,1.9c-0.6,0.4-1.4,0.6-2.2,0.6c-1,0-1.7-0.3-2.3-0.8
+		c-0.6-0.5-0.8-1.2-0.8-2C-251,640.1-250,640.1-250,640.1z M-239.3,639.4l-1.2-3.5l-1.3,3.5C-241.8,639.4-239.3,639.4-239.3,639.4z
+		 M-241.1,634.7h1.2l2.9,7.9h-1.2l-0.8-2.4h-3.1l-0.9,2.4h-1.1L-241.1,634.7z"/>
 </g>
-<text transform="matrix(1 0 0 1 806 853)" class="st4 st13">dLPFC</text>
 </svg>
