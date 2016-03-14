@@ -128,7 +128,7 @@
 	<line class="st7" x1="594" y1="241" x2="594" y2="40"/>
 </g>
 <g transform="translate(500.5005,67.25)">
-	<text transform="matrix(1 0 0 1 3.488 -34)" class="st3 st10">Change in Firing Rate (Spikes / s)</text>
+	<text transform="matrix(1 0 0 1 3.488 -27.27)" class="st3 st10">Change in Firing Rate (Spikes / s)</text>
 </g>
 <line class="st0" x1="1520" y1="236.6" x2="960" y2="236.6"/>
 <line class="st0" x1="1520" y1="207.9" x2="960" y2="207.9"/>
@@ -536,7 +536,7 @@
 	<line class="st7" x1="570.6" y1="800" x2="570.6" y2="599"/>
 </g>
 <g transform="translate(500.5005,626.25)">
-	<text transform="matrix(1 0 0 1 -100.5356 -34)" class="st3 st10">Normalized Change in Firing Rate (Average Firing Rate)</text>
+	<text transform="matrix(1 0 0 1 -100.5356 -27.25)" class="st3 st10">Normalized Change in Firing Rate (Average Firing Rate)</text>
 </g>
 <line class="st0" x1="1520" y1="795.6" x2="960" y2="795.6"/>
 <line class="st0" x1="1520" y1="766.9" x2="960" y2="766.9"/>
@@ -661,4 +661,6 @@
 	</g>
 </g>
 <text transform="matrix(1 0 0 1 800 883)" class="st3 st13">dLPFC</text>
+<text transform="matrix(1 0 0 1 60.2213 27.7603)" class="st3 st13">a</text>
+<text transform="matrix(1 0 0 1 800.2213 27.7604)" class="st3 st13">b</text>
 </svg>

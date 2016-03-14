@@ -18,7 +18,7 @@
 	.st12{font-size:36px;}
 	.st13{font-size:24px;}
 </style>
-<line class="st0" x1="404.9" y1="905.9" x2="404.9" y2="22.9"/>
+<line class="st0" x1="404.9" y1="905.9" x2="404.9" y2="63"/>
 <line class="st1" x1="668.4" y1="852.8" x2="141.4" y2="852.8"/>
 <line class="st1" x1="668.4" y1="726.7" x2="141.4" y2="726.7"/>
 <line class="st1" x1="668.4" y1="600.5" x2="141.4" y2="600.5"/>
@@ -235,9 +235,9 @@
 </g>
 <text transform="matrix(1 0 0 1 675.9343 976.8594)" class="st4 st12">ACC</text>
 <g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 -296.8679 -325.3646)" class="st4 st13">Change in Firing Rate Between Rules</text>
+	<text transform="matrix(1 0 0 1 -296.8679 -295.3646)" class="st4 st13">Change in Firing Rate Between Rules</text>
 </g>
 <g transform="translate(500.5005,347.25)">
-	<text transform="matrix(1 0 0 1 393.2366 -325.3646)" class="st4 st13">Absolute Change in Firing Rate</text>
+	<text transform="matrix(1 0 0 1 393.2366 -295.3646)" class="st4 st13">Absolute Change in Firing Rate</text>
 </g>
 </svg>
