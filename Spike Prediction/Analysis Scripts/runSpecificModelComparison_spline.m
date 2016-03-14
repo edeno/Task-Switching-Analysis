@@ -14,3 +14,8 @@ modelsOfInterest = {...
 for file_ind = 1:length(files),
   specificModelComparison(files{file_ind}, predictor, comparisonModel, modelsOfInterest)
 end
+
+predictor = 'AUC';
+for file_ind = 1:length(files),
+  specificModelComparison(files{file_ind}, predictor, comparisonModel, modelsOfInterest)
+end

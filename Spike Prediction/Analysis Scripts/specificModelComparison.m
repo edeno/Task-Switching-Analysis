@@ -3,19 +3,16 @@ load(file);
 pred_ind = ismember(predType, predictor);
 
 % colorbrewer 7-class PuOr
-colors = [165,0,38; ...
-    215,48,39; ...
-    244,109,67; ...
-    253,174,97; ...
-    254,224,139; ...
-    186,186,186; ...
-    217,239,139; ...
-    166,217,106; ...
-    102,189,99; ...
-    26,152,80; ...
-    0,104,55; ...
+colors = [
+    102,194,165; ...
+    117, 112, 179; ...
     ] ./ 255;
 numBins = length(colors);
+isCC = cellfun(@(x) ~isempty(x), strfind(neuronNames, 'cc'));
+isISA = cellfun(@(x) ~isempty(x), strfind(neuronNames, 'isa'));
+plotColors = nan(numNeurons, 3);
+plotColors(isCC, :) = colors(ones(sum(isCC), 1), :);
+plotColors(isISA, :) = colors(2*ones(sum(isISA), 1), :);
 
 comparison_ind = find(ismember(models, comparisonModel));
 MOI_ind = find(ismember(models, modelsOfInterest));
@@ -35,8 +32,10 @@ axisLim = quantile(reshape(pred([comparison_ind, MOI_ind], :, pred_ind), [], 1),
 switch(predictor)
     case 'mutualInformation'
         axisLim(axisLim < 0) = 0;
+        binWidth = 0.05;
     case 'AUC'
         axisLim(axisLim < 0.5) = 0.5;
+        binWidth = 0.01;
 end
 %%
 f = figure;
@@ -46,7 +45,8 @@ for m_ind = 1:numModels,
     subplot(2, numModels, m_ind);
     bin_ind = discretize(diffMI(m_ind, :), edges);
     bin_ind(isnan(bin_ind)) = round(size(colors, 1) / 2);
-    scatter(pred(MOI_ind(m_ind), :, pred_ind), pred(comparison_ind, :, pred_ind), 40, repmat([186,186,186]./255, [numNeurons, 1]), 'filled');
+    scatter(pred(MOI_ind(m_ind), :, pred_ind), pred(comparison_ind, :, pred_ind), 40, plotColors, 'filled');
+    alpha(.8);
     ylim(axisLim);
     xlim(axisLim);
     l = line(axisLim, axisLim);
@@ -67,7 +67,7 @@ for m_ind = 1:numModels,
 %         hold all;
 %     end
     
-    histogram(diffMI(m_ind, :), 'binWidth', 0.1); hold all;
+    histogram(diffMI(m_ind, :), 'binWidth', binWidth); hold all;
     vline(0, 'Color', 'black', 'LineType', '-');
     vline(meanDiffMI(m_ind));
     xlim(quantile(edges, [0 1]));
