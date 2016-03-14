@@ -6,7 +6,7 @@
 	.st0{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;stroke-opacity:0.149;}
 	.st1{fill:none;stroke:#262626;stroke-linecap:square;stroke-miterlimit:10;}
 	.st2{fill:#262626;}
-	.st3{font-family:'MyriadPro-Regular';}
+	.st3{font-family:'ArialMT';}
 	.st4{font-size:13px;}
 	.st5{fill:none;stroke:#66C2A5;stroke-linecap:square;stroke-miterlimit:10;}
 	.st6{fill:#66C2A5;}
@@ -15,6 +15,8 @@
 	.st9{fill:#7570B3;}
 	.st10{font-size:15px;}
 	.st11{font-size:36px;}
+	.st12{fill:none;}
+	.st13{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
 </style>
 <line class="st0" x1="781" y1="264.3" x2="274" y2="264.3"/>
 <line class="st0" x1="781" y1="250.9" x2="274" y2="250.9"/>
@@ -73,16 +75,16 @@
 	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
 </g>
 <g transform="translate(268.6667,116.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
+	<text transform="matrix(1 0 0 1 -102.1396 5.5)" class="st2 st3 st4">Orientation - Color</text>
 </g>
 <g transform="translate(268.6667,103.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
+	<text transform="matrix(1 0 0 1 -59.3335 5.5)" class="st2 st3 st4">Left - Right</text>
 </g>
 <g transform="translate(268.6667,90.1)">
-	<text transform="matrix(1 0 0 1 -180.8667 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -193.8696 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
 </g>
 <g transform="translate(268.6667,76.7)">
-	<text transform="matrix(1 0 0 1 -137.7856 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
+	<text transform="matrix(1 0 0 1 -136.6738 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
 </g>
 <g>
 	<line class="st5" x1="457.8" y1="264.3" x2="502.7" y2="264.3"/>
@@ -233,16 +235,16 @@
 	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
 </g>
 <g transform="translate(1008.6667,116.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
+	<text transform="matrix(1 0 0 1 -102.1396 5.5)" class="st2 st3 st4">Orientation - Color</text>
 </g>
 <g transform="translate(1008.6667,103.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
+	<text transform="matrix(1 0 0 1 -59.3331 5.5)" class="st2 st3 st4">Left - Right</text>
 </g>
 <g transform="translate(1008.6667,90.1)">
-	<text transform="matrix(1 0 0 1 -180.8662 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -193.8691 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
 </g>
 <g transform="translate(1008.6667,76.7)">
-	<text transform="matrix(1 0 0 1 -137.7852 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
+	<text transform="matrix(1 0 0 1 -136.6729 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
 </g>
 <g>
 	<line class="st5" x1="1106.7" y1="264.3" x2="1146.5" y2="264.3"/>
@@ -395,16 +397,16 @@
 	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
 </g>
 <g transform="translate(268.6667,396.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
+	<text transform="matrix(1 0 0 1 -102.1396 5.5)" class="st2 st3 st4">Orientation - Color</text>
 </g>
 <g transform="translate(268.6667,383.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
+	<text transform="matrix(1 0 0 1 -59.3335 5.5)" class="st2 st3 st4">Left - Right</text>
 </g>
 <g transform="translate(268.6667,370.1)">
-	<text transform="matrix(1 0 0 1 -180.8667 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -193.8696 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
 </g>
 <g transform="translate(268.6667,356.7)">
-	<text transform="matrix(1 0 0 1 -137.7856 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
+	<text transform="matrix(1 0 0 1 -136.6738 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
 </g>
 <g>
 	<line class="st5" x1="488.7" y1="544.3" x2="535.2" y2="544.3"/>
@@ -538,30 +540,14 @@
 <g transform="translate(1520,556.3333)">
 	<text transform="matrix(1 0 0 1 -13 8)" class="st2 st3 st4">0.14</text>
 </g>
-<g transform="translate(1008.6667,450.5)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition4 - Repetition5+</text>
-</g>
-<g transform="translate(1008.6667,437.1)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition3 - Repetition5+</text>
-</g>
-<g transform="translate(1008.6667,423.7)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition2 - Repetition5+</text>
-</g>
-<g transform="translate(1008.6667,410.3)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
-</g>
-<g transform="translate(1008.6667,396.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
-</g>
-<g transform="translate(1008.6667,383.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
-</g>
-<g transform="translate(1008.6667,370.1)">
-	<text transform="matrix(1 0 0 1 -180.8662 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
-</g>
-<g transform="translate(1008.6667,356.7)">
-	<text transform="matrix(1 0 0 1 -137.7852 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
-</g>
+<text transform="matrix(1 0 0 1 860.237 456)" class="st2 st3 st4">Repetition4 - Repetition5+</text>
+<text transform="matrix(1 0 0 1 860.237 442.6)" class="st2 st3 st4">Repetition3 - Repetition5+</text>
+<text transform="matrix(1 0 0 1 860.237 429.2)" class="st2 st3 st4">Repetition2 - Repetition5+</text>
+<text transform="matrix(1 0 0 1 860.237 415.8)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
+<text transform="matrix(1 0 0 1 904.527 402.4)" class="st2 st3 st4">Orientation - Color</text>
+<text transform="matrix(1 0 0 1 947.3336 389)" class="st2 st3 st4">Left - Right</text>
+<text transform="matrix(1 0 0 1 812.7975 375.6)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+<text transform="matrix(1 0 0 1 869.9938 362.2)" class="st2 st3 st4">Incongruent - Congruent</text>
 <g>
 	<line class="st5" x1="1083.9" y1="544.3" x2="1111.9" y2="544.3"/>
 	<line class="st5" x1="1269.5" y1="530.9" x2="1406.4" y2="530.9"/>
@@ -681,25 +667,23 @@
 	<text transform="matrix(1 0 0 1 -13 9)" class="st2 st3 st4">0.15</text>
 </g>
 <g transform="translate(268.6667,823.3)">
-	<text transform="matrix(1 0 0 1 -107.0669 5.5)" class="st2 st3 st4">Rule@Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -109.042 5.5)" class="st2 st3 st4">Rule@Repetition5+</text>
 </g>
 <g transform="translate(268.6667,809.9)">
-	<text transform="matrix(1 0 0 1 -99.3188 5.5)" class="st2 st3 st4">Rule@Repetition4</text>
+	<text transform="matrix(1 0 0 1 -101.4501 5.5)" class="st2 st3 st4">Rule@Repetition4</text>
 </g>
 <g transform="translate(268.6667,796.5)">
-	<text transform="matrix(1 0 0 1 -99.3188 5.5)" class="st2 st3 st4">Rule@Repetition3</text>
+	<text transform="matrix(1 0 0 1 -101.4501 5.5)" class="st2 st3 st4">Rule@Repetition3</text>
 </g>
 <g transform="translate(268.6667,783.1)">
-	<text transform="matrix(1 0 0 1 -99.3188 5.5)" class="st2 st3 st4">Rule@Repetition2</text>
+	<text transform="matrix(1 0 0 1 -101.4501 5.5)" class="st2 st3 st4">Rule@Repetition2</text>
 </g>
 <g transform="translate(268.6667,769.7)">
-	<text transform="matrix(1 0 0 1 -99.3188 5.5)" class="st2 st3 st4">Rule@Repetition1</text>
+	<text transform="matrix(1 0 0 1 -101.4501 5.5)" class="st2 st3 st4">Rule@Repetition1</text>
 </g>
-<g transform="translate(268.6667,756.3)">
-	<text transform="matrix(1 0 0 1 -111.188 5.5)" class="st2 st3 st4">Rule@Previous Error</text>
-</g>
+<text transform="matrix(1 0 0 1 149.7248 761.8)" class="st2 st3 st4">Rule@Previous Error</text>
 <g transform="translate(268.6667,742.9)">
-	<text transform="matrix(1 0 0 1 -129.6348 5.5)" class="st2 st3 st4">Rule@No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -139.1719 5.5)" class="st2 st3 st4">Rule@No Previous Error</text>
 </g>
 <g transform="translate(268.6667,729.5)">
 	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition4 - Repetition5+</text>
@@ -714,16 +698,16 @@
 	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
 </g>
 <g transform="translate(268.6667,675.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
+	<text transform="matrix(1 0 0 1 -102.1396 5.5)" class="st2 st3 st4">Orientation - Color</text>
 </g>
 <g transform="translate(268.6667,662.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
+	<text transform="matrix(1 0 0 1 -59.3335 5.5)" class="st2 st3 st4">Left - Right</text>
 </g>
 <g transform="translate(268.6667,649.1)">
-	<text transform="matrix(1 0 0 1 -180.8667 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -193.8696 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
 </g>
 <g transform="translate(268.6667,635.7)">
-	<text transform="matrix(1 0 0 1 -137.7856 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
+	<text transform="matrix(1 0 0 1 -136.6738 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
 </g>
 <g>
 	<line class="st5" x1="487.7" y1="823.3" x2="522.9" y2="823.3"/>
@@ -854,28 +838,28 @@
 	<text transform="matrix(1 0 0 1 -9.5 9)" class="st2 st3 st4">0.3</text>
 </g>
 <g transform="translate(1008.6667,729.5)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition4 - Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -143.4268 5.5)" class="st2 st3 st4">Repetition4 - Repetition5+</text>
 </g>
 <g transform="translate(1008.6667,716.1)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition3 - Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -143.4268 5.5)" class="st2 st3 st4">Repetition3 - Repetition5+</text>
 </g>
 <g transform="translate(1008.6667,702.7)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition2 - Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -143.4268 5.5)" class="st2 st3 st4">Repetition2 - Repetition5+</text>
 </g>
 <g transform="translate(1008.6667,689.3)">
-	<text transform="matrix(1 0 0 1 -146.4297 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
+	<text transform="matrix(1 0 0 1 -143.4268 5.5)" class="st2 st3 st4">Repetition1 - Repetition5+</text>
 </g>
 <g transform="translate(1008.6667,675.9)">
-	<text transform="matrix(1 0 0 1 -103.5049 5.5)" class="st2 st3 st4">Orientation - Color</text>
+	<text transform="matrix(1 0 0 1 -99.1367 5.5)" class="st2 st3 st4">Orientation - Color</text>
 </g>
 <g transform="translate(1008.6667,662.5)">
-	<text transform="matrix(1 0 0 1 -61.9307 5.5)" class="st2 st3 st4">Left - Right</text>
+	<text transform="matrix(1 0 0 1 -56.3301 5.5)" class="st2 st3 st4">Left - Right</text>
 </g>
 <g transform="translate(1008.6667,649.1)">
-	<text transform="matrix(1 0 0 1 -180.8662 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
+	<text transform="matrix(1 0 0 1 -190.8662 5.5)" class="st2 st3 st4">Previous Error - No Previous Error</text>
 </g>
 <g transform="translate(1008.6667,635.7)">
-	<text transform="matrix(1 0 0 1 -137.7852 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
+	<text transform="matrix(1 0 0 1 -133.67 5.5)" class="st2 st3 st4">Incongruent - Congruent</text>
 </g>
 <g>
 	<line class="st5" x1="1088.5" y1="823.3" x2="1113.9" y2="823.3"/>
@@ -955,120 +939,110 @@
 	<line class="st8" x1="1321.4" y1="756.3" x2="1184.8" y2="742.9"/>
 	<path class="st8" d="M1164.3,823.3l185.2-13.4l-18.9-13.4l38.3-13.4l7-13.4"/>
 </g>
-<g>
-	<g transform="translate(268.6667,823.3)">
-		<text transform="matrix(1 0 0 1 632.9335 5.5001)" class="st2 st3 st4">Rule@Repetition5+</text>
-	</g>
-	<g transform="translate(268.6667,809.9)">
-		<text transform="matrix(1 0 0 1 640.6816 5.5001)" class="st2 st3 st4">Rule@Repetition4</text>
-	</g>
-	<g transform="translate(268.6667,796.5)">
-		<text transform="matrix(1 0 0 1 640.6816 5.5001)" class="st2 st3 st4">Rule@Repetition3</text>
-	</g>
-	<g transform="translate(268.6667,783.1)">
-		<text transform="matrix(1 0 0 1 640.6816 5.5001)" class="st2 st3 st4">Rule@Repetition2</text>
-	</g>
-	<g transform="translate(268.6667,769.7)">
-		<text transform="matrix(1 0 0 1 640.6816 5.5001)" class="st2 st3 st4">Rule@Repetition1</text>
-	</g>
-	<g transform="translate(268.6667,756.3)">
-		<text transform="matrix(1 0 0 1 628.8124 5.5001)" class="st2 st3 st4">Rule@Previous Error</text>
-	</g>
-	<g transform="translate(268.6667,742.9)">
-		<text transform="matrix(1 0 0 1 610.3657 5.5001)" class="st2 st3 st4">Rule@No Previous Error</text>
-	</g>
+<g transform="translate(268.6667,823.3)">
+	<text transform="matrix(1 0 0 1 633.9608 5.5001)" class="st2 st3 st4">Rule@Repetition5+</text>
 </g>
-<g>
-	<g transform="translate(268.6667,823.3)">
-		<text transform="matrix(1 0 0 1 632.9335 -273.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
-	</g>
-	<g transform="translate(268.6667,809.9)">
-		<text transform="matrix(1 0 0 1 640.6816 -273.4999)" class="st2 st3 st4">Rule@Repetition4</text>
-	</g>
-	<g transform="translate(268.6667,796.5)">
-		<text transform="matrix(1 0 0 1 640.6816 -273.4999)" class="st2 st3 st4">Rule@Repetition3</text>
-	</g>
-	<g transform="translate(268.6667,783.1)">
-		<text transform="matrix(1 0 0 1 640.6816 -273.4999)" class="st2 st3 st4">Rule@Repetition2</text>
-	</g>
-	<g transform="translate(268.6667,769.7)">
-		<text transform="matrix(1 0 0 1 640.6816 -273.4999)" class="st2 st3 st4">Rule@Repetition1</text>
-	</g>
-	<g transform="translate(268.6667,756.3)">
-		<text transform="matrix(1 0 0 1 628.8124 -273.4999)" class="st2 st3 st4">Rule@Previous Error</text>
-	</g>
-	<g transform="translate(268.6667,742.9)">
-		<text transform="matrix(1 0 0 1 610.3657 -273.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
-	</g>
+<g transform="translate(268.6667,809.9)">
+	<text transform="matrix(1 0 0 1 641.5527 5.5001)" class="st2 st3 st4">Rule@Repetition4</text>
 </g>
-<g>
-	<g transform="translate(268.6667,823.3)">
-		<text transform="matrix(1 0 0 1 632.9335 -553.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
-	</g>
-	<g transform="translate(268.6667,809.9)">
-		<text transform="matrix(1 0 0 1 640.6816 -553.4999)" class="st2 st3 st4">Rule@Repetition4</text>
-	</g>
-	<g transform="translate(268.6667,796.5)">
-		<text transform="matrix(1 0 0 1 640.6816 -553.4999)" class="st2 st3 st4">Rule@Repetition3</text>
-	</g>
-	<g transform="translate(268.6667,783.1)">
-		<text transform="matrix(1 0 0 1 640.6816 -553.4999)" class="st2 st3 st4">Rule@Repetition2</text>
-	</g>
-	<g transform="translate(268.6667,769.7)">
-		<text transform="matrix(1 0 0 1 640.6816 -553.4999)" class="st2 st3 st4">Rule@Repetition1</text>
-	</g>
-	<g transform="translate(268.6667,756.3)">
-		<text transform="matrix(1 0 0 1 628.8124 -553.4999)" class="st2 st3 st4">Rule@Previous Error</text>
-	</g>
-	<g transform="translate(268.6667,742.9)">
-		<text transform="matrix(1 0 0 1 610.3657 -553.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
-	</g>
+<g transform="translate(268.6667,796.5)">
+	<text transform="matrix(1 0 0 1 641.5527 5.5001)" class="st2 st3 st4">Rule@Repetition3</text>
 </g>
-<g>
-	<g transform="translate(268.6667,823.3)">
-		<text transform="matrix(1 0 0 1 -107.067 -273.4995)" class="st2 st3 st4">Rule@Repetition5+</text>
-	</g>
-	<g transform="translate(268.6667,809.9)">
-		<text transform="matrix(1 0 0 1 -99.3189 -273.4995)" class="st2 st3 st4">Rule@Repetition4</text>
-	</g>
-	<g transform="translate(268.6667,796.5)">
-		<text transform="matrix(1 0 0 1 -99.3189 -273.4995)" class="st2 st3 st4">Rule@Repetition3</text>
-	</g>
-	<g transform="translate(268.6667,783.1)">
-		<text transform="matrix(1 0 0 1 -99.3189 -273.4995)" class="st2 st3 st4">Rule@Repetition2</text>
-	</g>
-	<g transform="translate(268.6667,769.7)">
-		<text transform="matrix(1 0 0 1 -99.3189 -273.4995)" class="st2 st3 st4">Rule@Repetition1</text>
-	</g>
-	<g transform="translate(268.6667,756.3)">
-		<text transform="matrix(1 0 0 1 -111.188 -273.4995)" class="st2 st3 st4">Rule@Previous Error</text>
-	</g>
-	<g transform="translate(268.6667,742.9)">
-		<text transform="matrix(1 0 0 1 -129.6348 -273.4995)" class="st2 st3 st4">Rule@No Previous Error</text>
-	</g>
+<g transform="translate(268.6667,783.1)">
+	<text transform="matrix(1 0 0 1 641.5527 5.5001)" class="st2 st3 st4">Rule@Repetition2</text>
 </g>
-<g>
-	<g transform="translate(268.6667,823.3)">
-		<text transform="matrix(1 0 0 1 -107.067 -553.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
-	</g>
-	<g transform="translate(268.6667,809.9)">
-		<text transform="matrix(1 0 0 1 -99.3189 -553.4999)" class="st2 st3 st4">Rule@Repetition4</text>
-	</g>
-	<g transform="translate(268.6667,796.5)">
-		<text transform="matrix(1 0 0 1 -99.3189 -553.4999)" class="st2 st3 st4">Rule@Repetition3</text>
-	</g>
-	<g transform="translate(268.6667,783.1)">
-		<text transform="matrix(1 0 0 1 -99.3189 -553.4999)" class="st2 st3 st4">Rule@Repetition2</text>
-	</g>
-	<g transform="translate(268.6667,769.7)">
-		<text transform="matrix(1 0 0 1 -99.3189 -553.4999)" class="st2 st3 st4">Rule@Repetition1</text>
-	</g>
-	<g transform="translate(268.6667,756.3)">
-		<text transform="matrix(1 0 0 1 -111.188 -553.4999)" class="st2 st3 st4">Rule@Previous Error</text>
-	</g>
-	<g transform="translate(268.6667,742.9)">
-		<text transform="matrix(1 0 0 1 -129.6348 -553.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
-	</g>
+<g transform="translate(268.6667,769.7)">
+	<text transform="matrix(1 0 0 1 641.5527 5.5001)" class="st2 st3 st4">Rule@Repetition1</text>
+</g>
+<g transform="translate(268.6667,756.3)">
+	<text transform="matrix(1 0 0 1 624.0614 5.5001)" class="st2 st3 st4">Rule@Previous Error</text>
+</g>
+<g transform="translate(268.6667,742.9)">
+	<text transform="matrix(1 0 0 1 603.8315 5.5001)" class="st2 st3 st4">Rule@No Previous Error</text>
+</g>
+<g transform="translate(268.6667,823.3)">
+	<text transform="matrix(1 0 0 1 628.9579 -273.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
+</g>
+<g transform="translate(268.6667,809.9)">
+	<text transform="matrix(1 0 0 1 636.5497 -273.4999)" class="st2 st3 st4">Rule@Repetition4</text>
+</g>
+<g transform="translate(268.6667,796.5)">
+	<text transform="matrix(1 0 0 1 636.5497 -273.4999)" class="st2 st3 st4">Rule@Repetition3</text>
+</g>
+<g transform="translate(268.6667,783.1)">
+	<text transform="matrix(1 0 0 1 636.5497 -273.4999)" class="st2 st3 st4">Rule@Repetition2</text>
+</g>
+<g transform="translate(268.6667,769.7)">
+	<text transform="matrix(1 0 0 1 636.5497 -273.4999)" class="st2 st3 st4">Rule@Repetition1</text>
+</g>
+<g transform="translate(268.6667,756.3)">
+	<text transform="matrix(1 0 0 1 619.0585 -273.4999)" class="st2 st3 st4">Rule@Previous Error</text>
+</g>
+<g transform="translate(268.6667,742.9)">
+	<text transform="matrix(1 0 0 1 598.8286 -273.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
+</g>
+<g transform="translate(268.6667,823.3)">
+	<text transform="matrix(1 0 0 1 630.9579 -553.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
+</g>
+<g transform="translate(268.6667,809.9)">
+	<text transform="matrix(1 0 0 1 638.5497 -553.4999)" class="st2 st3 st4">Rule@Repetition4</text>
+</g>
+<g transform="translate(268.6667,796.5)">
+	<text transform="matrix(1 0 0 1 638.5497 -553.4999)" class="st2 st3 st4">Rule@Repetition3</text>
+</g>
+<g transform="translate(268.6667,783.1)">
+	<text transform="matrix(1 0 0 1 638.5497 -553.4999)" class="st2 st3 st4">Rule@Repetition2</text>
+</g>
+<g transform="translate(268.6667,769.7)">
+	<text transform="matrix(1 0 0 1 638.5497 -553.4999)" class="st2 st3 st4">Rule@Repetition1</text>
+</g>
+<g transform="translate(268.6667,756.3)">
+	<text transform="matrix(1 0 0 1 621.0585 -553.4999)" class="st2 st3 st4">Rule@Previous Error</text>
+</g>
+<g transform="translate(268.6667,742.9)">
+	<text transform="matrix(1 0 0 1 600.8286 -553.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
+</g>
+<g transform="translate(268.6667,823.3)">
+	<text transform="matrix(1 0 0 1 -109.0421 -273.4995)" class="st2 st3 st4">Rule@Repetition5+</text>
+</g>
+<g transform="translate(268.6667,809.9)">
+	<text transform="matrix(1 0 0 1 -101.4503 -273.4995)" class="st2 st3 st4">Rule@Repetition4</text>
+</g>
+<g transform="translate(268.6667,796.5)">
+	<text transform="matrix(1 0 0 1 -101.4503 -273.4995)" class="st2 st3 st4">Rule@Repetition3</text>
+</g>
+<g transform="translate(268.6667,783.1)">
+	<text transform="matrix(1 0 0 1 -101.4503 -273.4995)" class="st2 st3 st4">Rule@Repetition2</text>
+</g>
+<g transform="translate(268.6667,769.7)">
+	<text transform="matrix(1 0 0 1 -101.4503 -273.4995)" class="st2 st3 st4">Rule@Repetition1</text>
+</g>
+<g transform="translate(268.6667,756.3)">
+	<text transform="matrix(1 0 0 1 -118.9419 -273.4995)" class="st2 st3 st4">Rule@Previous Error</text>
+</g>
+<g transform="translate(268.6667,742.9)">
+	<text transform="matrix(1 0 0 1 -139.1719 -273.4995)" class="st2 st3 st4">Rule@No Previous Error</text>
+</g>
+<g transform="translate(268.6667,823.3)">
+	<text transform="matrix(1 0 0 1 -109.0421 -553.4999)" class="st2 st3 st4">Rule@Repetition5+</text>
+</g>
+<g transform="translate(268.6667,809.9)">
+	<text transform="matrix(1 0 0 1 -101.4503 -553.4999)" class="st2 st3 st4">Rule@Repetition4</text>
+</g>
+<g transform="translate(268.6667,796.5)">
+	<text transform="matrix(1 0 0 1 -101.4503 -553.4999)" class="st2 st3 st4">Rule@Repetition3</text>
+</g>
+<g transform="translate(268.6667,783.1)">
+	<text transform="matrix(1 0 0 1 -101.4503 -553.4999)" class="st2 st3 st4">Rule@Repetition2</text>
+</g>
+<g transform="translate(268.6667,769.7)">
+	<text transform="matrix(1 0 0 1 -101.4503 -553.4999)" class="st2 st3 st4">Rule@Repetition1</text>
+</g>
+<g transform="translate(268.6667,756.3)">
+	<text transform="matrix(1 0 0 1 -118.9419 -553.4999)" class="st2 st3 st4">Rule@Previous Error</text>
+</g>
+<g transform="translate(268.6667,742.9)">
+	<text transform="matrix(1 0 0 1 -139.1719 -553.4999)" class="st2 st3 st4">Rule@No Previous Error</text>
 </g>
 <g transform="translate(500.5005,67.25)">
 	<text transform="matrix(1 0 0 1 -74.1736 -8.2901)" class="st3 st10">Change in Firing Rate (Spikes / s)</text>
@@ -1090,4 +1064,26 @@
 </g>
 <text transform="matrix(1 0 0 1 87.7998 32.8491)" class="st3 st11">a</text>
 <text transform="matrix(1 0 0 1 827.8005 32.8492)" class="st3 st11">b</text>
+<g>
+	<text transform="matrix(1 0 0 1 489.6163 864.5003)" class="st3 st4">Stronger for Orientation Rule</text>
+	<text transform="matrix(1 0 0 1 326.2062 864.5003)" class="st3 st4">Stronger for Color Rule</text>
+	<g>
+		<line class="st12" x1="415.7" y1="880.6" x2="380.6" y2="880.6"/>
+		<g>
+			<line class="st13" x1="415.7" y1="880.6" x2="389.4" y2="880.6"/>
+			<g>
+				<polygon points="391.4,877.7 380.6,880.6 391.4,883.5 				"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<line class="st12" x1="561.5" y1="880.6" x2="596.6" y2="880.6"/>
+		<g>
+			<line class="st13" x1="561.5" y1="880.6" x2="587.8" y2="880.6"/>
+			<g>
+				<polygon points="585.8,883.5 596.6,880.6 585.8,877.7 				"/>
+			</g>
+		</g>
+	</g>
+</g>
 </svg>
