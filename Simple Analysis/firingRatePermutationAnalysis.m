@@ -118,7 +118,7 @@ if popParams.numCores > 0,
         parpool(myCluster, min([numNeurons, popParams.numCores, myCluster.NumWorkers]));
     end
     
-      %Transfer static assets to each worker only once
+    %Transfer static assets to each worker only once
     fprintf('\nTransferring static assets to each worker...\n');
     if verLessThan('matlab', '8.6'),
         s = WorkerObjWrapper(spikes);
@@ -147,7 +147,9 @@ for level_ind = 1:numLevels,
         randData2 = s.Value(ismember(trialID, perm_ind(group2_ind)), :);
         randDiff(level_ind, rand_ind, :) = nanmean(randData1) - nanmean(randData2);
     end
-    p(level_ind, :) = sum(bsxfun(@ge, abs(randDiff(level_ind, :, :)), abs(obsDiff(level_ind, :))), 2) / popParams.numRand;
+    for neuron_ind = 1:numNeurons,
+        p(level_ind, neuron_ind) = sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2) / popParams.numRand;
+    end
     
 end
 
