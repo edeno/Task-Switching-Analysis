@@ -1,27 +1,27 @@
-function [saveDir, p, obsDiff, randDiff] = firingRatePermutationAnalysis(sessionName, popParams, covInfo)
+function [saveDir, p, obsDiff, randDiff] = firingRatePermutationAnalysis(sessionName, permutationParams, covInfo)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
 fprintf('\nDate: %s\n \n', datestr(now));
 fprintf('\nPopulation Analysis Parameters\n');
-fprintf('\t covariateOfInterest: %s\n', popParams.covariateOfInterest);
-fprintf('\t timePeriod: %s\n', popParams.timePeriod);
-fprintf('\t overwrite: %d\n', popParams.overwrite);
-fprintf('\t includeIncorrect: %d\n', popParams.includeIncorrect);
-fprintf('\t includeTimeBeforeZero: %d\n', popParams.includeTimeBeforeZero);
-fprintf('\t numRand: %d\n', popParams.numRand);
-fprintf('\t numCores: %d\n', popParams.numCores);
+fprintf('\t covariateOfInterest: %s\n', permutationParams.covariateOfInterest);
+fprintf('\t timePeriod: %s\n', permutationParams.timePeriod);
+fprintf('\t overwrite: %d\n', permutationParams.overwrite);
+fprintf('\t includeIncorrect: %d\n', permutationParams.includeIncorrect);
+fprintf('\t includeTimeBeforeZero: %d\n', permutationParams.includeTimeBeforeZero);
+fprintf('\t numRand: %d\n', permutationParams.numRand);
+fprintf('\t numCores: %d\n', permutationParams.numCores);
 %% Get directories
 mainDir = getWorkingDir();
-timePeriodDir = sprintf('%s/Processed Data/%s/', mainDir, popParams.timePeriod);
+timePeriodDir = sprintf('%s/Processed Data/%s/', mainDir, permutationParams.timePeriod);
 %% Setup Save File
-saveDir = sprintf('%s/populationAnalysis/%s/', timePeriodDir, regexprep(popParams.covariateOfInterest, '\s+', '-'));
+saveDir = sprintf('%s/populationAnalysis/%s/', timePeriodDir, regexprep(permutationParams.covariateOfInterest, '\s+', '-'));
 if ~exist(saveDir, 'dir'),
     mkdir(saveDir);
 end
-saveFileName = sprintf('%s/%s_%s_popAnalysis.mat', saveDir, sessionName);
+saveFileName = sprintf('%s/%s_permutationAnalysis.mat', saveDir, sessionName);
 
-if exist(saveFileName, 'file') && ~popParams.overwrite,
+if exist(saveFileName, 'file') && ~permutationParams.overwrite,
     p = []; obsDiff = []; randDiff = [];
     fprintf('File %s already exists. Skipping.\n', saveFileName);
     return;
@@ -48,7 +48,7 @@ covNames = spikeCov.keys;
 
 fprintf('\nNumber of Neurons: %d\n', numNeurons);
 
-if ~popParams.includeIncorrect
+if ~permutationParams.includeIncorrect
     for cov_ind = 1:length(covNames),
         if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
         cov = spikeCov(covNames{cov_ind});
@@ -61,7 +61,7 @@ if ~popParams.includeIncorrect
     isAttempted(~isCorrect) = [];
 end
 
-if ~popParams.includeTimeBeforeZero,
+if ~permutationParams.includeTimeBeforeZero,
     isBeforeZero = trialTime < 0;
     for cov_ind = 1:length(covNames),
         if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
@@ -75,7 +75,7 @@ if ~popParams.includeTimeBeforeZero,
     isAttempted(isBeforeZero) = [];
 end
 
-if ~popParams.includeFixationBreaks
+if ~permutationParams.includeFixationBreaks
     for cov_ind = 1:length(covNames),
         if ~spikeCov.isKey(covNames{cov_ind}), continue; end;
         cov = spikeCov(covNames{cov_ind});
@@ -87,14 +87,14 @@ if ~popParams.includeFixationBreaks
     percentTrials(~isAttempted) = [];
 end
 
-labels = spikeCov(popParams.covariateOfInterest);
-levels = covInfo(popParams.covariateOfInterest).levels;
-baselineLevel = covInfo(popParams.covariateOfInterest).baselineLevel;
+labels = spikeCov(permutationParams.covariateOfInterest);
+levels = covInfo(permutationParams.covariateOfInterest).levels;
+baselineLevel = covInfo(permutationParams.covariateOfInterest).baselineLevel;
 baseline_ind = find(ismember(levels, baselineLevel));
 levels(baseline_ind) = []; % remove baseline level
 numLevels = length(levels);
 
-randDiff = nan(numLevels, popParams.numRand, numNeurons);
+randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
 obsDiff = nan(numLevels, numNeurons);
 p = nan(numLevels, numNeurons);
 neuronNames = cell(numNeurons, 1);
@@ -103,10 +103,10 @@ comparisonNames = cell(numLevels, 1);
 for neuron_ind = 1:numNeurons,
     neuronNames{neuron_ind} = sprintf('%s-%d-%d', sessionName, wireNumber{neuron_ind}, unitNumber{neuron_ind});
 end
-avgFiringRate = nanmean(spikes, 1);
+avgFiringRate = nanmean(spikes, 1) * 1000;
 
 %% Create matlab pool
-if popParams.numCores > 0,
+if permutationParams.numCores > 0,
     fprintf('\nCreate matlab pool...\n');
     myCluster = parcluster('local');
     tempDir = tempname;
@@ -115,7 +115,7 @@ if popParams.numCores > 0,
     
     poolobj = gcp('nocreate'); % If no pool, do not create new one.
     if isempty(poolobj)
-        parpool(myCluster, min([numNeurons, popParams.numCores, myCluster.NumWorkers]));
+        parpool(myCluster, min([numNeurons, permutationParams.numCores, myCluster.NumWorkers]));
     end
     
     %Transfer static assets to each worker only once
@@ -140,19 +140,19 @@ for level_ind = 1:numLevels,
     data = cat(1, curLevelTrials, curBaselineTrials);
     group1_ind = 1:length(curLevelTrials);
     group2_ind = length(curLevelTrials)+1:size(data, 1);
-    obsDiff(level_ind, :) = nanmean(spikes(labels == level_ind, :)) - nanmean(spikes(labels == baseline_ind, :));
-    parfor rand_ind = 1:popParams.numRand,
+    obsDiff(level_ind, :) = 1000 * (nanmean(spikes(labels == level_ind, :)) - nanmean(spikes(labels == baseline_ind, :)));
+    parfor rand_ind = 1:permutationParams.numRand,
         perm_ind = randperm(size(data, 1));
         randData1 = s.Value(ismember(trialID, perm_ind(group1_ind)), :);
         randData2 = s.Value(ismember(trialID, perm_ind(group2_ind)), :);
-        randDiff(level_ind, rand_ind, :) = nanmean(randData1) - nanmean(randData2);
+        randDiff(level_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
     end
     for neuron_ind = 1:numNeurons,
-        p(level_ind, neuron_ind) = sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2) / popParams.numRand;
+        p(level_ind, neuron_ind) = sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2) / permutationParams.numRand;
     end
     
 end
 
-save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'neuronNames', 'avgFiringRate', '-v7.3');
+save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'neuronNames', 'avgFiringRate', 'permutationParams', '-v7.3');
 
 end

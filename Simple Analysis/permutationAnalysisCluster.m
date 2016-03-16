@@ -1,4 +1,4 @@
-function [popJob] = permutationAnalysisCluster(covariateOfInterest, timePeriod, varargin)
+function [permJob] = permutationAnalysisCluster(covariateOfInterest, timePeriod, varargin)
 
 %% Validate Parameters
 
@@ -23,23 +23,23 @@ inParser.addParameter('numCores', 9, @(x) isnumeric(x) && x > 0);
 inParser.parse(covariateOfInterest, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
-popParams = inParser.Results;
+permutationParams = inParser.Results;
 %% Process Data
 fprintf('\nProcessing Covariate: %s\n', covariateOfInterest);
-popJob = [];
+permJob = [];
 
-if popParams.isLocal,
+if permutationParams.isLocal,
     % Run Locally
     for session_ind = 1:length(sessionNames),
         fprintf('\t...Session: %s\n', sessionNames{session_ind});
-        firingRatePermutationAnalysis(sessionNames{session_ind}, popParams, covInfo);
+        firingRatePermutationAnalysis(sessionNames{session_ind}, permutationParams, covInfo);
     end
 else
     % Use Cluster
     fprintf('Fitting model....\n');
-    args = cellfun(@(x) {x; popParams; covInfo}', sessionNames, 'UniformOutput', false);
-    popJob = TorqueJob('firingRatePermutationAnalysis', args, ...
-        sprintf('walltime=%s,mem=%s,nodes=1:ppn=12', popParams.walltime, popParams.mem), true, 'numOutputs', 0);
+    args = cellfun(@(x) {x; permutationParams; covInfo}', sessionNames, 'UniformOutput', false);
+    permJob = TorqueJob('firingRatePermutationAnalysis', args, ...
+        sprintf('walltime=%s,mem=%s,nodes=1:ppn=12', permutationParams.walltime, permutationParams.mem), true, 'numOutputs', 0);
 end
 
 end
