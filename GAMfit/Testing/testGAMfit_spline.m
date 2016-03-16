@@ -3,7 +3,7 @@ clear variables; close all; clc; profile off;
 % GAMpred parameters
 isOverwrite = true;
 numFolds = 5;
-ridgeLambda = 1;
+ridgeLambda = 0;
 smoothLambda = 10.^(-3:3);
 
 % Simulate Session
@@ -30,7 +30,7 @@ trueRate(level_ind('Rule', 'Orientation') & trial_time > 100) = orientRate * 2;
 model = 's(Rule, Trial Time)';
 [saveDir, spikes] = testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
-    'isPrediction', false);
+    'isPrediction', false, 'numCores', 0);
 
 load(sprintf('%s/Test_neuron_test_1_1_GAMfit.mat', saveDir), 'neuron', 'stat');
 load(sprintf('%s/test_GAMfit.mat', saveDir), 'gamParams', 'designMatrix', 'gam');
@@ -90,8 +90,8 @@ box off;
 figure;
 plot(uniformCDFvalues, stat.timeRescale.sortedKS - uniformCDFvalues); hold all;
 ylabel('Model CDF - Empirical CDF');
-hline([-CI CI], 'k--');
-hline(0, 'k-');
+hline([-CI CI], 'Color', 'black', 'LineType', '--');
+hline(0, 'Color', 'black', 'LineType', '-');
 box off;
 
 figure;
@@ -104,8 +104,8 @@ title('Consecutive Intervals of Uniform ISIs');
 subplot(1,2,2);
 CI = 1.96 / sqrt(numSpikes);
 [coef, lags] = xcorr(stat.timeRescale.normalRescaledISIs(~isinf(stat.timeRescale.normalRescaledISIs)), 'coeff');
-hline([-CI CI], 'k--');
-hline(0, 'k-');
+hline([-CI CI], 'Color', 'black', 'LineType', '--');
+hline(0, 'Color', 'black', 'LineType', '-');
 plot(lags, coef, '.');
 box off;
 ylabel('Correlation Coefficient');
