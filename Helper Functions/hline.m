@@ -39,7 +39,7 @@ params = inParser.Results;
 
 if length(y)>1  % vector input
     for ind=1:length(y)
-        h(ind)=hline(y{ind}, varargin{:});
+        h(ind)=hline(y(ind), varargin{:});
     end
 else
     g=ishold(gca);
