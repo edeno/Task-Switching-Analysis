@@ -148,7 +148,9 @@ for level_ind = 1:numLevels,
         randDiff(level_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
     end
     for neuron_ind = 1:numNeurons,
-        p(level_ind, neuron_ind) = sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2) / permutationParams.numRand;
+        p(level_ind, neuron_ind) = (sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
+        p(p == 0) = 1 / permutationParams.numRand;
+        p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
     end
     
 end
