@@ -123,14 +123,16 @@ end
 for level_ind = 1:numLevels,
     comparisonNames{level_ind} = sprintf('%s - %s', levels{level_ind}, baselineLevel);
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
-    data = cat(1, spikes(labels == level_ind, :), spikes(labels == baseline_ind, :));
-    group1_ind = 1:sum(labels == level_ind);
-    group2_ind = sum(labels == level_ind)+1:size(data, 1);
+    curLevelTrials = unique(trialID(labels == level_ind));
+    curBaselineTrials = unique(trialID(labels == baseline_ind));
+    data = cat(1, curLevelTrials, curBaselineTrials);
+    group1_ind = 1:length(curLevelTrials);
+    group2_ind = length(curLevelTrials)+1:size(data, 1);
     obsDiff(level_ind, :) = nanmean(spikes(labels == level_ind, :)) - nanmean(spikes(labels == baseline_ind, :));
     parfor rand_ind = 1:popParams.numRand,
         perm_ind = randperm(size(data, 1));
-        randData1 = data(perm_ind(group1_ind), :);
-        randData2 = data(perm_ind(group2_ind), :);
+        randData1 = spikes(ismember(trialID, perm_ind(group1_ind)));
+        randData2 = spikes(ismember(trialID, perm_ind(group2_ind)));
         randDiff(level_ind, rand_ind, :) = nanmean(randData1) - nanmean(randData2);
     end
     p(level_ind, :) = sum(bsxfun(@ge, abs(randDiff(level_ind, :, :)), abs(obsDiff(level_ind, :))), 2) / popParams.numRand;
