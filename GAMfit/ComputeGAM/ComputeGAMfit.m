@@ -118,36 +118,40 @@ if ~gamParams.includeFixationBreaks
 end
 
 %% Create matlab pool
-fprintf('\nCreate matlab pool...\n');
-myCluster = parcluster('local');
-tempDir = tempname;
-mkdir(tempDir);
-myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
-
-poolobj = gcp('nocreate'); % If no pool, do not create new one.
-if isempty(poolobj)
-     parpool(myCluster, min([numNeurons, gamParams.numCores, myCluster.NumWorkers]));
-end
-
-%Transfer static assets to each worker only once
-fprintf('\nTransferring static assets to each worker...\n');
-if verLessThan('matlab', '8.6'),
-    gP = WorkerObjWrapper(gamParams);
-    tI = WorkerObjWrapper(trialID);
-    sC = WorkerObjWrapper(spikeCov);
-    cI = WorkerObjWrapper(covInfo);
+if gamParams.numCores > 0,
+    fprintf('\nCreate matlab pool...\n');
+    myCluster = parcluster('local');
+    tempDir = tempname;
+    mkdir(tempDir);
+    myCluster.JobStorageLocation = tempDir;  % points to TMPDIR
+    
+    
+    poolobj = gcp('nocreate'); % If no pool, do not create new one.
+    if isempty(poolobj)
+        parpool(myCluster, min([numNeurons, gamParams.numCores, myCluster.NumWorkers]));
+    end
+    
+    %Transfer static assets to each worker only once
+    fprintf('\nTransferring static assets to each worker...\n');
+    if verLessThan('matlab', '8.6'),
+        gP = WorkerObjWrapper(gamParams);
+        tI = WorkerObjWrapper(trialID);
+        sC = WorkerObjWrapper(spikeCov);
+        cI = WorkerObjWrapper(covInfo);
+    else
+        gP = parallel.pool.Constant(gamParams);
+        tI = parallel.pool.Constant(trialID);
+        sC = parallel.pool.Constant(spikeCov);
+        cI = parallel.pool.Constant(covInfo);
+    end
+    fprintf('\nFinished transferring static assets...\n');
 else
-    gP = parallel.pool.Constant(gamParams);
-    tI = parallel.pool.Constant(trialID);
-    sC = parallel.pool.Constant(spikeCov);
-    cI = parallel.pool.Constant(covInfo);
+    gP.Value = gamParams;
+    tI.Value = trialID;
+    sC.Value = spikeCov;
+    cI.Value = covInfo;
 end
-fprintf('\nFinished transferring static assets...\n');
 
-% gP.Value = gamParams;
-% tI.Value = trialID;
-% sC.Value = spikeCov;
-% cI.Value = covInfo;
 %% Do the fitting
 fprintf('\nFitting GAMs ...\n');
 parfor curNeuron = 1:numNeurons,
