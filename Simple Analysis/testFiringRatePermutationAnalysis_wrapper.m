@@ -1,4 +1,4 @@
-function [saveDir, p, obsDiff, randDiff] = testbasicPopulationAnalysis_wrapper(covariateOfInterest, Rate, varargin)
+function [saveDir, p, obsDiff, randDiff] = testFiringRatePermutationAnalysis_wrapper(covariateOfInterest, Rate, varargin)
 
 mainDir = getWorkingDir();
 
@@ -40,7 +40,7 @@ end
 
 %% Estimate GAM parameters
 profile -memory on;
-[saveDir, p, obsDiff, randDiff] = BasicPopulationAnalysis('test', popParams, covInfo);
+[saveDir, p, obsDiff, randDiff] = firingRatePermutationAnalysis('test', popParams, covInfo);
 profile viewer;
 
 end

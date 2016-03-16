@@ -1,4 +1,4 @@
-function [saveDir, p, obsDiff, randDiff] = BasicPopulationAnalysis(sessionName, popParams, covInfo)
+function [saveDir, p, obsDiff, randDiff] = firingRatePermutationAnalysis(sessionName, popParams, covInfo)
 %% Log parameters
 fprintf('\n------------------------\n');
 fprintf('\nSession: %s\n', sessionName);
@@ -117,9 +117,21 @@ if popParams.numCores > 0,
     if isempty(poolobj)
         parpool(myCluster, min([numNeurons, popParams.numCores, myCluster.NumWorkers]));
     end
+    
+      %Transfer static assets to each worker only once
+    fprintf('\nTransferring static assets to each worker...\n');
+    if verLessThan('matlab', '8.6'),
+        s = WorkerObjWrapper(spikes);
+    else
+        s = parallel.pool.Constant(spikes);
+    end
+    fprintf('\nFinished transferring static assets...\n');
+else
+    s.Value = spikes;
 end
 
 %%
+
 for level_ind = 1:numLevels,
     comparisonNames{level_ind} = sprintf('%s - %s', levels{level_ind}, baselineLevel);
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
@@ -131,8 +143,8 @@ for level_ind = 1:numLevels,
     obsDiff(level_ind, :) = nanmean(spikes(labels == level_ind, :)) - nanmean(spikes(labels == baseline_ind, :));
     parfor rand_ind = 1:popParams.numRand,
         perm_ind = randperm(size(data, 1));
-        randData1 = spikes(ismember(trialID, perm_ind(group1_ind)));
-        randData2 = spikes(ismember(trialID, perm_ind(group2_ind)));
+        randData1 = s.Value(ismember(trialID, perm_ind(group1_ind)), :);
+        randData2 = s.Value(ismember(trialID, perm_ind(group2_ind)), :);
         randDiff(level_ind, rand_ind, :) = nanmean(randData1) - nanmean(randData2);
     end
     p(level_ind, :) = sum(bsxfun(@ge, abs(randDiff(level_ind, :, :)), abs(obsDiff(level_ind, :))), 2) / popParams.numRand;

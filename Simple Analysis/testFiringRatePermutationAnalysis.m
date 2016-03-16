@@ -18,21 +18,21 @@ orientRate = 1.05;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[~, p_small, obs_small, randDiff_small] = testbasicPopulationAnalysis_wrapper('Rule', trueRate);
+[~, p_small, obs_small, randDiff_small] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate);
 
 colorRate = 5;
 orientRate = 1;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[~, p_large, obs_large, randDiff_large] = testbasicPopulationAnalysis_wrapper('Rule', trueRate);
+[~, p_large, obs_large, randDiff_large] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate);
 
 colorRate = 5;
 orientRate = 1;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[ ~, p_wrong, obs_wrong, randDiff_wrong] = testbasicPopulationAnalysis_wrapper('Rule Repetition', trueRate);
+[ ~, p_wrong, obs_wrong, randDiff_wrong] = testFiringRatePermutationAnalysis_wrapper('Rule Repetition', trueRate);
 %%
 figure;
 subplot(3,2,1);
