@@ -3,7 +3,7 @@ function [saveDir, p, obsDiff, randDiff] = testFiringRatePermutationAnalysis_wra
 mainDir = getWorkingDir();
 
 load(sprintf('%s/paramSet.mat', mainDir), ...
-    'validPredType', 'covInfo');
+     'covInfo');
 
 inParser = inputParser;
 inParser.addRequired('covariateOfInterest', @ischar);
