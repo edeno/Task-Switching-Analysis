@@ -21,6 +21,9 @@ trialID = convertFactor(1:numTrials, trialTimeByTrial);
 
 trialTime = cellfun(@(time) 1:time, num2cell(trialTimeByTrial), 'UniformOutput', false);
 trialTime = cat(2, trialTime{:})';
+behavior = containers.Map();
+behavior('Reaction Time') = trialTimeByTrial;
+behavior('Preparation Time') = trialTimeByTrial - 160;
 %% Preparation Time
 spikeCov('Preparation Time') = convertFactor(prepTime, trialTimeByTrial);
 spikeCov('Normalized Preparation Time') = convertFactor(zscore(prepTime), trialTimeByTrial);
@@ -68,7 +71,7 @@ for sw_ind = 1:length(sw)+1
 end
 dist_sw = dist_sw'+1;
 
-dist_sw(dist_sw >= 6) = 6;
+dist_sw(dist_sw >= 5) = 5;
 
 spikeCov('Rule Repetition') = convertFactor(dist_sw, trialTimeByTrial);
 %% Congruency History
@@ -133,7 +136,7 @@ end
 
 filename = sprintf('%s/test_SpikeCov.mat', spikeCovDir);
 save(filename, 'spikeCov', 'monkeyName', 'percentTrials', ...
-        'numNeurons', 'trialID', 'trialTime', ...
+        'numNeurons', 'trialID', 'trialTime', 'behavior', ...
         'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
 
 end
