@@ -51,7 +51,7 @@ meanPredError = mean([correct.neuron.AUC; misspecified.neuron.AUC], 2);
 plot(1:2, meanPredError)
 set(gca, 'XTick', 1:2)
 set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
-hline(0.5, 'k');
+hline(0.5, 'Color', 'black');
 title('AUC')
 
 % MI
@@ -60,7 +60,7 @@ meanPredError = mean([correct.neuron.mutualInformation; misspecified.neuron.mutu
 plot(1:2, meanPredError)
 set(gca, 'XTick', 1:2)
 set(gca, 'XTickLabel', {'Correct Model', 'Misspecified Model'})
-hline(0.0, 'k');
+hline(0.0, 'Color', 'black');
 title('Mutual Information (bits / spike)')
 
 % Deviance
