@@ -68,7 +68,7 @@ for sw_ind = 1:length(sw)+1
 end
 dist_sw = dist_sw'+1;
 
-dist_sw(dist_sw >= 5) = 5;
+dist_sw(dist_sw >= 6) = 6;
 
 spikeCov('Rule Repetition') = convertFactor(dist_sw, trialTimeByTrial);
 %% Congruency History
@@ -126,7 +126,7 @@ percentTrials = n(bin) / max(n);
 % Trial Time
 spikeCov('Trial Time') = trialTime;
 %% Save Simulated Session
-spikeCovDir = sprintf('%s/Processed Data/Testing/spikeCov', mainDir);
+spikeCovDir = sprintf('%s/Processed Data/Testing/SpikeCov', mainDir);
 if ~exist(spikeCovDir, 'dir'),
     mkdir(spikeCovDir);
 end
