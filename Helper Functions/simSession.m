@@ -131,7 +131,7 @@ if ~exist(spikeCovDir, 'dir'),
     mkdir(spikeCovDir);
 end
 
-filename = sprintf('%s/test_spikeCov.mat', spikeCovDir);
+filename = sprintf('%s/test_SpikeCov.mat', spikeCovDir);
 save(filename, 'spikeCov', 'monkeyName', 'percentTrials', ...
         'numNeurons', 'trialID', 'trialTime', ...
         'wire_number', 'unit_number', 'neuronBrainArea', 'isCorrect', 'isAttempted', '-v7.3');
