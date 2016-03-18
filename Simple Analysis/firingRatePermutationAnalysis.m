@@ -38,10 +38,6 @@ unitNumber = double(unit_number);
 monkeyName = regexp(sessionName, '(cc)|(isa)|(ch)|(test)', 'match');
 monkeyName = monkeyName{:};
 
-numTrials = length(unique(trialID));
-numPFC = sum(ismember(neuronBrainArea, 'dlPFC'));
-numACC = sum(ismember(neuronBrainArea, 'ACC'));
-
 wireNumber = num2cell(wireNumber);
 unitNumber = num2cell(unitNumber);
 covNames = spikeCov.keys;
@@ -155,6 +151,7 @@ for level_ind = 1:numLevels,
     
 end
 
-save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'neuronNames', 'avgFiringRate', 'permutationParams', '-v7.3');
+save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
+    'neuronNames', 'avgFiringRate', 'permutationParams', 'neuronBrainArea', '-v7.3');
 
 end
