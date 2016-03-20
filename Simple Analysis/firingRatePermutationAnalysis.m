@@ -87,7 +87,9 @@ labels = spikeCov(permutationParams.covariateOfInterest);
 levels = covInfo(permutationParams.covariateOfInterest).levels;
 baselineLevel = covInfo(permutationParams.covariateOfInterest).baselineLevel;
 baseline_ind = find(ismember(levels, baselineLevel));
+levelsID = 1:length(levels);
 levels(baseline_ind) = []; % remove baseline level
+levelsID(baseline_ind) = [];
 numLevels = length(levels);
 
 randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
@@ -131,12 +133,12 @@ end
 for level_ind = 1:numLevels,
     comparisonNames{level_ind} = sprintf('%s - %s', levels{level_ind}, baselineLevel);
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
-    curLevelTrials = unique(trialID(labels == level_ind));
+    curLevelTrials = unique(trialID(labels == levelsID(level_ind)));
     curBaselineTrials = unique(trialID(labels == baseline_ind));
     data = cat(1, curLevelTrials, curBaselineTrials);
     group1_ind = 1:length(curLevelTrials);
     group2_ind = length(curLevelTrials)+1:size(data, 1);
-    obsDiff(level_ind, :) = 1000 * (nanmean(spikes(labels == level_ind, :)) - nanmean(spikes(labels == baseline_ind, :)));
+    obsDiff(level_ind, :) = 1000 * (nanmean(spikes(labels == levelsID(level_ind), :)) - nanmean(spikes(labels == baseline_ind, :)));
     parfor rand_ind = 1:permutationParams.numRand,
         perm_ind = randperm(size(data, 1));
         randData1 = s.Value(ismember(trialID, perm_ind(group1_ind)), :);
