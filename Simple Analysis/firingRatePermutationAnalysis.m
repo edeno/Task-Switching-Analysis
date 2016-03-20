@@ -88,9 +88,8 @@ levels = covInfo(permutationParams.covariateOfInterest).levels;
 baselineLevel = covInfo(permutationParams.covariateOfInterest).baselineLevel;
 baseline_ind = find(ismember(levels, baselineLevel));
 levelsID = 1:length(levels);
-levels(baseline_ind) = []; % remove baseline level
 levelsID(baseline_ind) = [];
-numLevels = length(levels);
+numLevels = length(levelsID);
 
 randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
 obsDiff = nan(numLevels, numNeurons);
@@ -131,7 +130,7 @@ end
 %%
 
 for level_ind = 1:numLevels,
-    comparisonNames{level_ind} = sprintf('%s - %s', levels{level_ind}, baselineLevel);
+    comparisonNames{level_ind} = sprintf('%s - %s', levels{levelsID(level_ind)}, baselineLevel);
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
     curLevelTrials = unique(trialID(labels == levelsID(level_ind)));
     curBaselineTrials = unique(trialID(labels == baseline_ind));
