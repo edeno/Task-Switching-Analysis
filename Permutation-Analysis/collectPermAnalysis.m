@@ -6,7 +6,7 @@ permAnalysis = containers.Map;
 
 for time_ind = 1:length(timePeriods),
     
-    permutationAnalysisDir = sprintf('%s/Processed Data/%s/populationAnalysis', workingDir, timePeriods{time_ind});
+    permutationAnalysisDir = sprintf('%s/Processed Data/%s/permutationAnalysis', workingDir, timePeriods{time_ind});
     factors = dir(permutationAnalysisDir );
     factors = {factors.name};
     factors = factors(~ismember(factors, {'.', '..'}));
