@@ -59,11 +59,12 @@ trialInfo('Fixation Break') = [3 4];
 monkeyNames = {'CC', 'CH', 'ISA'};
 validPredType = {'Dev', 'AUC', 'MI', 'AIC', 'GCV', 'BIC', 'UBRE'};
 
-timePeriodNames = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Reward', 'Rule Response', 'Saccade', 'Reward', 'Entire Trial'};
+timePeriodNames = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Response', 'Stimulus Reward', 'Rule Response', 'Saccade', 'Reward', 'Entire Trial'};
 encode_period = {...
     {trialInfo('Start Trial Encode'), trialInfo('Fixation ON Encode')}; ... % Intertrial Interval
     {trialInfo('Fixation ACQUIRED Encode'), trialInfo('Rule ON Encode')}; ... % Fixation
     {trialInfo('Rule ON Encode'), trialInfo('Test Stimulus ON Encode')}; ... % Rule Stimulus
+    {trialInfo('Test Stimulus ON Encode'), trialInfo('Saccade START Encode')}; ... % Stimulus Response
     {trialInfo('Test Stimulus ON Encode'), trialInfo('Reward START Encode')}; ... % Stimulus Reward
     {trialInfo('Rule ON Encode'), trialInfo('Saccade START Encode')}; ... % Rule Response
     {trialInfo('Saccade START Encode'), trialInfo('Reward START Encode')}; ... % Saccade
