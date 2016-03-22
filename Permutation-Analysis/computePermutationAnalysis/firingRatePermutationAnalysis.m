@@ -15,7 +15,7 @@ fprintf('\t numCores: %d\n', permutationParams.numCores);
 mainDir = getWorkingDir();
 timePeriodDir = sprintf('%s/Processed Data/%s/', mainDir, permutationParams.timePeriod);
 %% Setup Save File
-saveDir = sprintf('%s/populationAnalysis/%s/', timePeriodDir, regexprep(permutationParams.covariateOfInterest, '\s+', '-'));
+saveDir = sprintf('%s/permutationAnalysis/%s/', timePeriodDir, regexprep(permutationParams.covariateOfInterest, '\s+', '-'));
 if ~exist(saveDir, 'dir'),
     mkdir(saveDir);
 end
