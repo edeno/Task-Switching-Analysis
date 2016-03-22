@@ -14,12 +14,12 @@ do
   # because qsub splits passed variables with commas
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
-       -N "Perm_$curFactor" \
+       -N "RuleByPerm_$curFactor" \
        -l h_rt=2:00:00 \
        -l mem_total=24G \
        -v TIMEPERIOD="$timeperiod" \
        -v COVARIATEOFINTEREST="$curFactor" \
        -v NUMCORES="12" \
        -v NUMRAND="10000" \
-       ./runComputePermutationAnalysisExec2015a.sh;
+       ./runComputeRuleByPermutationAnalysisExec2015a.sh;
 done
