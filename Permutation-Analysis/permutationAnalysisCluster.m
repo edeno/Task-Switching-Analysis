@@ -1,7 +1,6 @@
 function [permJob] = permutationAnalysisCluster(covariateOfInterest, timePeriod, varargin)
 
 %% Validate Parameters
-
 mainDir = getWorkingDir();
 
 load(sprintf('%s/paramSet.mat', mainDir), ...
