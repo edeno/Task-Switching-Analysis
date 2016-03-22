@@ -1,6 +1,6 @@
-function [] = computePermutationAnalysis_standalone(session_ind, covariateOfInterest, timePeriod, varargin)
+function [] = computeRuleByPermutationAnalysis_standalone(session_ind, covariateOfInterest, timePeriod, varargin)
 %#function getWorkingDir
-%#function firingRatePermutationAnalysis
+%#function RuleBy_firingRatePermutationAnalysis
 
 fprintf('\nMatlab\n')
 fprintf('---------\n')
