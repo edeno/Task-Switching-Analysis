@@ -26,7 +26,7 @@ load(sprintf('%s/paramSet.mat', mainDir), ...
 inParser = inputParser;
 inParser.addRequired('covariateOfInterest', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
-inParser.addParameter('overwrite', false, @islogical)
+inParser.addParameter('overwrite', false, @isnumeric)
 inParser.addParameter('includeIncorrect', false, @islogical);
 inParser.addParameter('includeFixationBreaks', false, @islogical);
 inParser.addParameter('includeTimeBeforeZero', false, @islogical);
