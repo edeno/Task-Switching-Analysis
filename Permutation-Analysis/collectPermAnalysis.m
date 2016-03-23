@@ -60,7 +60,8 @@ numP = length(p);
 thresholdLine = ([1:numP]' / numP) * alpha;
 threshold_ind = find(sortedP <= thresholdLine, 1, 'last');
 threshold = sortedP(threshold_ind);
-figure; plot(sortedP); hold all; plot(thresholdLine, 'k'); vline(threshold_ind);
+figure; plot(sortedP); hold all; plot(thresholdLine, 'k'); vline(threshold_ind, 'Label', 'P-value Threshold');
+xlabel('Sorted P-Values');
 
 h = p < threshold;
 
@@ -77,3 +78,6 @@ values = permAnalysis.values;
 values = [values{:}];
 
 comparisonNames = values(1).comparisonNames;
+
+saveName = sprintf('%s/Permutation-Analysis/Analysis/colllectedPermAnalysis.mat', workingDir);
+save(saveName);
