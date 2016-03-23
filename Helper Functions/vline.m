@@ -39,7 +39,7 @@ params = inParser.Results;
 
 if length(x)>1  % vector input
     for ind=1:length(x)
-        h(ind)=vline(x{ind}, varargin{:});
+        h(ind)=vline(x(ind), varargin{:});
     end
 else
     g=ishold(gca);
@@ -52,9 +52,9 @@ else
         xrange=xx(2)-xx(1);
         xunit=(x-xx(1))/xrange;
         if xunit<0.8
-            text(x+0.01*xrange,y(1)+0.1*(y(2)-y(1)),label,'color',get(h,'color'))
+            text(x+0.01*xrange,y(1)+0.1*(y(2)-y(1)),params.Label,'color',get(h,'color'))
         else
-            text(x-.05*xrange,y(1)+0.1*(y(2)-y(1)),label,'color',get(h,'color'))
+            text(x-.05*xrange,y(1)+0.1*(y(2)-y(1)),params.Label,'color',get(h,'color'))
         end
     end
     
