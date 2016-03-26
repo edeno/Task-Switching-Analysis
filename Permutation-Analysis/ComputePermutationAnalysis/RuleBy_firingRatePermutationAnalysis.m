@@ -100,7 +100,7 @@ comparisonNames = cell(numLevels, 1);
 ruleLabels = spikeCov('Rule');
 ruleLevels = covInfo('Rule').levels;
 ruleBaselineLevel = covInfo('Rule').baselineLevel;
-baseline_ind = find(ismember(ruleLevels, ruleBaselineLevel));
+ruleBaseline_ind = find(ismember(ruleLevels, ruleBaselineLevel));
 ruleLevelsID = 1:length(ruleLevels);
 
 for neuron_ind = 1:numNeurons,
@@ -139,22 +139,46 @@ orientationID = find(ismember(ruleLevels, 'Orientation'));
 for level_ind = 1:numLevels,
     comparisonNames{level_ind} = sprintf('Orientation Rule - Color Rule @ %s', levels{levelsID(level_ind)});
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
-    color_ind = (labels == levelsID(level_ind)) & (ruleLabels == colorID);
-    orientation_ind = (labels == levelsID(level_ind)) & (ruleLabels == orientationID);
-    curLevelTrials_color = unique(trialID(color_ind));
-    curLevelTrials_orientation = unique(trialID(orientation_ind));
-    data = cat(1, curLevelTrials_orientation, curLevelTrials_color);
-    group1_ind = 1:length(curLevelTrials_orientation);
-    group2_ind = length(curLevelTrials_orientation)+1:size(data, 1);
-    obsDiff(level_ind, :) = 1000 * (nanmean(spikes(orientation_ind, :)) - nanmean(spikes(color_ind, :)));
+    
+    % Comparison Level
+    curLevelColor_ind = (labels == levelsID(level_ind)) & (ruleLabels == colorID);
+    curLevelOrientation_ind = (labels == levelsID(level_ind)) & (ruleLabels == orientationID);
+    curLevelTrials_color = unique(trialID(curLevelColor_ind));
+    curLevelTrials_orientation = unique(trialID(curLevelOrientation_ind));
+    
+    % Baseline Level
+    baselineLevelColor_ind = (labels == baseline_ind) & (ruleLabels == colorID);
+    baselineLevelOrientation_ind = (labels == baseline_ind) & (ruleLabels == orientationID);
+    baselineLevelTrials_color = unique(trialID(baselineLevelColor_ind));
+    baselineLevelTrials_orientation = unique(trialID(baselineLevelOrientation_ind));
+    
+    obsDiff(level_ind, :) = (1000 * (nanmean(spikes(curLevelOrientation_ind, :)) - nanmean(spikes(curLevelColor_ind, :)))) - ...
+        (1000 * (nanmean(spikes(baselineLevelOrientation_ind, :)) - nanmean(spikes(baselineLevelColor_ind, :))));
+    
+    
+    orientationData = cat(1, curLevelTrials_orientation, baselineLevelTrials_orientation);
+    orientationGroup1_ind = 1:length(curLevelTrials_orientation);
+    orientationGroup2_ind = length(curLevelTrials_orientation)+1:size(orientationData, 1);
+    
+    colorData = cat(1, curLevelTrials_color, baselineLevelTrials_color);
+    colorGroup1_ind = 1:length(curLevelTrials_color);
+    colorGroup2_ind = length(curLevelTrials_color)+1:size(colorData, 1);
+    
     parfor rand_ind = 1:permutationParams.numRand,
-        perm_ind = randperm(size(data, 1));
-        randData1 = s.Value(ismember(trialID, perm_ind(group1_ind)), :);
-        randData2 = s.Value(ismember(trialID, perm_ind(group2_ind)), :);
-        randDiff(level_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
+        orientationPerm_ind = randperm(size(orientationData, 1));
+        colorPerm_ind = randperm(size(colorData, 1));
+        
+        orientationRandData1 = s.Value(ismember(trialID, orientationPerm_ind(orientationGroup1_ind)), :);
+        orientationRandData2 = s.Value(ismember(trialID, orientationPerm_ind(orientationGroup2_ind)), :);
+        colorRandData1 = s.Value(ismember(trialID, colorPerm_ind(colorGroup1_ind)), :);
+        colorRandData2 = s.Value(ismember(trialID, colorPerm_ind(colorGroup2_ind)), :);
+        
+        randDiff(level_ind, rand_ind, :) = (1000 * (nanmean(orientationRandData1) - nanmean(colorRandData1))) - ...
+            (1000 * (nanmean(orientationRandData2) - nanmean(colorRandData2)));
     end
     for neuron_ind = 1:numNeurons,
-        p(level_ind, neuron_ind) = (sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
+        % Uppper tailed test
+        p(level_ind, neuron_ind) = (sum((randDiff(level_ind, :, neuron_ind)) >= (obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
         p(p == 0) = 1 / permutationParams.numRand;
         p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
     end
