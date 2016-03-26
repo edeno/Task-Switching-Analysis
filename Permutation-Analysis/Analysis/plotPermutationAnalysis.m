@@ -24,7 +24,7 @@ for area_ind = 1:length(brainAreas),
     hist(obsDiff(comparison_ind, neuron_ind), 50);
     meanObsDiff = mean(obsDiff(comparison_ind, neuron_ind), 2);
     vline(meanObsDiff, 'Label', sprintf('%.2f', meanObsDiff))
-    xlabel('Raw Difference (Spikes / s)');
+    xlabel({'Raw Difference','(Spikes / s)'});
     titleName = sprintf('%s (%d / %d Sig. Neurons, %.1f%%)', brainAreas{area_ind}, ...
         sum(sig_ind & neuron_ind), ...
         sum(neuron_ind), ...
@@ -35,31 +35,31 @@ for area_ind = 1:length(brainAreas),
     hist(abs(obsDiff(comparison_ind, neuron_ind)), 50);
     meanAbsObsDiff = mean(abs(obsDiff(comparison_ind, neuron_ind)), 2);
     vline(meanAbsObsDiff, 'Label', sprintf('%.2f', meanAbsObsDiff));
-    xlabel('Abs. Raw Difference (Spikes / s)');
+    xlabel({'Abs. Raw Difference','(Spikes / s)'});
     
     subplot(6,2, 5 + (area_ind - 1));
     hist(normObsDiff(comparison_ind, neuron_ind), 50);
     meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind), 2);
     vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
-    xlabel('Norm. Difference (by Average Firing Rate)');
+    xlabel({'Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 7 + (area_ind - 1));
     hist(abs(normObsDiff(comparison_ind, neuron_ind)), 50);
     meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind)), 2);
     vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
-    xlabel('Abs. Norm. Difference (by Average Firing Rate)');
+    xlabel({'Abs. Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 9 + (area_ind - 1));
     hist(normObsDiff(comparison_ind, neuron_ind & sig_ind), 50);
     meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind & sig_ind), 2);
     vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
-    xlabel('Norm. Difference (by Average Firing Rate)');
+    xlabel({'Sig. Only, Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 11 + (area_ind - 1));
     hist(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 50);
     meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 2);
     vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
-    xlabel('Abs. Norm. Difference (by Average Firing Rate)');
+    xlabel({'Sig. Only, Abs. Norm. Difference','(by Average Firing Rate)'});
 end
 suptitle(sprintf('Both Monkeys: %s', comparisonName))
 
@@ -74,7 +74,7 @@ for monkey_ind = 1:length(monkeyNames),
         hist(obsDiff(comparison_ind, neuron_ind), 50);
         meanObsDiff = mean(obsDiff(comparison_ind, neuron_ind), 2);
         vline(meanObsDiff, 'Label', sprintf('%.2f', meanObsDiff))
-        xlabel('Raw Difference (Spikes / s)');
+        xlabel({'Raw Difference','(Spikes / s)'});
         titleName = sprintf('%s (%d / %d Sig. Neurons, %.1f%%)', brainAreas{area_ind}, ...
             sum(sig_ind & neuron_ind), ...
             sum(neuron_ind), ...
@@ -85,31 +85,31 @@ for monkey_ind = 1:length(monkeyNames),
         hist(abs(obsDiff(comparison_ind, neuron_ind)), 50);
         meanAbsObsDiff = mean(abs(obsDiff(comparison_ind, neuron_ind)), 2);
         vline(meanAbsObsDiff, 'Label', sprintf('%.2f', meanAbsObsDiff));
-        xlabel('Abs. Raw Difference (Spikes / s)');
+        xlabel({'Abs. Raw Difference','(Spikes / s)'});
         
         subplot(6,2, 5 + (area_ind - 1));
         hist(normObsDiff(comparison_ind, neuron_ind), 50);
         meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind), 2);
         vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
-        xlabel('Norm. Difference (by Average Firing Rate)');
+        xlabel({'Norm. Difference','(by Average Firing Rate)'});
         
         subplot(6,2, 7 + (area_ind - 1));
         hist(abs(normObsDiff(comparison_ind, neuron_ind)), 50);
         meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind)), 2);
         vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
-        xlabel('Abs. Norm. Difference (by Average Firing Rate)');
+        xlabel({'Abs. Norm. Difference','(by Average Firing Rate)'});
         
         subplot(6,2, 9 + (area_ind - 1));
         hist(normObsDiff(comparison_ind, neuron_ind & sig_ind), 50);
         meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind & sig_ind), 2);
         vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
-        xlabel('Norm. Difference (by Average Firing Rate)');
+        xlabel({'Sig. Only, Norm. Difference (by Average Firing Rate)'});
         
         subplot(6,2, 11 + (area_ind - 1));
         hist(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 50);
         meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 2);
         vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
-        xlabel('Abs. Norm. Difference (by Average Firing Rate)');
+        xlabel({'Sig. Only, Abs. Norm. Difference','(by Average Firing Rate)'});
     end
     suptitle(sprintf('Monkey %s: %s', monkeyNames{monkey_ind}, comparisonName))
 end
