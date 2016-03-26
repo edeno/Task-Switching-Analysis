@@ -165,6 +165,10 @@ for level_ind = 1:numLevels,
     colorGroup2_ind = length(curLevelTrials_color)+1:size(colorData, 1);
     
     parfor rand_ind = 1:permutationParams.numRand,
+        if (mod(rand_ind, 100) == 0)
+            fprintf('\t\tRand #%d...\n', sim_ind);
+        end
+        
         orientationPerm_ind = randperm(size(orientationData, 1));
         colorPerm_ind = randperm(size(colorData, 1));
         
@@ -185,6 +189,7 @@ for level_ind = 1:numLevels,
     
 end
 
+fprintf('\nSaving... : %s\n', saveFileName);
 save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
     'neuronNames', 'avgFiringRate', 'permutationParams', 'neuronBrainArea', '-v7.3');
 
