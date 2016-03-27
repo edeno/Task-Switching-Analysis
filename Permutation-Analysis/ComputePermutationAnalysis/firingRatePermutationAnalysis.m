@@ -139,19 +139,25 @@ for level_ind = 1:numLevels,
     group2_ind = length(curLevelTrials)+1:size(data, 1);
     obsDiff(level_ind, :) = 1000 * (nanmean(spikes(labels == levelsID(level_ind), :)) - nanmean(spikes(labels == baseline_ind, :)));
     parfor rand_ind = 1:permutationParams.numRand,
+        if (mod(rand_ind, 100) == 0)
+            fprintf('\t\tRand #%d...\n', rand_ind);
+        end
         perm_ind = randperm(size(data, 1));
-        randData1 = s.Value(ismember(trialID, perm_ind(group1_ind)), :);
-        randData2 = s.Value(ismember(trialID, perm_ind(group2_ind)), :);
+        randData1 = s.Value(ismember(trialID, data(perm_ind(group1_ind))), :);
+        randData2 = s.Value(ismember(trialID, data(perm_ind(group2_ind))), :);
         randDiff(level_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
     end
     for neuron_ind = 1:numNeurons,
         p(level_ind, neuron_ind) = (sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
         p(p == 0) = 1 / permutationParams.numRand;
         p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
+        p(isnan(obsDiff)) = NaN;
+        p(squeeze(all(isnan(randDiff), 2))) = NaN;
     end
     
 end
 
+fprintf('\nSaving... : %s\n', saveFileName);
 save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
     'neuronNames', 'avgFiringRate', 'permutationParams', 'neuronBrainArea', '-v7.3');
 

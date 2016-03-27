@@ -166,16 +166,16 @@ for level_ind = 1:numLevels,
     
     parfor rand_ind = 1:permutationParams.numRand,
         if (mod(rand_ind, 100) == 0)
-            fprintf('\t\tRand #%d...\n', sim_ind);
+            fprintf('\t\tRand #%d...\n', rand_ind);
         end
         
         orientationPerm_ind = randperm(size(orientationData, 1));
         colorPerm_ind = randperm(size(colorData, 1));
         
-        orientationRandData1 = s.Value(ismember(trialID, orientationPerm_ind(orientationGroup1_ind)), :);
-        orientationRandData2 = s.Value(ismember(trialID, orientationPerm_ind(orientationGroup2_ind)), :);
-        colorRandData1 = s.Value(ismember(trialID, colorPerm_ind(colorGroup1_ind)), :);
-        colorRandData2 = s.Value(ismember(trialID, colorPerm_ind(colorGroup2_ind)), :);
+        orientationRandData1 = s.Value(ismember(trialID, orientationData(orientationPerm_ind(orientationGroup1_ind))), :);
+        orientationRandData2 = s.Value(ismember(trialID, orientationData(orientationPerm_ind(orientationGroup2_ind))), :);
+        colorRandData1 = s.Value(ismember(trialID, colorData(colorPerm_ind(colorGroup1_ind))), :);
+        colorRandData2 = s.Value(ismember(trialID, colorData(colorPerm_ind(colorGroup2_ind))), :);
         
         randDiff(level_ind, rand_ind, :) = (1000 * (nanmean(orientationRandData1) - nanmean(colorRandData1))) - ...
             (1000 * (nanmean(orientationRandData2) - nanmean(colorRandData2)));
@@ -185,6 +185,8 @@ for level_ind = 1:numLevels,
         p(level_ind, neuron_ind) = (sum((randDiff(level_ind, :, neuron_ind)) >= (obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
         p(p == 0) = 1 / permutationParams.numRand;
         p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
+        p(isnan(obsDiff)) = NaN;
+        p(squeeze(all(isnan(randDiff), 2))) = NaN;
     end
     
 end
