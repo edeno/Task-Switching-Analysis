@@ -152,9 +152,8 @@ for level_ind = 1:numLevels,
     baselineLevelTrials_color = unique(trialID(baselineLevelColor_ind));
     baselineLevelTrials_orientation = unique(trialID(baselineLevelOrientation_ind));
     
-    obsDiff(level_ind, :) = (1000 * (nanmean(spikes(curLevelOrientation_ind, :)) - nanmean(spikes(curLevelColor_ind, :)))) - ...
-        (1000 * (nanmean(spikes(baselineLevelOrientation_ind, :)) - nanmean(spikes(baselineLevelColor_ind, :))));
-    
+    obsDiff(level_ind, :) = abs(1000 * (nanmean(spikes(curLevelOrientation_ind, :)) - nanmean(spikes(curLevelColor_ind, :)))) - ...
+        abs(1000 * (nanmean(spikes(baselineLevelOrientation_ind, :)) - nanmean(spikes(baselineLevelColor_ind, :))));
     
     orientationData = cat(1, curLevelTrials_orientation, baselineLevelTrials_orientation);
     orientationGroup1_ind = 1:length(curLevelTrials_orientation);
@@ -177,8 +176,8 @@ for level_ind = 1:numLevels,
         colorRandData1 = s.Value(ismember(trialID, colorData(colorPerm_ind(colorGroup1_ind))), :);
         colorRandData2 = s.Value(ismember(trialID, colorData(colorPerm_ind(colorGroup2_ind))), :);
         
-        randDiff(level_ind, rand_ind, :) = (1000 * (nanmean(orientationRandData1) - nanmean(colorRandData1))) - ...
-            (1000 * (nanmean(orientationRandData2) - nanmean(colorRandData2)));
+        randDiff(level_ind, rand_ind, :) = abs(1000 * (nanmean(orientationRandData1) - nanmean(colorRandData1))) - ...
+            abs(1000 * (nanmean(orientationRandData2) - nanmean(colorRandData2)));
     end
     for neuron_ind = 1:numNeurons,
         % Uppper tailed test
