@@ -11,7 +11,6 @@ for time_ind = 1:length(timePeriods),
     factors = {factors.name};
     factors = factors(~ismember(factors, {'.', '..'}));
     
-    
     for factor_ind = 1:length(factors),
         fileNames = dir(sprintf('%s/%s/*_permutationAnalysis.mat', permutationAnalysisDir, factors{factor_ind}));
         fileNames = {fileNames.name};
@@ -32,6 +31,7 @@ for time_ind = 1:length(timePeriods),
                     s.timePeriod = repmat(timePeriods(time_ind), [length(file.obsDiff(:, neuron_ind)), 1]);
                     s.brainArea = file.neuronBrainArea{neuron_ind};
                     s.monkeyName = file.monkeyName;
+                    s.neuronName = curNeuron;
                     permAnalysis(curNeuron) = s;
                 else
                     s = permAnalysis(curNeuron);
