@@ -93,6 +93,7 @@ numLevels = length(levelsID);
 
 randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
 obsDiff = nan(numLevels, numNeurons);
+obs = nan(numLevels+1, numNeurons);
 p = nan(numLevels, numNeurons);
 neuronNames = cell(numNeurons, 1);
 comparisonNames = cell(numLevels, 1);
@@ -152,8 +153,9 @@ for level_ind = 1:numLevels,
     baselineLevelTrials_color = unique(trialID(baselineLevelColor_ind));
     baselineLevelTrials_orientation = unique(trialID(baselineLevelOrientation_ind));
     
-    obsDiff(level_ind, :) = abs(1000 * (nanmean(spikes(curLevelOrientation_ind, :)) - nanmean(spikes(curLevelColor_ind, :)))) - ...
-        abs(1000 * (nanmean(spikes(baselineLevelOrientation_ind, :)) - nanmean(spikes(baselineLevelColor_ind, :))));
+    obs(level_ind, :) = 1000 * (nanmean(spikes(curLevelOrientation_ind, :)) - nanmean(spikes(curLevelColor_ind, :)));
+    obs(end, :) = 1000 * (nanmean(spikes(baselineLevelOrientation_ind, :)) - nanmean(spikes(baselineLevelColor_ind, :)));
+    obsDiff(level_ind, :) = abs(obs(level_ind, :)) - abs(obs(end, :));
     
     orientationData = cat(1, curLevelTrials_orientation, baselineLevelTrials_orientation);
     orientationGroup1_ind = 1:length(curLevelTrials_orientation);
@@ -191,7 +193,7 @@ for level_ind = 1:numLevels,
 end
 
 fprintf('\nSaving... : %s\n', saveFileName);
-save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
+save(saveFileName, 'obs', 'levels', 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
     'neuronNames', 'avgFiringRate', 'permutationParams', 'neuronBrainArea', '-v7.3');
 
 end

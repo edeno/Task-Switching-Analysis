@@ -93,6 +93,7 @@ numLevels = length(levelsID);
 
 randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
 obsDiff = nan(numLevels, numNeurons);
+obs = nan(numLevels+1, numNeurons);
 p = nan(numLevels, numNeurons);
 neuronNames = cell(numNeurons, 1);
 comparisonNames = cell(numLevels, 1);
@@ -128,7 +129,7 @@ else
 end
 
 %%
-
+obs(end, :) = nanmean(spikes(labels == baseline_ind, :)) * 1000;
 for level_ind = 1:numLevels,
     comparisonNames{level_ind} = sprintf('%s - %s', levels{levelsID(level_ind)}, baselineLevel);
     fprintf('\nComparison: %s\n', comparisonNames{level_ind});
@@ -137,7 +138,9 @@ for level_ind = 1:numLevels,
     data = cat(1, curLevelTrials, curBaselineTrials);
     group1_ind = 1:length(curLevelTrials);
     group2_ind = length(curLevelTrials)+1:size(data, 1);
-    obsDiff(level_ind, :) = 1000 * (nanmean(spikes(labels == levelsID(level_ind), :)) - nanmean(spikes(labels == baseline_ind, :)));
+    obs(level_ind, :) = nanmean(spikes(labels == levelsID(level_ind), :)) * 1000;
+    obsDiff(level_ind, :) = obs(level_ind, :) - obs(end, :);
+    
     parfor rand_ind = 1:permutationParams.numRand,
         if (mod(rand_ind, 100) == 0)
             fprintf('\t\tRand #%d...\n', rand_ind);
@@ -158,7 +161,7 @@ for level_ind = 1:numLevels,
 end
 
 fprintf('\nSaving... : %s\n', saveFileName);
-save(saveFileName, 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
+save(saveFileName, 'obs', 'levels', 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
     'neuronNames', 'avgFiringRate', 'permutationParams', 'neuronBrainArea', '-v7.3');
 
 end
