@@ -1,7 +1,7 @@
 clear variables;
 workingDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', workingDir), 'numTotalNeurons', 'sessionNames');
-timePeriods = {'Rule Stimulus', 'Stimulus Response'};
+timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Response'};
 permAnalysis = containers.Map;
 
 for time_ind = 1:length(timePeriods),
