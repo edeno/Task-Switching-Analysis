@@ -18,7 +18,7 @@ corrCI = 1.96 / sqrt(numSpikes);
 
 figure;
 subplot(2,3,1:2);
-uniqueFR = unique([gam.trialTime fR(:, neuronInd)], 'rows');
+uniqueFR = unique([gam.trialTime fR], 'rows');
 p  = plot(uniqueFR(:, 1), uniqueFR(:, 2), '.');
 box off;
 if max(uniqueFR(:, 2)) > 20,
