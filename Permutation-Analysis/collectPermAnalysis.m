@@ -23,6 +23,7 @@ for time_ind = 1:length(timePeriods),
                 curNeuron = file.neuronNames{neuron_ind};
                 if ~permAnalysis.isKey(curNeuron),
                     s = [];
+                    s.obs = file.obs(:, neuron_ind);
                     s.obsDiff = file.obsDiff(:, neuron_ind);
                     s.normObsDiff = file.obsDiff(:, neuron_ind) / file.avgFiringRate(neuron_ind);
                     s.avgFiringRate = file.avgFiringRate(neuron_ind);
@@ -35,6 +36,7 @@ for time_ind = 1:length(timePeriods),
                     permAnalysis(curNeuron) = s;
                 else
                     s = permAnalysis(curNeuron);
+                    s.obs = [s.obs; file.obs(:, neuron_ind)];
                     s.obsDiff = [s.obsDiff; file.obsDiff(:, neuron_ind)];
                     s.normObsDiff = [s.normObsDiff; file.obsDiff(:, neuron_ind) / file.avgFiringRate(neuron_ind)];
                     s.p = [s.p; file.p(:, neuron_ind)];
