@@ -1,40 +1,18 @@
-%% Convert Raster to JSON
-clear all; close all; clc;
-
-%% Setup
-main_dir = '/data/home/edeno/Task Switching Analysis';
-cd(main_dir);
-
-% Find Cluster
-jobMan = parcluster();
-
 % Load Common Parameters
-load('paramSet.mat', 'session_names', 'data_info', 'numSessions');
+workingDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', workingDir), 'sessionNames');
 
 %% Set Parameters
-% Overwrite?
-isOverwrite = true;
+saveDir = sprintf('%s/Figures/Entire Trial/Visualization Data/', workingDir);
 
-save_dir = sprintf('%s/Entire Trial/Visualization Data/', data_info.figure_dir);
-
-if ~exist(save_dir, 'dir'),
-    mkdir(save_dir);
+if ~exist(saveDir, 'dir'),
+    mkdir(saveDir);
 end
 
 %% Process Data
-rasterJob = cell(1, length(session_names));
 
 % Loop through files in the data directory
-for session_ind = 1:length(session_names),
-    
-    if exist(sprintf('%s/%s.json', save_dir, session_names{session_ind}), 'file') && ~isOverwrite,
-       continue;
-    end
-    
-    fprintf('\t...Session: %s\n', session_names{session_ind});
-    rasterJob{session_ind} = createCommunicatingJob(jobMan, 'AdditionalPaths', {data_info.script_dir, [data_info.script_dir, '/Helper Functions/jsonlab']}, 'AttachedFiles', ...
-        {which('saveMillerlab')}, 'NumWorkersRange', [12 12], 'Type', 'Pool');
-    
-    createTask(rasterJob{session_ind}, @convertSpikeFile_toJSON, 0, {session_names{session_ind}, save_dir});
-    submit(rasterJob{session_ind}); 
+for session_ind = 1:length(sessionNames),
+    fprintf('\nSession name: %s\n', sessionNames{session_ind});
+    convertSpikeFile_toJSON(sessionNames{session_ind}, saveDir)
 end
