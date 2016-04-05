@@ -23,15 +23,29 @@ behavior('Fixation Break') = behavior('Fixation Break') + 1;
 behavior('Included') = isIncluded + 1;
 
 s.levels = {'Incorrect', 'Correct', };
+s.isCategorical = true;
 covInfo('Correct') = s;
-s.levels = {'No Fixation Break', 'Fixation Break'};
+
+s.levels = {'Fixation Break', 'No Fixation Break'};
+s.isCategorical = true;
 covInfo('Fixation Break') = s;
+
 s.levels = {'Excluded', 'Included'};
+s.isCategorical = true;
 covInfo('Included') = s;
 
-names = {'Rule', 'Response Direction', 'Previous Error', 'Test Stimulus', ...
+s.levels = {'1 ms'};
+s.isCategorical = false;
+covInfo('Reaction Time') = s;
+
+covNames = {'Rule', 'Response Direction', 'Previous Error', 'Test Stimulus', ...
     'Rule Cues', 'Rule Cue Switch', 'Rule Repetition', 'Included', 'Correct', ...
-    'Fixation Break', 'Preparation Time'};
+    'Fixation Break', 'Preparation Time', 'Congruency', 'Reaction Time'};
+cov = cell(size(covNames));
+
+for n = 1:length(covNames),
+    cov{n} = convertCov(covNames{n}, covInfo, behavior);
+end
 
 fixOn_time = behavior('Intertrial Interval Time');
 ruleOn_time = fixOn_time + behavior('Fixation Accquired Time') + behavior('Fixation Time'); % Fix spot on + fix spot accquired + fixation time
@@ -42,8 +56,7 @@ reward_time = react_time + behavior('Saccade Fixation Time');
 fixBreaks = behavior('Fixation Break');
 
 parfor trial_ind = 1:numTrials,
-    
-    cur_trial = ismember(trial_id, trialNum(trial_ind));
+    cur_trial = ismember(trialID, trialNum(trial_ind));
     trials(trial_ind).trial_id = trialNum(trial_ind);
     
     if fixBreaks(trialNum(trial_ind))== 1 && ~isnan(react_time(trialNum(trial_ind))),
@@ -64,20 +77,19 @@ parfor trial_ind = 1:numTrials,
         trials(trial_ind).end_time = NaN;
     end
     
-    trials(trial_ind).Rule = Rule{trialNum(trial_ind)};
-    trials(trial_ind).Rule_Repetition = Rule_Repetition{trialNum(trial_ind)};
-    trials(trial_ind).Response_Direction = Response_Direction{trialNum(trial_ind)};
-    trials(trial_ind).Current_Congruency = Current_Congruency{trialNum(trial_ind)};
-    trials(trial_ind).Previous_Congruency = Previous_Congruency{trialNum(trial_ind)};
-    trials(trial_ind).Preparation_Time = Preparation_Time(trialNum(trial_ind));
-    trials(trial_ind).Previous_Error = Previous_Error{trialNum(trial_ind)};
-    trials(trial_ind).Test_Stimulus = Test_Stimulus{trialNum(trial_ind)};
-    trials(trial_ind).Rule_Cues = Rule_Cues{trialNum(trial_ind)};
-    trials(trial_ind).Rule_Cue_Repetition = Rule_Cue_Repetition{trialNum(trial_ind)};
-    trials(trial_ind).isCorrect = isCorrect{trialNum(trial_ind)};
-    trials(trial_ind).isIncluded = isIncluded{trialNum(trial_ind)};
-    trials(trial_ind).Fixation_Break = fixationBreak{trialNum(trial_ind)};
-    trials(trial_ind).Reaction_Time = behavior.Reaction_Time(trialNum(trial_ind));
+    trials(trial_ind).Rule = cov{ismember(covNames, 'Rule')}{trialNum(trial_ind)};
+    trials(trial_ind).Rule_Repetition = cov{ismember(covNames, 'Rule Repetition')}{trialNum(trial_ind)};
+    trials(trial_ind).Response_Direction = cov{ismember(covNames, 'Response Direction')}{trialNum(trial_ind)};
+    trials(trial_ind).Congruency = cov{ismember(covNames, 'Congruency')}{trialNum(trial_ind)};
+    trials(trial_ind).Preparation_Time = cov{ismember(covNames, 'Preparation Time')}(trialNum(trial_ind));
+    trials(trial_ind).Previous_Error = cov{ismember(covNames, 'Previous Error')}{trialNum(trial_ind)};
+    trials(trial_ind).Test_Stimulus = cov{ismember(covNames, 'Test Stimulus')}{trialNum(trial_ind)};
+    trials(trial_ind).Rule_Cues = cov{ismember(covNames, 'Rule Cues')}{trialNum(trial_ind)};
+    trials(trial_ind).Rule_Cue_Repetition = cov{ismember(covNames, 'Rule Cue Switch')}{trialNum(trial_ind)};
+    trials(trial_ind).isCorrect = cov{ismember(covNames, 'Correct')}{trialNum(trial_ind)};
+    trials(trial_ind).isIncluded = cov{ismember(covNames, 'Included')}{trialNum(trial_ind)};
+    trials(trial_ind).Fixation_Break = cov{ismember(covNames, 'Fixation Break')}{trialNum(trial_ind)};
+    trials(trial_ind).Reaction_Time = cov{ismember(covNames, 'Reaction Time')}(trialNum(trial_ind));
     
 end
 
@@ -93,13 +105,13 @@ savejson('', trials, opt);
 for neuron_ind = 1:numNeurons,
     neuron = struct(...
         'Name', sprintf('%s_%d_%d', sessionName, wire_number(neuron_ind), unit_number(neuron_ind)), ...
-        'Brain_Area', area_names{pfc(neuron_ind)+1}, ...
+        'Brain_Area', neuronBrainArea(neuron_ind), ...
         'Subject', monkeyName, ...
         'Recording_Session', sessionName);
     
     for trial_ind = 1:numTrials,
-        cur_trial = ismember(trial_id, trialNum(trial_ind));
-        neuron.Spikes(trial_ind).trial_id = trialNum(trial_ind);
+        cur_trial = ismember(trialID, trialNum(trial_ind));
+        neuron.Spikes(trial_ind).trialID = trialNum(trial_ind);
         
         cur_spikes = spikes(cur_trial, neuron_ind);
         cur_spikes(isnan(cur_spikes)) = 0;
@@ -130,10 +142,12 @@ covIndex = behavior(covName);
 % Handle NaN conditions - Set NaN to 1, then fix later
 isNaN_cond = isnan(behavior('Condition'));
 covIndex(isNaN_cond) = 1;
-if covInfo('Rule').isCategorical,
+if covInfo(covName).isCategorical,
     cov = covInfo(covName).levels(behavior(covName))';
+    cov(isNaN_cond) = {NaN};
 else
     cov = behavior(covName)';
+    cov(isNaN_cond) = NaN;
 end
-cov(isNaN_cond) = {NaN};
+
 end
