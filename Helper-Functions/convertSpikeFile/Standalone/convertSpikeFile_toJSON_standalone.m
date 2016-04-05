@@ -6,6 +6,9 @@ fprintf('\nMatlab\n')
 fprintf('---------\n')
 fprintf('Session_ind: %s\n', session_ind);
 
+% Numbers are passed as strings. Need to convert to correct type
+session_ind = str2double(session_ind);
+
 %% Validate Parameters
 workingDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', workingDir), 'sessionNames');
