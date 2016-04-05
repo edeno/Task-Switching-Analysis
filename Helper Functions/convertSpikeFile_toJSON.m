@@ -4,9 +4,10 @@ workingDir = getWorkingDir();
 sessionFile = sprintf('%s/Processed Data/Entire Trial/SpikeCov/%s_SpikeCov.mat', workingDir, sessionName);
 behaviorFile = sprintf('%s/Behavior/behavior.mat', workingDir);
 paramSetFile = sprintf('%s/paramSet.mat', workingDir);
-load(sessionFile);
-load(behaviorFile);
-load(paramSetFile);
+load(sessionFile, 'spikes', 'trialID', 'spikeCov', 'trialTime', 'numNeurons',...
+    'wire_number', 'unit_number', 'neuronBrainArea');
+load(behaviorFile, 'behavior');
+load(paramSetFile, 'sessionNames', 'covInfo');
 
 behavior = behavior{ismember(sessionNames, sessionName)};
 
@@ -54,6 +55,9 @@ react_time = stimOn_time + behavior('Reaction Time');
 reward_time = react_time + behavior('Saccade Fixation Time');
 
 fixBreaks = behavior('Fixation Break');
+trialID = trialID;
+trialTime = trialTime;
+spikes = spikes;
 
 parfor trial_ind = 1:numTrials,
     cur_trial = ismember(trialID, trialNum(trial_ind));
@@ -109,9 +113,9 @@ for neuron_ind = 1:numNeurons,
         'Subject', monkeyName, ...
         'Recording_Session', sessionName);
     
-    for trial_ind = 1:numTrials,
+    parfor trial_ind = 1:numTrials,
         cur_trial = ismember(trialID, trialNum(trial_ind));
-        neuron.Spikes(trial_ind).trialID = trialNum(trial_ind);
+        trialSpikes(trial_ind).trialID = trialNum(trial_ind);
         
         cur_spikes = spikes(cur_trial, neuron_ind);
         cur_spikes(isnan(cur_spikes)) = 0;
@@ -120,19 +124,19 @@ for neuron_ind = 1:numNeurons,
             spike_times = cur_time(logical(cur_spikes))';
             if length(spike_times) == 1,
                 % Stupid hack to force the spikes to be an array.
-                neuron.Spikes(trial_ind).spikes = [spike_times spike_times];
+                trialSpikes(trial_ind).spikes = [spike_times spike_times];
             else
-                neuron.Spikes(trial_ind).spikes = spike_times;
+                trialSpikes(trial_ind).spikes = spike_times;
             end
         else
-            neuron.Spikes(trial_ind).spikes = [];
+            trialSpikes(trial_ind).spikes = [];
         end
     end
+    neuron.Spikes = trialSpikes;
     
     opt.FileName = ['Neuron_', neuron.Name,'.json'];
     savejson('', neuron, opt);
     
-    clear neuron
 end
 end
 
