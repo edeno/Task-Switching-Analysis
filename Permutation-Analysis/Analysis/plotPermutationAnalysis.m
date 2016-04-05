@@ -25,7 +25,7 @@ for area_ind = 1:length(brainAreas),
     sig_ind = h(comparison_ind, :);
     
     subplot(6,2, 1 + (area_ind - 1));
-    hist(obsDiff(comparison_ind, neuron_ind), 50);
+    histogram(obsDiff(comparison_ind, neuron_ind), 'BinWidth', 0.5);
     meanObsDiff = mean(obsDiff(comparison_ind, neuron_ind), 2);
     vline(meanObsDiff, 'Label', sprintf('%.2f', meanObsDiff))
     xlabel({'Raw Difference','(Spikes / s)'});
@@ -36,31 +36,31 @@ for area_ind = 1:length(brainAreas),
     title(titleName);
     
     subplot(6,2, 3 + (area_ind - 1));
-    hist(abs(obsDiff(comparison_ind, neuron_ind)), 50);
+    histogram(abs(obsDiff(comparison_ind, neuron_ind)), 'BinWidth', 0.5);
     meanAbsObsDiff = mean(abs(obsDiff(comparison_ind, neuron_ind)), 2);
     vline(meanAbsObsDiff, 'Label', sprintf('%.2f', meanAbsObsDiff));
     xlabel({'Abs. Raw Difference','(Spikes / s)'});
     
     subplot(6,2, 5 + (area_ind - 1));
-    hist(normObsDiff(comparison_ind, neuron_ind), 50);
+    histogram(normObsDiff(comparison_ind, neuron_ind), 'BinWidth', 0.1);
     meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind), 2);
     vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
     xlabel({'Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 7 + (area_ind - 1));
-    hist(abs(normObsDiff(comparison_ind, neuron_ind)), 50);
+    histogram(abs(normObsDiff(comparison_ind, neuron_ind)), 'BinWidth', 0.1);
     meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind)), 2);
     vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
     xlabel({'Abs. Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 9 + (area_ind - 1));
-    hist(normObsDiff(comparison_ind, neuron_ind & sig_ind), 50);
+    histogram(normObsDiff(comparison_ind, neuron_ind & sig_ind), 'BinWidth', 0.1);
     meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind & sig_ind), 2);
     vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
     xlabel({'Sig. Only, Norm. Difference','(by Average Firing Rate)'});
     
     subplot(6,2, 11 + (area_ind - 1));
-    hist(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 50);
+    histogram(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 'BinWidth', 0.1);
     meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 2);
     vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
     xlabel({'Sig. Only, Abs. Norm. Difference','(by Average Firing Rate)'});
@@ -77,7 +77,7 @@ for monkey_ind = 1:length(monkeyNames),
         sig_ind = h(comparison_ind, :);
         
         subplot(6,2, 1 + (area_ind - 1));
-        hist(obsDiff(comparison_ind, neuron_ind), 50);
+        histogram(obsDiff(comparison_ind, neuron_ind), 'BinWidth', 0.5);
         meanObsDiff = mean(obsDiff(comparison_ind, neuron_ind), 2);
         vline(meanObsDiff, 'Label', sprintf('%.2f', meanObsDiff))
         xlabel({'Raw Difference','(Spikes / s)'});
@@ -88,31 +88,31 @@ for monkey_ind = 1:length(monkeyNames),
         title(titleName);
         
         subplot(6,2, 3 + (area_ind - 1));
-        hist(abs(obsDiff(comparison_ind, neuron_ind)), 50);
+        histogram(abs(obsDiff(comparison_ind, neuron_ind)), 'BinWidth', 0.5);
         meanAbsObsDiff = mean(abs(obsDiff(comparison_ind, neuron_ind)), 2);
         vline(meanAbsObsDiff, 'Label', sprintf('%.2f', meanAbsObsDiff));
         xlabel({'Abs. Raw Difference','(Spikes / s)'});
         
         subplot(6,2, 5 + (area_ind - 1));
-        hist(normObsDiff(comparison_ind, neuron_ind), 50);
+        histogram(normObsDiff(comparison_ind, neuron_ind), 'BinWidth', 0.1);
         meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind), 2);
         vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
         xlabel({'Norm. Difference','(by Average Firing Rate)'});
         
         subplot(6,2, 7 + (area_ind - 1));
-        hist(abs(normObsDiff(comparison_ind, neuron_ind)), 50);
+        histogram(abs(normObsDiff(comparison_ind, neuron_ind)), 'BinWidth', 0.1);
         meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind)), 2);
         vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
         xlabel({'Abs. Norm. Difference','(by Average Firing Rate)'});
         
         subplot(6,2, 9 + (area_ind - 1));
-        hist(normObsDiff(comparison_ind, neuron_ind & sig_ind), 50);
+        histogram(normObsDiff(comparison_ind, neuron_ind & sig_ind), 'BinWidth', 0.1);
         meanNormObsDiff = mean(normObsDiff(comparison_ind, neuron_ind & sig_ind), 2);
         vline(meanNormObsDiff, 'Label', sprintf('%.2f', meanNormObsDiff))
         xlabel({'Sig. Only, Norm. Difference','(by Average Firing Rate)'});
         
         subplot(6,2, 11 + (area_ind - 1));
-        hist(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 50);
+        histogram(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 'BinWidth', 0.1);
         meanAbsNormObsDiff = mean(abs(normObsDiff(comparison_ind, neuron_ind & sig_ind)), 2);
         vline(meanAbsNormObsDiff, 'Label', sprintf('%.2f', meanAbsNormObsDiff));
         xlabel({'Sig. Only, Abs. Norm. Difference','(by Average Firing Rate)'});
@@ -129,21 +129,21 @@ end
 %
 %     subplot(3, 2, 1 + (area_ind - 1));
 %     neuron_ind = filterArea(brainAreas{area_ind});
-%     hist(avgFiringRate(neuron_ind), 50);
+%     histogram(avgFiringRate(neuron_ind), 'BinWidth', 0.5);
 %     vline(quantile(avgFiringRate(neuron_ind), [.25 .5 .75]))
 %     xlim([0 max(avgFiringRate)])
 %     title(brainAreas{area_ind});
 %
 %     subplot(3, 2, 3 + (area_ind - 1));
 %     neuron_ind = filterArea(brainAreas{area_ind}) & filterMonkey(monkeyNames{1});
-%     hist(avgFiringRate(neuron_ind), 50);
+%     histogram(avgFiringRate(neuron_ind), 'BinWidth', 0.5);
 %     vline(quantile(avgFiringRate(neuron_ind), [.25 .5 .75]))
 %     xlim([0 max(avgFiringRate)])
 %     title(monkeyNames{1});
 %
 %     subplot(3, 2, 5 + (area_ind - 1));
 %     neuron_ind = filterArea(brainAreas{area_ind}) & filterMonkey(monkeyNames{2});
-%     hist(avgFiringRate(neuron_ind), 50);
+%     histogram(avgFiringRate(neuron_ind), 'BinWidth', 0.5);
 %     vline(quantile(avgFiringRate(neuron_ind), [.25 .5 .75]))
 %     xlim([0 max(avgFiringRate)])
 %     title(monkeyNames{2});
