@@ -97,7 +97,6 @@ behaviorData('Fixation Time') = findTimeDiff(encodeMap('Fixation'));
 behaviorData('Preparation Time') = findTimeDiff(encodeMap('Rule Stimulus'));
 behaviorData('Reaction Time') = findTimeDiff({trialInfo('Test Stimulus ON Encode'), trialInfo('Saccade START Encode')});
 behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
-behaviorData('Saccade Fixation Time') = findTimeDiff(encodeMap('Saccade'));
 behaviorData('Reward Time') = findTimeDiff(encodeMap('Reward'));
 behaviorData('Trial Number') = [1:numtrials]';
 
@@ -187,7 +186,7 @@ behaviorData('Attempted') = ismember([trials.ResponseError], [trialInfo('Correct
     & behaviorData('Reaction Time') > reactBounds(1) ...
     & behaviorData('Reaction Time') < reactBounds(2);
 %% Fixation Breaks
-behaviorData('Fixation Break') = ~ismember([trials.ResponseError], trialInfo('Fixation Break'))';
+behaviorData('Fixation Break') = ismember([trials.ResponseError], trialInfo('Fixation Break'))';
 %% Consistent Attempt
 behaviorData('Consistent Attempt') = behaviorData('Consistent') & ...
     behaviorData('Attempted');
