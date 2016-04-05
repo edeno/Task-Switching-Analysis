@@ -59,7 +59,7 @@ parfor trial_ind = 1:numTrials,
     cur_trial = ismember(trialID, trialNum(trial_ind));
     trials(trial_ind).trial_id = trialNum(trial_ind);
     
-    if fixBreaks(trialNum(trial_ind))== 1 && ~isnan(react_time(trialNum(trial_ind))),
+    if fixBreaks(trialNum(trial_ind)) == 2 && ~isnan(react_time(trialNum(trial_ind))),
         trials(trial_ind).start_time = min(trialTime(cur_trial));
         trials(trial_ind).fixation_onset = fixOn_time(trialNum(trial_ind));
         trials(trial_ind).rule_onset = ruleOn_time(trialNum(trial_ind));
@@ -116,7 +116,7 @@ for neuron_ind = 1:numNeurons,
         cur_spikes = spikes(cur_trial, neuron_ind);
         cur_spikes(isnan(cur_spikes)) = 0;
         cur_time = trialTime(cur_trial);
-        if ~behavior.Fixation_Break(trialNum(trial_ind)) && ~isnan(react_time(trialNum(trial_ind))),
+        if fixBreaks(trialNum(trial_ind)) == 2 && ~isnan(react_time(trialNum(trial_ind))),
             spike_times = cur_time(logical(cur_spikes))';
             if length(spike_times) == 1,
                 % Stupid hack to force the spikes to be an array.
