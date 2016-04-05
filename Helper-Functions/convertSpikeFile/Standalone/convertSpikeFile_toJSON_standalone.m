@@ -22,6 +22,7 @@ end
 
 numCores = 12;
 parpool(myCluster, numCores);
+fprintf('Session Name: %s\n', sessionNames{session_ind});
 convertSpikeFile_toJSON(sessionNames{session_ind}, saveDir);
 exit;
 end
