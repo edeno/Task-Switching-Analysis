@@ -89,41 +89,37 @@ trialInfo.experimentalFactor(4).name = 'Number of Rule Repetitions (# of trials)
 trialInfo.experimentalFactor(4).factorType = 'ordinal';
 trialInfo.experimentalFactor(4).value = 'Rule_Repetition';
 
-trialInfo.experimentalFactor(5).name = 'Current Trial Congruency';
+trialInfo.experimentalFactor(5).name = 'Congruency';
 trialInfo.experimentalFactor(5).factorType = 'categorical';
-trialInfo.experimentalFactor(5).value = 'Current_Congruency';
+trialInfo.experimentalFactor(5).value = 'Congruency';
 
-trialInfo.experimentalFactor(6).name = 'Previous Trial Congruency';
-trialInfo.experimentalFactor(6).factorType = 'categorical';
-trialInfo.experimentalFactor(6).value = 'Previous_Congruency';
+trialInfo.experimentalFactor(6).name = 'Preparation Time before Stimulus Onset (ms)';
+trialInfo.experimentalFactor(6).factorType = 'continuous';
+trialInfo.experimentalFactor(6).value = 'Preparation_Time';
 
-trialInfo.experimentalFactor(7).name = 'Preparation Time before Stimulus Onset (ms)';
-trialInfo.experimentalFactor(7).factorType = 'continuous';
-trialInfo.experimentalFactor(7).value = 'Preparation_Time';
+trialInfo.experimentalFactor(7).name = 'Response Direction (Left vs. Right Saccade)';
+trialInfo.experimentalFactor(7).factorType = 'categorical';
+trialInfo.experimentalFactor(7).value = 'Response_Direction';
 
-trialInfo.experimentalFactor(8).name = 'Response Direction (Left vs. Right Saccade)';
-trialInfo.experimentalFactor(8).factorType = 'categorical';
-trialInfo.experimentalFactor(8).value = 'Response_Direction';
+trialInfo.experimentalFactor(8).name = 'Response Time (ms)';
+trialInfo.experimentalFactor(8).factorType = 'continuous';
+trialInfo.experimentalFactor(8).value = 'Reaction_Time';
 
-trialInfo.experimentalFactor(9).name = 'Response Time (ms)';
-trialInfo.experimentalFactor(9).factorType = 'continuous';
-trialInfo.experimentalFactor(9).value = 'Reaction_Time';
+trialInfo.experimentalFactor(9).name = 'Test Stimulus Cue';
+trialInfo.experimentalFactor(9).factorType = 'categorical';
+trialInfo.experimentalFactor(9).value = 'Test_Stimulus';
 
-trialInfo.experimentalFactor(10).name = 'Test Stimulus Cue';
+trialInfo.experimentalFactor(10).name = 'Rule Cues';
 trialInfo.experimentalFactor(10).factorType = 'categorical';
-trialInfo.experimentalFactor(10).value = 'Test_Stimulus';
+trialInfo.experimentalFactor(10).value = 'Rule_Cues';
 
-trialInfo.experimentalFactor(11).name = 'Rule Cues';
-trialInfo.experimentalFactor(11).factorType = 'categorical';
-trialInfo.experimentalFactor(11).value = 'Rule_Cues';
+trialInfo.experimentalFactor(11).name = 'Rule Cue Repetition';
+trialInfo.experimentalFactor(11).factorType = 'ordinal';
+trialInfo.experimentalFactor(11).value = 'Rule_Cue_Repetition';
 
-trialInfo.experimentalFactor(12).name = 'Rule Cue Repetition';
-trialInfo.experimentalFactor(12).factorType = 'ordinal';
-trialInfo.experimentalFactor(12).value = 'Rule_Cue_Repetition';
-
-trialInfo.experimentalFactor(13).name = 'Correct/Incorrect';
-trialInfo.experimentalFactor(13).factorType = 'categorical';
-trialInfo.experimentalFactor(13).value = 'isCorrect';
+trialInfo.experimentalFactor(12).name = 'Correct/Incorrect';
+trialInfo.experimentalFactor(12).factorType = 'categorical';
+trialInfo.experimentalFactor(12).value = 'isCorrect';
 %%
 save_dir = sprintf('%sFigures/Entire Trial/', main_dir);
 opt.FileName = 'trialInfo.json';
