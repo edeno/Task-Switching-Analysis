@@ -1,4 +1,4 @@
-function [plotHandles, parameterEstAll, dev, stats] = plotBehaviorCorrectMultiples(model, varargin)
+function [plotHandles, parameterEstAll, dev, stats, gam] = plotBehaviorCorrectMultiples(model, varargin)
 
 main_dir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', main_dir), 'covInfo');
@@ -71,9 +71,8 @@ for plot_ind = 1:length(covNames)
         plotHandles{plot_ind}.EdgeColor = params.Color;
         if ~verLessThan('matlab', '8.5.1'),
             plotHandles{plot_ind}.LineWidth = 4; % Only works for matlab 2015b
+            plotHandles{plot_ind}.EdgeAlpha = 0.9;
         end
-        plotHandles{plot_ind}.EdgeAlpha = 0.9;
-        plotHandles{plot_ind}.LineWidth = 3;
         vline(nanmean(correct), 'Color', params.Color, 'LineType', '-', 'LineWidth', 1);
         ylabel('Probability');
         xlim([0 1]);
@@ -89,7 +88,7 @@ for plot_ind = 1:length(covNames)
             % NOTE: Only really handles a single interaction.
             for level1_ind = 1:length(curLevels{1}),
                 y_all = nan(size(curLevels{2}));
-                 y_se = nan(length(curLevels{2}), 2);
+                y_se = nan(length(curLevels{2}), 2);
                 for level2_ind = 1:length(curLevels{2}),
                     possibleLevels = [
                         curLevels{1}(level1_ind), ...
@@ -123,7 +122,9 @@ for plot_ind = 1:length(covNames)
                 hold all;
             else
                 s  = scatter(0.9 + 0.2 * rand(numSessions,1), parameterEstBySession(:, level_ind), 40, params.Color, 'filled');
-                alpha(s, transparency);
+                if ~verLessThan('matlab', '8.5.1'),
+                    alpha(s, transparency);
+                end
                 hold all;
                 plotHandles{plot_ind} = scatter(1, parameterEstAll(level_ind), 120, params.Color, 'filled');
             end
@@ -149,7 +150,7 @@ for plot_ind = 1:length(covNames)
         slowerTextHandle.Color = [153, 153, 153] / 255;
         slowerTextHandle.VerticalAlignment = 'top';
         title(covNames{plot_ind});
-        hline(0, 'k');
+        hline(0, 'Color', 'black');
         ylabel('Change from Baseline (%)');
         hold all;
         box off;
