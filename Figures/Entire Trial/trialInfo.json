@@ -3517,14 +3517,9 @@
 			"value": "Rule_Repetition"
 		},
 		{
-			"name": "Current Trial Congruency",
+			"name": "Congruency",
 			"factorType": "categorical",
-			"value": "Current_Congruency"
-		},
-		{
-			"name": "Previous Trial Congruency",
-			"factorType": "categorical",
-			"value": "Previous_Congruency"
+			"value": "Congruency"
 		},
 		{
 			"name": "Preparation Time before Stimulus Onset (ms)",
