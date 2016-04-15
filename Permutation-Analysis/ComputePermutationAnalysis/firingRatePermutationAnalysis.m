@@ -149,7 +149,7 @@ for hist_ind = 1:numHist,
         obs(level_ind, hist_ind, :) = nanmean(spikes(labels(:, hist_ind) == levelsID(level_ind), :)) * 1000;
         obsDiff(level_ind, hist_ind, :) = obs(level_ind, hist_ind, :) - obs(end, hist_ind, :);
         
-        for rand_ind = 1:permutationParams.numRand,
+        parfor rand_ind = 1:permutationParams.numRand,
             if (mod(rand_ind, 100) == 0)
                 fprintf('\t\tRand #%d...\n', rand_ind);
             end
