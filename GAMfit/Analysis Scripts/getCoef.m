@@ -1,4 +1,4 @@
-function [parEst, gam, neuronNames, neuronBrainAreas, p] = getCoef(modelName, timePeriod, varargin)
+function [parEst, gam, neuronNames, neuronBrainAreas, p, h] = getCoef(modelName, timePeriod, varargin)
 
 inParser = inputParser;
 inParser.addRequired('modelName', @ischar);
@@ -43,5 +43,15 @@ for file_ind = 1:length(neuronFiles),
     end
     p(file_ind, :) = file.stat.p;
 end
+
+alpha = 0.05;
+sortedP = sort(p(:));
+numP = length(p(:));
+
+thresholdLine = ([1:numP]' / numP) * alpha;
+threshold_ind = find(sortedP <= thresholdLine, 1, 'last');
+threshold = sortedP(threshold_ind);
+
+h = p < threshold;
 
 end
