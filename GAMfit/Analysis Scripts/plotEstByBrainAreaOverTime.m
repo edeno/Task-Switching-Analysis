@@ -49,12 +49,15 @@ end
 end
 
 function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
-[parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject);
+[parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
 
 numLevels = length(gam.levelNames);
 
-bad_ind = (exp(parEst(:, 1, :)) * 1000) <  0.5; % exclude neurons with < 0.5 Hz firing rate
-bad_ind = repmat(bad_ind, [1, numLevels, 1]);
+bad_ind = (exp(mean(parEst(:, 1, :), 3)) * 1000) <  0.5 | (exp(mean(parEst(:, 1, :), 3)) * 1000) > 1E3; % exclude neurons with < 0.5 Hz firing rate
+bad_ind = repmat(bad_ind, [1, numLevels, size(parEst, 3)]);
+% bad_ind = abs(parEst) > 10; 
+% bad_ind(:, 1, :) = false; 
+
 parEst(bad_ind) = NaN;
 if params.onlySig,
     h = repmat(h, [1 1 size(parEst, 3)]);
@@ -157,10 +160,8 @@ for cov_ind = 1:length(uniqueCovNames),
     if cov_ind ~= 1,
         set(gca, 'YTickLabel', []);
     else
-        ylabel('Percent Significant')
+        ylabel('Percentage of Significant Neurons')
     end
-    
-    set(gca, 'FontSize', 8);
 end
 
 end
