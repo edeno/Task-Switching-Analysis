@@ -1,10 +1,9 @@
 #!/bin/sh
-modelList[0]="Rule * Previous Error + Response Direction + Rule * Rule Repetition + Congruency"
-modelList[1]="s(Rule * Previous Error, Trial Time, knotDiff=50) + s(Response Direction, Trial Time, knotDiff=50) + s(Rule * Rule Repetition, Trial Time, knotDiff=50) + s(Congruency, Trial Time, knotDiff=50)"
+modelList[0]="Rule * Previous Error History + Session Time"
+modelList[1]="Rule * Previous Error History"
 
 numFiles=34;
-# Time Period: Rule Response
-timeperiod="Rule Response"
+timeperiod="Intertrial Interval"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
 
 for (( i = 0; i < ${#modelList[@]}; i++ ))
@@ -15,7 +14,7 @@ do
   export CURMODEL="$curModel";
   modelCmd="gamParams.timePeriod = '$timeperiod'; \
   gamParams.regressionModel_str = getenv('CURMODEL'); \
-  addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper Functions'); \
+  addpath('/projectnb/pfc-rule/Task-Switching-Analysis/Helper-Functions'); \
   updateModelList(gamParams); exit;"
 
   matlab -nodisplay -r "$modelCmd"
@@ -25,13 +24,14 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N GAMfit \
-       -l h_rt=96:00:00 \
-       -l mem_total=125G \
+       -l h_rt=1:00:00 \
+       -l mem_total=24G \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
-       -v INCLUDETIMEBEFOREZERO="1" \
+       -v INCLUDETIMEBEFOREZERO="0" \
        -v OVERWRITE="0" \
        -v SMOOTHLAMBDA="10.^(-2)" \
-       -v NUMCORES="2" \
+       -v RIDGELAMBDA="0" \
+       -v NUMCORES="12" \
        ./runGAMCluster2015a.sh;
 done

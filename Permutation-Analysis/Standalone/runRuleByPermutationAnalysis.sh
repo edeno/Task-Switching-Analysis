@@ -1,9 +1,9 @@
 #!/bin/sh
 factorList[0]="Previous Error"
-factorList[1]="Rule Repetition"
+factorList[0]="Rule Repetition"
 numFiles=34;
 # Time Period
-timeperiod="Rule Stimulus"
+timeperiod="Saccade"
 printf "\n\nProcessing Time Period: %s \n" "$timeperiod"
 
 for (( i = 0; i < ${#factorList[@]}; i++ ))
@@ -15,11 +15,12 @@ do
   # Submit Cluster Jobs
   qsub -t "1-$numFiles" \
        -N "RuleByPerm_$curFactor" \
-       -l h_rt=2:00:00 \
+       -l h_rt=1:00:00 \
        -l mem_total=24G \
        -v TIMEPERIOD="$timeperiod" \
        -v COVARIATEOFINTEREST="$curFactor" \
        -v NUMCORES="12" \
        -v NUMRAND="10000" \
+       -v OVERWRITE="1" \
        ./runComputeRuleByPermutationAnalysisExec2015a.sh;
 done
