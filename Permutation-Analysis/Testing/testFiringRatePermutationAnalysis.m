@@ -18,21 +18,21 @@ orientRate = 1.05;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[~, p_small, obs_small, randDiff_small] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate);
+[~, p_small, obs_small, randDiff_small] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate, 'numCores', 0);
 
 colorRate = 5;
 orientRate = 1;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[~, p_large, obs_large, randDiff_large] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate);
+[~, p_large, obs_large, randDiff_large] = testFiringRatePermutationAnalysis_wrapper('Rule', trueRate, 'numCores', 0);
 
 colorRate = 5;
 orientRate = 1;
 trueRate(level_ind('Rule', 'Color')) = colorRate;
 trueRate(level_ind('Rule', 'Orientation')) = orientRate;
 
-[ ~, p_wrong, obs_wrong, randDiff_wrong] = testFiringRatePermutationAnalysis_wrapper('Rule Repetition', trueRate);
+[ ~, p_wrong, obs_wrong, randDiff_wrong] = testFiringRatePermutationAnalysis_wrapper('Rule Repetition', trueRate, 'numCores', 0);
 %%
 figure;
 subplot(3,2,1);
@@ -59,3 +59,7 @@ subplot(3,2,5);
 hist(squeeze(randDiff_wrong(3,:)), 50);
 vline(obs_wrong(3));
 title(sprintf('p-value: %.3f', p_wrong(3)));
+subplot(3,2,6);
+hist(squeeze(randDiff_wrong(4,:)), 50);
+vline(obs_wrong(4));
+title(sprintf('p-value: %.3f', p_wrong(4)));
