@@ -84,19 +84,26 @@ if ~permutationParams.includeFixationBreaks
 end
 
 labels = spikeCov(permutationParams.covariateOfInterest);
+numHist = size(labels, 2);
 levels = covInfo(permutationParams.covariateOfInterest).levels;
+levels = reshape(levels, [], numHist);
 baselineLevel = covInfo(permutationParams.covariateOfInterest).baselineLevel;
-baseline_ind = find(ismember(levels, baselineLevel));
-levelsID = 1:length(levels);
+if ~iscell(baselineLevel),
+    baselineLevel = {baselineLevel};
+end
+baselineLevel = reshape(baselineLevel, [], numHist);
+[baseline_ind, ~] = find(ismember(levels, baselineLevel));
+baseline_ind = unique(baseline_ind);
+levelsID = 1:size(levels, 1);
 levelsID(baseline_ind) = [];
 numLevels = length(levelsID);
 
-randDiff = nan(numLevels, permutationParams.numRand, numNeurons);
-obsDiff = nan(numLevels, numNeurons);
-obs = nan(numLevels+1, numNeurons);
-p = nan(numLevels, numNeurons);
+randDiff = nan(numLevels, numHist, permutationParams.numRand, numNeurons);
+obsDiff = nan(numLevels, numHist, numNeurons);
+obs = nan(numLevels + 1, numHist, numNeurons);
+p = nan(numLevels, numHist, numNeurons);
 neuronNames = cell(numNeurons, 1);
-comparisonNames = cell(numLevels, 1);
+comparisonNames = cell(numLevels, numHist, 1);
 
 for neuron_ind = 1:numNeurons,
     neuronNames{neuron_ind} = sprintf('%s-%d-%d', sessionName, wireNumber{neuron_ind}, unitNumber{neuron_ind});
@@ -129,36 +136,49 @@ else
 end
 
 %%
-obs(end, :) = nanmean(spikes(labels == baseline_ind, :)) * 1000;
-for level_ind = 1:numLevels,
-    comparisonNames{level_ind} = sprintf('%s - %s', levels{levelsID(level_ind)}, baselineLevel);
-    fprintf('\nComparison: %s\n', comparisonNames{level_ind});
-    curLevelTrials = unique(trialID(labels == levelsID(level_ind)));
-    curBaselineTrials = unique(trialID(labels == baseline_ind));
-    data = cat(1, curLevelTrials, curBaselineTrials);
-    group1_ind = 1:length(curLevelTrials);
-    group2_ind = length(curLevelTrials)+1:size(data, 1);
-    obs(level_ind, :) = nanmean(spikes(labels == levelsID(level_ind), :)) * 1000;
-    obsDiff(level_ind, :) = obs(level_ind, :) - obs(end, :);
-    
-    parfor rand_ind = 1:permutationParams.numRand,
-        if (mod(rand_ind, 100) == 0)
-            fprintf('\t\tRand #%d...\n', rand_ind);
+for hist_ind = 1:numHist,
+    obs(end, hist_ind, :) = nanmean(spikes(labels(:, hist_ind) == baseline_ind, :)) * 1000;
+    for level_ind = 1:numLevels,
+        comparisonNames{level_ind, hist_ind} = sprintf('%s - %s', levels{levelsID(level_ind), hist_ind}, baselineLevel{hist_ind});
+        fprintf('\nComparison: %s\n', comparisonNames{level_ind, hist_ind});
+        curLevelTrials = unique(trialID(labels(:, hist_ind) == levelsID(level_ind)));
+        curBaselineTrials = unique(trialID(labels(:, hist_ind) == baseline_ind));
+        data = cat(1, curLevelTrials, curBaselineTrials);
+        group1_ind = 1:length(curLevelTrials);
+        group2_ind = length(curLevelTrials)+1:size(data, 1);
+        obs(level_ind, hist_ind, :) = nanmean(spikes(labels(:, hist_ind) == levelsID(level_ind), :)) * 1000;
+        obsDiff(level_ind, hist_ind, :) = obs(level_ind, hist_ind, :) - obs(end, hist_ind, :);
+        
+        parfor rand_ind = 1:permutationParams.numRand,
+            if (mod(rand_ind, 100) == 0)
+                fprintf('\t\tRand #%d...\n', rand_ind);
+            end
+            perm_ind = randperm(size(data, 1));
+            randData1 = s.Value(ismember(trialID, data(perm_ind(group1_ind))), :);
+            randData2 = s.Value(ismember(trialID, data(perm_ind(group2_ind))), :);
+            randDiff(level_ind, hist_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
         end
-        perm_ind = randperm(size(data, 1));
-        randData1 = s.Value(ismember(trialID, data(perm_ind(group1_ind))), :);
-        randData2 = s.Value(ismember(trialID, data(perm_ind(group2_ind))), :);
-        randDiff(level_ind, rand_ind, :) = 1000 * (nanmean(randData1) - nanmean(randData2));
-    end
-    for neuron_ind = 1:numNeurons,
-        p(level_ind, neuron_ind) = (sum(abs(randDiff(level_ind, :, neuron_ind)) >= abs(obsDiff(level_ind, neuron_ind)), 2)) / (permutationParams.numRand);
-        p(p == 0) = 1 / permutationParams.numRand;
-        p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
-        p(isnan(obsDiff)) = NaN;
-        p(squeeze(all(isnan(randDiff), 2))) = NaN;
+        for neuron_ind = 1:numNeurons,
+            p(level_ind, hist_ind, neuron_ind) = (sum(abs(randDiff(level_ind, hist_ind, :, neuron_ind)) ...
+                >= abs(obsDiff(level_ind, hist_ind, neuron_ind)), 3)) ...
+                / (permutationParams.numRand);
+        end
+        
     end
     
 end
+
+p(p == 0) = 1 / permutationParams.numRand;
+p(p == 1) = (permutationParams.numRand - 1) / permutationParams.numRand;
+p(isnan(obsDiff)) = NaN;
+p(squeeze(all(isnan(randDiff), 2))) = NaN;
+
+
+randDiff = reshape(randDiff, [numLevels * numHist, permutationParams.numRand, numNeurons]);
+obsDiff = reshape(obsDiff, [numLevels * numHist, numNeurons]);
+obs = reshape(obs, [(numLevels + 1) * numHist, numNeurons]);
+p = reshape(p, [numLevels * numHist, numNeurons]);
+comparisonNames = reshape(comparisonNames, [numLevels * numHist, 1]);
 
 fprintf('\nSaving... : %s\n', saveFileName);
 save(saveFileName, 'obs', 'levels', 'obsDiff', 'randDiff', 'p', 'comparisonNames', 'monkeyName', ...
