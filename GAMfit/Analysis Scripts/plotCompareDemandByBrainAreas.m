@@ -9,14 +9,27 @@ inParser.addParameter('onlySig', false, @islogical);
 inParser.parse(modelName, timePeriods, varargin{:});
 params = inParser.Results;
 
-bootEst = @(x) squeeze(quantile(nanmedian(x, 1), [0.025, 0.5, 0.975], 3));
+bootEst = @(x) squeeze(quantile(nanmean(x, 1), [0.025, 0.5, 0.975], 3));
 brainAreas = {'ACC', 'dlPFC'};
 demandFactors = {'Previous Error History', 'Rule Repetition', 'Congruency'};
 
 numTimePeriods = length(timePeriods);
-figure;
+numBrainAreas = length(brainAreas);
+numDemandFactors = length(demandFactors);
 
-for area_ind = 1:length(brainAreas),
+colorOrder = [ ...
+    8,48,107; ...
+    15,77,145; ...
+    31,108,177; ...
+    68,141,196; ...
+    107,174,214; ...
+    ] ./ 255;
+colorOrder = num2cell(colorOrder, 2);
+
+figure;
+set(gca, 'FontName', 'Arial');
+
+for area_ind = 1:numBrainAreas,
     parEst = cell(size(timePeriods));
     parEstAbs = cell(size(timePeriods));
     h = cell(size(timePeriods));
@@ -45,14 +58,14 @@ for area_ind = 1:length(brainAreas),
         sig(level_ind, time_ind) = h{time_ind}(2:end);
     end
     
-    for demand_ind = 1:length(demandFactors),
+    for demand_ind = 1:numDemandFactors,
         cov_ind = ismember(covNames, demandFactors{demand_ind});
         %% Effect Size
-        subplot(3, 4, (4 * (demand_ind - 1)) + area_ind)
+        subplot(2, numBrainAreas * numDemandFactors, ((2 * demand_ind) - 1) + (area_ind - 1))
         plotEffectSize();
         
         %% Percent Significant
-        subplot(3, 4, (4 * (demand_ind - 1)) + area_ind + 2)
+        subplot(2, numBrainAreas * numDemandFactors, ((2 * demand_ind) - 1) + (area_ind - 1) + (numBrainAreas * numDemandFactors))
         plotPercentSig();
     end
     
@@ -60,8 +73,6 @@ end
 
     function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
         [parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
-        
-        numLevels = length(gam.levelNames);
         
         % bad_ind = (exp(mean(parEst(:, 1, :), 3)) * 1000) <  0.5 | (exp(mean(parEst(:, 1, :), 3)) * 1000) > 1E3; % exclude neurons with < 0.5 Hz firing rate
         % bad_ind = repmat(bad_ind, [1, numLevels, size(parEst, 3)]);
@@ -76,50 +87,66 @@ end
     end
 %%
     function plotEffectSize()
-        plotHandle{demand_ind} = plot(1:numTimePeriods, squeeze(timeEst(cov_ind, 2, :)), '.-', 'MarkerSize', 20);
+        plotHandle = plot(1:numTimePeriods, squeeze(timeEst(cov_ind, 2, :)), '.-', 'MarkerSize', 20);
+        set(plotHandle, {'Color'}, colorOrder(1:sum(cov_ind)));
         hold all;
         l = cell(sum(cov_ind), 1);
         lID = find(cov_ind);
+        
         for l_ind = 1:length(lID),
             l{l_ind} = line(repmat(1:numTimePeriods, [2 1]), squeeze(timeEst(lID(l_ind), [1 3], :)));
-            set(l{l_ind}, 'Color', get(plotHandle{demand_ind}(l_ind), 'Color'));
+            set(l{l_ind}, 'Color', colorOrder{l_ind, :});
         end
         box off;
         grid on;
         t = text((0.1 + numTimePeriods) * ones(length(levelNames(cov_ind)), 1), timeEst(cov_ind, 2, end), levelNames(cov_ind));
-        if length(plotHandle{demand_ind}) == 1,
-            set(t, 'Color', get(plotHandle{demand_ind}, 'Color'));
+        if length(plotHandle) == 1,
+            set(t, 'Color', get(plotHandle, 'Color'));
         else
-            set(t, {'Color'}, get(plotHandle{demand_ind}, 'Color'));
+            set(t, {'Color'}, get(plotHandle, 'Color'));
         end
         
         title([brainAreas(area_ind), demandFactors(demand_ind)])
-        ylim(log([.9 1.1]))
-        set(gca, 'YTick', log(0.9:.05:1.1));
-        set(gca, 'YTickLabel', 100 * ([0.9:.05:1.1] - 1));
+        ylim(log([0.85 1.15]))
+        set(gca, 'YTick', log(0.85:.05:1.15));
+        set(gca, 'YTickLabel', 100 * ([0.85:.05:1.15] - 1));
         set(gca, 'TickLength', [0, 0]);
+        set(gca, 'XTick', 1:numTimePeriods);
         set(gca, 'XTickLabel', strrep(timePeriods, ' ', '\newline'))
         xlim([1 - 0.5, numTimePeriods + 0.5]);
         hline(0, 'Color', 'black', 'LineType', '-')
-        ylabel('Change in Firing Rate (%)')
+        if (area_ind == 1) && (demand_ind == 1)
+            y = ylabel('Median Change in\newlinePopulation Firing Rate\newline(%)');
+            y.Rotation = 0;
+            y.HorizontalAlignment = 'right';
+        else
+            set(gca, 'YTickLabel', []);
+        end
     end
 %%
     function plotPercentSig()
-        plotHandle{demand_ind} = plot(1:numTimePeriods,  sig(cov_ind, :), '.-', 'MarkerSize', 20);
+        plotHandle = plot(1:numTimePeriods,  sig(cov_ind, :), '.-', 'MarkerSize', 20);
+        set(plotHandle, {'Color'}, colorOrder(1:sum(cov_ind), :));
         box off;
         set(gca, 'XTick', 1:numTimePeriods);
         set(gca, 'XTickLabel', strrep(timePeriods, ' ', '\newline'))
         t = text((0.1 + numTimePeriods) * ones(length(levelNames(cov_ind)), 1), sig(cov_ind, end), levelNames(cov_ind));
-        if length(plotHandle{demand_ind}) == 1,
-            set(t, 'Color', get(plotHandle{demand_ind}, 'Color'));
+        if length(plotHandle) == 1,
+            set(t, 'Color', get(plotHandle, 'Color'));
         else
-            set(t, {'Color'}, get(plotHandle{demand_ind}, 'Color'));
+            set(t, {'Color'}, get(plotHandle, 'Color'));
         end
         grid on;
         xlim([1 - 0.5, numTimePeriods + 0.5]);
-        ylim([0 50]);
+        ylim([0 40]);
         title([brainAreas(area_ind), demandFactors(demand_ind)])
         set(gca, 'TickLength', [0, 0]);
-        ylabel('Percentage of Significant Neurons')
+        if (area_ind == 1) && (demand_ind == 1),
+            y = ylabel('Percentage of\newlineSignificant Neurons');
+            y.Rotation = 0;
+            y.HorizontalAlignment = 'right';
+        else
+            set(gca, 'YTickLabel', []);
+        end
     end
 end
