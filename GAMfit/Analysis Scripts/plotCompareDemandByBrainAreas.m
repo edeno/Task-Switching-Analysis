@@ -108,8 +108,6 @@ set(s2, 'YTick', [0:5:mSig]);
     function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
         [parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
         
-        % bad_ind = (exp(mean(parEst(:, 1, :), 3)) * 1000) <  0.5 | (exp(mean(parEst(:, 1, :), 3)) * 1000) > 1E3; % exclude neurons with < 0.5 Hz firing rate
-        % bad_ind = repmat(bad_ind, [1, numLevels, size(parEst, 3)]);
         bad_ind = abs(parEst) > 10;
         bad_ind(:, 1, :) = false;
         
