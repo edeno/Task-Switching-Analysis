@@ -8,11 +8,11 @@ inParser.addParameter('brainArea', '*', @ischar);
 inParser.parse(modelName, timePeriod, varargin{:});
 params = inParser.Results;
 
- [~, gam, ~, ~, ~, h] = getCoef(modelName, timePeriod, 'brainArea', params.brainArea, 'subject', params.subject);
- curComparisons = gam.levelNames(2:end);
- h = h(:, 2:end);
- 
- counter_idx = 1;
+[~, gam, ~, ~, ~, h] = getCoef(modelName, timePeriod, 'brainArea', params.brainArea, 'subject', params.subject);
+curComparisons = gam.levelNames(2:end);
+h = h(:, 2:end);
+
+counter_idx = 1;
 
 for k = 1:length(curComparisons)
     comb_ind = nchoosek(1:length(curComparisons), k);
@@ -28,20 +28,33 @@ for k = 1:length(curComparisons)
 end
 
 %%
-numFactors = cellfun(@(x) length(x), combNames, 'UniformOutput', false);
-numFactors = [numFactors{:}];
-colors = [27,158,119; ...
-    37,52,148; ...
-    44,127,184; ...
-    65,182,196; ...
-    127,205,187; ...
+combID = cellfun(@(x) length(x), combNames, 'UniformOutput', false);
+combID = [combID{:}];
+
+for comb_ind = 1:length(curComparisons),
+    plotStuff(percentSig(combID == comb_ind), combNames(combID == comb_ind), curComparisons, params, comb_ind)
+end
+
+end
+
+function plotStuff(percentSig, combNames, curComparisons, params, comb_ind)
+colors = [
+    228,26,28; ...
     199,233,180; ...
-        37,52,148; ...
-    44,127,184; ...
-    65,182,196; ...
     127,205,187; ...
+    65,182,196; ...
+    44,127,184; ...
+    37,52,148; ...
+    199,233,180; ...
+    127,205,187; ...
+    65,182,196; ...
+    44,127,184; ...
+    37,52,148; ...
+    55,126,184; ...
+    77,175,74; ...
     ] ./ 255;
-barWidth = 0.8;
+barWidth = 0.5;
+
 f = figure;
 ha = tight_subplot(2, 1, [.01 .01], [.1 .01],[.1 .01]);
 
@@ -53,15 +66,24 @@ set(gca, 'TickLength', [0 0]);
 box off;
 xlim([1 - barWidth, length(percentSig) + barWidth]);
 ylabel('Percent Significant');
-vline(find(diff(numFactors)) + .5, 'Color', 'black', 'LineType', '-');
 
 axes(ha(2));
+% width = f.Position(3);
+% markerSize = barWidth * (width / length(curComparisons));
+%Obtain the axes size (in axpos) in Points
+
+currentunits = get(gca,'Units');
+set(ha(2), 'Units', 'Points');
+axpos = get(ha(2),'Position');
+set(ha(2), 'Units', currentunits);
+markerWidth = barWidth * (axpos(3) / length(curComparisons)); % Calculate Marker width in points
+
 ylim([1 - barWidth, length(curComparisons) + barWidth]);
 for comparison_ind = 1:length(percentSig),
     time_ind = find(ismember(curComparisons, combNames{comparison_ind}));
-%     plot(comparison_ind * ones(size(time_ind)), time_ind, 'k.-', 'MarkerSize', 5, 'LineWidth', .1);
+    plot(comparison_ind * ones(size(time_ind)), time_ind, 'k.-', 'MarkerSize', markerWidth, 'LineWidth', .1);
     hold all;
-    p = plot(comparison_ind, time_ind, '.', 'MarkerSize', 5);
+    p = plot(comparison_ind, time_ind, '.', 'MarkerSize', markerWidth);
     set(p, {'Color'}, num2cell(colors(time_ind, :), 2));
 end
 set(gca, 'XTick', 1:length(percentSig))
@@ -71,8 +93,7 @@ set(gca, 'YTickLabel', curComparisons);
 set(gca, 'TickLength', [0 0])
 xlim([1 - barWidth, length(percentSig) + barWidth]);
 box off;
-vline(find(diff(numFactors)) + .5, 'Color', 'black', 'LineType', '-');
-endgrid on;
+grid on;
 
 f.Name = sprintf('%s - Number of Perm: %d', params.brainArea, comb_ind);
 end
