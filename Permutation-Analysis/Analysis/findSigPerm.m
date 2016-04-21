@@ -54,3 +54,22 @@ neuronNames(isdlPFC & ruleRepSig(1, :))
 neuronNames(isdlPFC & ruleRepSig(2, :))
 % dlPFC - both
 neuronNames(isdlPFC & ruleRepSig(1, :) & ruleRepSig(2, :))
+
+%%
+response_ind = ismember(comparisonNames, {'Left - Right'});
+responseSig = h(response_ind, :);
+
+% ACC - response period
+neuronNames(isACC & responseSig(1, :))
+% ACC - reward period
+neuronNames(isACC & responseSig(2, :))
+% ACC - both
+neuronNames(isACC & responseSig(1, :) & responseSig(2, :))
+
+% dlPFC - response period
+neuronNames(isdlPFC & responseSig(1, :))
+% dlPFC - reward period
+neuronNames(isdlPFC & responseSig(2, :))
+% dlPFC - both
+neuronNames(isdlPFC & responseSig(1, :) & responseSig(2, :))
+
