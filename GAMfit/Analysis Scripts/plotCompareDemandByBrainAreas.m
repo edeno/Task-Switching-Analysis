@@ -27,6 +27,8 @@ colorOrder = num2cell(colorOrder, 2);
 
 figure;
 set(groot, 'DefaultAxesFontName', 'Arial')
+s1 = cell(numBrainAreas * numFactors, 1);
+s2 = cell(numBrainAreas * numFactors, 1);
 
 for area_ind = 1:numBrainAreas,
     parEst = cell(size(timePeriods));
@@ -60,11 +62,11 @@ for area_ind = 1:numBrainAreas,
     for demand_ind = 1:numFactors,
         cov_ind = ismember(covNames, factorsOfInterest{demand_ind});
         %% Effect Size
-        subplot(2, numBrainAreas * numFactors, ((2 * demand_ind) - 1) + (area_ind - 1))
+        s1{((2 * demand_ind) - 1) + (area_ind - 1)} = subplot(2, numBrainAreas * numFactors, ((2 * demand_ind) - 1) + (area_ind - 1));
         plotEffectSize();
         
         %% Percent Significant
-        subplot(2, numBrainAreas * numFactors, ((2 * demand_ind) - 1) + (area_ind - 1) + (numBrainAreas * numFactors))
+        s2{((2 * demand_ind) - 1) + (area_ind - 1)} = subplot(2, numBrainAreas * numFactors, ((2 * demand_ind) - 1) + (area_ind - 1) + (numBrainAreas * numFactors));
         plotPercentSig();
     end
     
