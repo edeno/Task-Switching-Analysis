@@ -72,4 +72,8 @@ set(gca, 'TickLength', [0 0])
 xlim([1 - barWidth, length(percentSig) + barWidth]);
 box off;
 vline(find(diff(numFactors)) + .5, 'Color', 'black', 'LineType', '-');
+endgrid on;
+
+f.Name = sprintf('%s - Number of Perm: %d', params.brainArea, comb_ind);
 end
+
