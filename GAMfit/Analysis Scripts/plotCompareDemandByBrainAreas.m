@@ -1,12 +1,14 @@
 function plotCompareDemandByBrainAreas(modelName, timePeriods, factorsOfInterest, varargin)
 inParser = inputParser;
 inParser.addRequired('modelName', @iscell);
-inParser.addRequired('timePeriod', @iscell);
+inParser.addRequired('timePeriods', @iscell);
+inParser.addRequired('factorsOfInterest', @iscell);
 inParser.addParameter('subject', '*', @ischar);
 inParser.addParameter('colors', [0 0 0], @isnumeric);
 inParser.addParameter('onlySig', false, @islogical);
+inParser.addParameter('isAbs', false, @islogical);
 
-inParser.parse(modelName, timePeriods, varargin{:});
+inParser.parse(modelName, timePeriods, factorsOfInterest, varargin{:});
 params = inParser.Results;
 
 bootEst = @(x) squeeze(quantile(nanmean(x, 1), [0.025, 0.5, 0.975], 3));
@@ -37,6 +39,9 @@ for area_ind = 1:numBrainAreas,
     gam = cell(size(timePeriods));
     for time_ind = 1:numTimePeriods,
         [est, gam{time_ind}, h{time_ind}] = filterCoef(modelName{time_ind}, timePeriods{time_ind}, brainAreas{area_ind}, params);
+        if params.isAbs,
+            est(:, 2:end, :) = abs(est(:, 2:end, :));
+        end
         parEst{time_ind} = bootEst(est(:, 2:end, :));
         parEstAbs{time_ind} = bootEst(abs(est(:, 2:end, :)));
         h{time_ind} = mean(h{time_ind}, 1) * 100;
