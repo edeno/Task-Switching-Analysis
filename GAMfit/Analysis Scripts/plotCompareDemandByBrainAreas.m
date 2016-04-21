@@ -70,8 +70,41 @@ for area_ind = 1:numBrainAreas,
         plotPercentSig();
     end
     
+    maxEst(area_ind) = max(reshape(timeEstAbs(ismember(covNames, factorsOfInterest), :, :), 1, []));
+    maxSig(area_ind) = max(reshape(sig(ismember(covNames, factorsOfInterest), :), 1, []));
 end
 
+%%
+s1 = [s1{:}];
+
+if round(exp(max(maxEst)), 1) - exp(max(maxEst)) < 0,
+    mEst = round(exp(max(maxEst)), 1) + 0.05;
+else
+    mEst = round(exp(max(maxEst)), 1);
+end
+
+if params.isAbs,
+    set(s1, 'YLim', [0, log(mEst)]);
+    set(s1, 'YTick', log(1:0.05:mEst));
+    set(s1, 'YTickLabel', ((1:0.05:mEst) - 1) * 100);
+else
+    set(s1, 'YLim', [log(1 / mEst), log(mEst)]);
+    set(s1, 'YTick', log((1 / mEst):0.05:mEst));
+    set(s1, 'YTickLabel', (((1 / mEst):0.05:mEst) - 1) * 100);
+end
+
+%%
+s2 = [s2{:}];
+
+if round(max(maxSig), -1) - max(maxSig) < 0,
+    mSig = round(max(maxSig) + 5, -1);
+else
+    mSig = round(max(maxSig), -1);
+end
+set(s2, 'YLim', [0, mSig]);
+set(s2, 'YTick', [0:5:mSig]);
+
+%%
     function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
         [parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
         
@@ -108,9 +141,15 @@ end
         end
         
         title([brainAreas(area_ind), factorsOfInterest(demand_ind)])
-        ylim(log([0.85 1.15]))
-        set(gca, 'YTick', log(0.85:.05:1.15));
-        set(gca, 'YTickLabel', 100 * ([0.85:.05:1.15] - 1));
+        if params.isAbs,
+             ylim(log([1 1.25]))
+            set(gca, 'YTick', log(1:.05:1.25));
+            set(gca, 'YTickLabel', 100 * ([1:.05:1.25] - 1));
+        else
+            ylim(log([0.85 1.15]))
+            set(gca, 'YTick', log(0.85:.05:1.15));
+            set(gca, 'YTickLabel', 100 * ([0.85:.05:1.15] - 1));
+        end
         set(gca, 'TickLength', [0, 0]);
         set(gca, 'XTick', 1:numTimePeriods);
         set(gca, 'XTickLabel', strrep(timePeriods, ' ', '\newline'))
@@ -139,7 +178,12 @@ end
         end
         grid on;
         xlim([1 - 0.5, numTimePeriods + 0.5]);
-        ylim([0 40]);
+        if params.isAbs,
+            ylim([0 50]);
+        else
+            ylim([0 40]);
+        end
+        
         title([brainAreas(area_ind), factorsOfInterest(demand_ind)])
         set(gca, 'TickLength', [0, 0]);
         if (area_ind == 1) && (demand_ind == 1),
