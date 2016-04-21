@@ -5,6 +5,7 @@ inParser.addRequired('timePeriod', @iscell);
 inParser.addParameter('subject', '*', @ischar);
 inParser.addParameter('colors', [0 0 0], @isnumeric);
 inParser.addParameter('onlySig', false, @islogical);
+inParser.addParameter('isSim', true, @islogical);
 
 inParser.parse(modelName, timePeriods, varargin{:});
 params = inParser.Results;
@@ -49,7 +50,7 @@ end
 end
 
 function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
-[parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
+[parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', params.isSim, 'subject', params.subject, 'numSim', 1E4);
 
 bad_ind = abs(parEst) > 10;
 bad_ind(:, 1, :) = false;
