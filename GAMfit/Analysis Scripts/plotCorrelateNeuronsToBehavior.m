@@ -1,4 +1,4 @@
-function plotNeuronsToBehavior(modelName, timePeriod, varargin)
+function plotCorrelateNeuronsToBehavior(modelName, timePeriod, varargin)
 
 inParser = inputParser;
 inParser.addRequired('modelName', @ischar);
@@ -76,8 +76,8 @@ threshold = sortedP(threshold_ind);
 hCorrect =  pValCorrect < threshold;
 %%
 if params.onlySig,
-% parEstCorrect(~hCorrect) = NaN;
-parEstNeuron(~hNeuron) = NaN;
+    % parEstCorrect(~hCorrect) = NaN;
+    parEstNeuron(~hNeuron) = NaN;
 end
 %%
 brainAreas = {'ACC', 'dlPFC'};
