@@ -64,7 +64,7 @@ ylabel('Percent Significant');
 axes(ha(2));
 markerWidth = 30; % Calculate Marker width in points
 
-ylim([1 - barWidth, length(models) + barWidth]);
+ylim([1 - barWidth, length(uniqueCovComb) + barWidth]);
 for model_ind = 1:length(models),
     covID = find(ismember(uniqueCovComb, covComb{model_ind}));
     plot(model_ind * ones(size(covID)), covID, 'k.-', 'MarkerSize', markerWidth, 'LineWidth', .1);
@@ -74,8 +74,8 @@ for model_ind = 1:length(models),
 end
 set(gca, 'XTick', 1:length(percentBest))
 set(gca, 'XTickLabel', []);
-set(gca, 'YTick', 1:length(models));
-set(gca, 'YTickLabel', models);
+set(gca, 'YTick', 1:length(uniqueCovComb));
+set(gca, 'YTickLabel', uniqueCovComb);
 set(gca, 'TickLength', [0 0])
 xlim([1 - barWidth, length(percentBest) + barWidth]);
 box off;
