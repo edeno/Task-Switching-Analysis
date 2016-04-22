@@ -24,7 +24,7 @@ end
 [designMatrix, gam] = gamModelMatrix(model, behavior, covInfo, 'level_reference', 'Reference');
 designMatrix = designMatrix(filter_ind, :);
 
-% Reaction Time
+% Correct
 correct = double(behavior('Correct'));
 correct = correct(filter_ind);
 sessionNames = behavior('Session Name');
