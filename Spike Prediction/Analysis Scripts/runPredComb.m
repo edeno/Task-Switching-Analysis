@@ -33,6 +33,14 @@ for uniqueCov_ind = 1:length(uniqueCovComb),
 end
 
 %%
+figure;
+b = bar(factorImportance);
+b.Horizontal = 'on';
+set(gca, 'YTick', 1:length(uniqueCovComb));
+set(gca, 'YTickLabel',uniqueCovComb);
+set(gca, 'TickLength', [0 0]);
+title('Factor Importance to Prediction');
+%%
 colors = [
     228,26,28; ...
     199,233,180; ...
@@ -60,7 +68,6 @@ box off;
 xlim([1 - barWidth, length(percentBest) + barWidth]);
 ylabel('Percent Significant');
 
-%%
 axes(ha(2));
 currentunits = get(gca,'Units');
 set(ha(2), 'Units', 'Points');
