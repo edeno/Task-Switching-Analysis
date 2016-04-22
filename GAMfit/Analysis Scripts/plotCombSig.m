@@ -80,11 +80,11 @@ markerWidth = barWidth * (axpos(3) / length(curComparisons)); % Calculate Marker
 
 ylim([1 - barWidth, length(curComparisons) + barWidth]);
 for comparison_ind = 1:length(percentSig),
-    time_ind = find(ismember(curComparisons, combNames{comparison_ind}));
-    plot(comparison_ind * ones(size(time_ind)), time_ind, 'k.-', 'MarkerSize', markerWidth, 'LineWidth', .1);
+    comparisonID = find(ismember(curComparisons, combNames{comparison_ind}));
+    plot(comparison_ind * ones(size(comparisonID)), comparisonID, 'k.-', 'MarkerSize', markerWidth, 'LineWidth', .1);
     hold all;
-    p = plot(comparison_ind, time_ind, '.', 'MarkerSize', markerWidth);
-    set(p, {'Color'}, num2cell(colors(time_ind, :), 2));
+    p = plot(comparison_ind, comparisonID, '.', 'MarkerSize', markerWidth);
+    set(p, {'Color'}, num2cell(colors(comparisonID, :), 2));
 end
 set(gca, 'XTick', 1:length(percentSig))
 set(gca, 'XTickLabel', []);
