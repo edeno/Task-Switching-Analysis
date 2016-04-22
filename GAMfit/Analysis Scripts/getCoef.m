@@ -5,6 +5,7 @@ inParser.addRequired('modelName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
 inParser.addParameter('brainArea', '*', @ischar);
 inParser.addParameter('subject', '*', @ischar);
+inParser.addParameter('sessionName', '*', @ischar);
 inParser.addParameter('isSim', false, @islogical)
 inParser.addParameter('numSim', 1000, @(x) isnumeric(x) & all(x > 0));
 
@@ -15,7 +16,11 @@ workingDir = getWorkingDir();
 modelsDir = sprintf('%s/Processed Data/%s/Models/', workingDir, timePeriod);
 load(sprintf('%s/modelList.mat', modelsDir));
 
-neuronFiles = sprintf('%s/%s/%s_neuron_%s*_GAMfit.mat', modelsDir, modelList(modelName), params.brainArea, params.subject);
+if strcmp(params.sessionName, '*')
+    neuronFiles = sprintf('%s/%s/%s_neuron_%s*_GAMfit.mat', modelsDir, modelList(modelName), params.brainArea, params.subject);
+else
+    neuronFiles = sprintf('%s/%s/%s_neuron_%s_*_GAMfit.mat', modelsDir, modelList(modelName), params.brainArea, params.sessionName);
+end
 
 neuronFiles = dir(neuronFiles);
 neuronFiles = {neuronFiles.name};
