@@ -35,17 +35,29 @@ s2 = cell(numBrainAreas * numFactors, 1);
 for area_ind = 1:numBrainAreas,
     parEst = cell(size(timePeriods));
     parEstAbs = cell(size(timePeriods));
-    h = cell(size(timePeriods));
+    pVal = cell(size(timePeriods));
     gam = cell(size(timePeriods));
     for time_ind = 1:numTimePeriods,
-        [est, gam{time_ind}, h{time_ind}] = filterCoef(modelName{time_ind}, timePeriods{time_ind}, brainAreas{area_ind}, params);
+        [est, gam{time_ind}, pVal{time_ind}] = filterCoef(modelName{time_ind}, timePeriods{time_ind}, brainAreas{area_ind}, params);
         if params.isAbs,
             est(:, 2:end, :) = abs(est(:, 2:end, :));
         end
         parEst{time_ind} = bootEst(est(:, 2:end, :));
         parEstAbs{time_ind} = bootEst(abs(est(:, 2:end, :)));
-        h{time_ind} = mean(h{time_ind}, 1) * 100;
+        %         h{time_ind} = mean(h{time_ind}, 1) * 100;
     end
+    pVec = cellfun(@(x) reshape(x, 1, []), pVal, 'UniformOutput', false);
+    pVec = [pVec{:}];
+    alpha = 0.05;
+    sortedP = sort(pVec(:));
+    numP = length(pVec(:));
+    
+    thresholdLine = ([1:numP]' / numP) * alpha;
+    threshold_ind = find(sortedP <= thresholdLine, 1, 'last');
+    threshold = sortedP(threshold_ind);
+    
+    h = cellfun(@(x) mean(x < threshold, 1) * 100, pVal, 'UniformOutput', false);
+    
     
     gam = [gam{:}];
     levelLength = arrayfun(@(x) length(x.levelNames(2:end)), gam, 'UniformOutput', false);
