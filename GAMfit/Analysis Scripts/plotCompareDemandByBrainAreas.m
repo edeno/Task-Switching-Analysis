@@ -75,7 +75,7 @@ for area_ind = 1:numBrainAreas,
         plotPercentSig();
     end
     
-    maxEst(area_ind) = max(reshape(timeEstAbs(ismember(covNames, factorsOfInterest), :, :), 1, []));
+    maxEst(area_ind) = max(reshape(abs(timeEst(ismember(covNames, factorsOfInterest), :, :)), 1, []));
     maxSig(area_ind) = max(reshape(sig(ismember(covNames, factorsOfInterest), :), 1, []));
 end
 
@@ -93,9 +93,9 @@ if params.isAbs,
     set(s1, 'YTick', log(1:0.05:mEst));
     set(s1, 'YTickLabel', ((1:0.05:mEst) - 1) * 100);
 else
-    set(s1, 'YLim', [log(1 / mEst), log(mEst)]);
-    set(s1, 'YTick', log((1 / mEst):0.05:mEst));
-    set(s1, 'YTickLabel', (((1 / mEst):0.05:mEst) - 1) * 100);
+    set(s1, 'YLim', [log((1 - mEst) + 1), log(mEst)]);
+    set(s1, 'YTick', log(((1 - mEst) + 1):0.05:mEst));
+    set(s1, 'YTickLabel', ((((1 - mEst) + 1):0.05:mEst) - 1) * 100);
 end
 
 %%
@@ -110,8 +110,8 @@ set(s2, 'YLim', [0, mSig]);
 set(s2, 'YTick', [0:5:mSig]);
 
 %%
-    function [parEst, gam, h] = filterCoef(modelName, timePeriods, brainArea, params)
-        [parEst, gam, ~, ~, ~, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
+    function [parEst, gam, p] = filterCoef(modelName, timePeriods, brainArea, params)
+        [parEst, gam, ~, ~, p, h] = getCoef(modelName, timePeriods, 'brainArea', brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
         
         bad_ind = abs(parEst) > 10;
         bad_ind(:, 1, :) = false;
@@ -145,7 +145,7 @@ set(s2, 'YTick', [0:5:mSig]);
         
         title([brainAreas(area_ind), factorsOfInterest(demand_ind)])
         if params.isAbs,
-             ylim(log([1 1.25]))
+            ylim(log([1 1.25]))
             set(gca, 'YTick', log(1:.05:1.25));
             set(gca, 'YTickLabel', 100 * ([1:.05:1.25] - 1));
         else
