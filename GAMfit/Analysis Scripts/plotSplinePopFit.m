@@ -92,7 +92,7 @@ plotTimeToSig(prevError)
         set(gca, 'YTickLabel', ((0.9:0.05:1.2) - 1) * 100);
         xlim([-50, max(time)]);
         vline(0, 'Color', 'black', 'LineType', '-');
-        hline(1, 'Color', 'black', 'LineType', '-');
+        hline(0, 'Color', 'black', 'LineType', '-');
     end
 %%
     function plotPopSig(est)
