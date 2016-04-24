@@ -112,7 +112,7 @@ plotTimeToSig(prevError)
         numLevels = size(data, 1);
         h = data(:, :, 1, :) > 0 | data(:, :, 3, :) < 0;
         timeSig = nan(size(h, 4), numLevels);
-        NUM_CONSEC = 25;
+        NUM_CONSEC = 3;
         
         for level_ind = 1:numLevels,
             for neuron_ind = 1:size(h, 4),
@@ -124,7 +124,10 @@ plotTimeToSig(prevError)
             l = line(ci, [level_ind level_ind]);
             l.Color = colorOrder(level_ind, :);
             xlim([-50, max(time)]);
+            normHist = (level_ind - 0.5) + histc(timeSig(:, level_ind), time) ./ max(histc(timeSig(:, level_ind), time));
+            plot(time, normHist, 'LineWidth' , 1, 'Color', colorOrder(level_ind, :))
         end
+        ylim([0.5, numLevels + 0.5]);
         vline(0, 'Color', 'black', 'LineType', '-');
         %%
         function [sigTime] = firstTimeSig(x, numConsec)
