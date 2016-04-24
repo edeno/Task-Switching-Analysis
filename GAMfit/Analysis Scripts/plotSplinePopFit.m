@@ -21,8 +21,14 @@ ruleRep(abs(ruleRep) > 10) = NaN;
 rule(abs(rule) > 10) = NaN;
 prevError(abs(prevError) > 10) = NaN;
 
-if strcmp(unique({timeEst.subject}), 'isa') & strcmp(timePeriod, 'Rule Stimulus'),
-    bad_ind = time > 345;
+if strcmp(unique({timeEst.subject}), 'isa') && strcmp(timePeriod, 'Rule Stimulus'),
+    bad_ind = time > 345 | time < -50;
+    prevError = prevError(:, ~bad_ind, :, :);
+    ruleRep = ruleRep(:, ~bad_ind, :, :);
+    rule = rule(:, ~bad_ind, :, :);
+    time = time(~bad_ind);
+else
+     bad_ind = time < -50;
     prevError = prevError(:, ~bad_ind, :, :);
     ruleRep = ruleRep(:, ~bad_ind, :, :);
     rule = rule(:, ~bad_ind, :, :);
