@@ -21,13 +21,12 @@ ruleRep(abs(ruleRep) > 10) = NaN;
 rule(abs(rule) > 10) = NaN;
 prevError(abs(prevError) > 10) = NaN;
 
-if strcmp(unique({timeEst.subject}), 'isa'),
-    bad_ind = time > 346;
+if strcmp(unique({timeEst.subject}), 'isa') & strcmp(timePeriod, 'Rule Stimulus'),
+    bad_ind = time > 345;
     prevError = prevError(:, ~bad_ind, :, :);
     ruleRep = ruleRep(:, ~bad_ind, :, :);
     rule = rule(:, ~bad_ind, :, :);
     time = time(~bad_ind);
-    ruleRepEst = ruleRepEst(:, ~bad_ind, :);
 end
 
 colorOrder = [ ...
@@ -43,9 +42,11 @@ f = figure;
 f.Name = sprintf('%s - %s - %s', params.brainArea, params.timePeriod, params.subject);
 subplot(3,3,1);
 plotPopMean(abs(rule))
-set(gca, 'YLim', log([0.9 1.2]));
-set(gca, 'YTick', log(0.9:0.05:1.2));
-set(gca, 'YTickLabel', ((0.9:0.05:1.2) - 1) * 100);
+set(gca, 'YLim', log([1 1.4]));
+set(gca, 'YTick', log(1:0.05:1.4));
+set(gca, 'YTickLabel', ((1:0.05:1.4) - 1) * 100);
+vline(0, 'Color', 'black', 'LineType', '-');
+
 title('Rule');
 
 subplot(3,3,2);
@@ -86,9 +87,9 @@ plotTimeToSig(prevError)
             plot(time, squeeze((data(level_ind, :, [1 3], :))), 'LineWidth', 0.5, 'Color', colorOrder(level_ind, :));
         end
         
-        set(gca, 'YLim', log([1 1.4]));
-        set(gca, 'YTick', log(1:0.05:1.4));
-        set(gca, 'YTickLabel', ((1:0.05:1.4) - 1) * 100);
+        set(gca, 'YLim', log([0.9 1.2]));
+        set(gca, 'YTick', log(0.9:0.05:1.2));
+        set(gca, 'YTickLabel', ((0.9:0.05:1.2) - 1) * 100);
         ylim(log([1 1.4]));
         xlim([-50, max(time)]);
         vline(0, 'Color', 'black', 'LineType', '-');
