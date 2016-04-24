@@ -11,7 +11,7 @@ params = inParser.Results;
 stat = @(s) nanmean(s, 4);
 bootEst = @(s) quantile(s, [0.025, 0.5, 0.975], 3);
 
-[timeEst, time] = getSplineCoef(model, timePeriod, 'brainArea', params.brainArea, 'isSim', true, 'subject', params.subject);
+[timeEst, time] = getSplineCoef(model, timePeriod, 'brainArea', params.brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
 
 prevError = cat(4, timeEst.Previous_Error);
 ruleRep = cat(4, timeEst.Rule_Repetition);
