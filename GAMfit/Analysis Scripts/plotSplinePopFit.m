@@ -90,7 +90,6 @@ plotTimeToSig(prevError)
         set(gca, 'YLim', log([0.9 1.2]));
         set(gca, 'YTick', log(0.9:0.05:1.2));
         set(gca, 'YTickLabel', ((0.9:0.05:1.2) - 1) * 100);
-        ylim(log([1 1.4]));
         xlim([-50, max(time)]);
         vline(0, 'Color', 'black', 'LineType', '-');
         hline(1, 'Color', 'black', 'LineType', '-');
