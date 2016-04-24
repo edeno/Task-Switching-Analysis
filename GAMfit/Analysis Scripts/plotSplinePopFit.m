@@ -112,7 +112,7 @@ plotTimeToSig(prevError)
         numLevels = size(data, 1);
         h = data(:, :, 1, :) > 0 | data(:, :, 3, :) < 0;
         timeSig = nan(size(h, 4), numLevels);
-        NUM_CONSEC = 5;
+        NUM_CONSEC = 25;
         
         for level_ind = 1:numLevels,
             for neuron_ind = 1:size(h, 4),
