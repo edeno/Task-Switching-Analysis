@@ -29,7 +29,7 @@ title('PSTH from Data');
 subplot(numTerms + 4,1,2);
 plotRaster(plotHandle1);
 set(gca, 'XTickLabel', [])
-title('Spikes');
+title('Data');
 %%
 [meanSpiking, time, spikesSample, cInfo] = getModelSim(neuronName, timePeriod, model, covOfInterest, ...
     'includeFixationBreaks', logical(gamParams.includeFixationBreaks), ...
