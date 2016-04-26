@@ -13,7 +13,6 @@ gamParams = gP.gamParams;
     'includeFixationBreaks', logical(gamParams.includeFixationBreaks), ...
     'includeIncorrect', logical(gamParams.includeIncorrect), ...
     'includeTimeBeforeZero', logical(gamParams.includeTimeBeforeZero));
-numSamples = max(spikesSample{1}(:, 2));
 
 numTerms = modelFormulaParse(model);
 numTerms = length(numTerms.terms);
@@ -64,9 +63,13 @@ xlabel('Time (ms)');
     end
 
     function plotRaster(plotHandle)
+        numSamples = cellfun(@(x) max(x(:, 2)), spikesSample, 'UniformOutput', false);
+        numSamples = [numSamples{:}];
+        numSamples = cumsum(numSamples);
         for level_ind = 1:length(cInfo.levels),
-            plot(spikesSample{level_ind}(:, 1), ((level_ind - 1) * numSamples) + spikesSample{level_ind}(:, 2), '.', 'Color', plotHandle(level_ind).Color);
+            plot(spikesSample{level_ind}(:, 1), (numSamples(level_ind) - numSamples(1)) + spikesSample{level_ind}(:, 2), '.', 'Color', plotHandle(level_ind).Color);
             xlim(quantile(time, [0 1]));
+            ylim([0, numSamples(end)])
             set(gca, 'TickLength', [0, 0]);
             set(gca, 'YTickLabel', [])
             box off;
