@@ -15,15 +15,18 @@ gamParams = gP.gamParams;
     'includeTimeBeforeZero', logical(gamParams.includeTimeBeforeZero));
 numSamples = max(spikesSample{1}(:, 2));
 
+numTerms = modelFormulaParse(model);
+numTerms = length(numTerms.terms);
+
 f = figure;
 f.Name = sprintf('%s - %s - %s', neuronName, timePeriod, covOfInterest);
-s1 = subplot(4,1,1);
+s1 = subplot(numTerms + 4,1,1);
 [plotHandle1] = plotMeanRate();
 legend(cInfo.levels);
 set(gca, 'XTickLabel', [])
 title('PSTH from Data');
 
-subplot(4,1,2);
+subplot(numTerms + 4,1,2);
 plotRaster(plotHandle1);
 set(gca, 'XTickLabel', [])
 title('Spikes');
@@ -32,20 +35,26 @@ title('Spikes');
     'includeFixationBreaks', logical(gamParams.includeFixationBreaks), ...
     'includeIncorrect', logical(gamParams.includeIncorrect), ...
     'includeTimeBeforeZero', logical(gamParams.includeTimeBeforeZero));
-s2 = subplot(4,1,3);
+s2 = subplot(numTerms + 4,1,3);
 [plotHandle2] = plotMeanRate();
 set(gca, 'XTickLabel', [])
 title('Model Estimated PSTH');
 
-subplot(4,1,4);
+subplot(numTerms + 4,1,4);
 plotRaster(plotHandle2);
-xlabel('Time (ms)');
+set(gca, 'XTickLabel', [])
 title('Model Estimated Spikes');
 
 set([s1, s2], 'YLim', [0, max([s1.YLim, s2.YLim])])
 
+%%
+[timeEst, time, modelTerms] = getEstOverTime(neuronName, timePeriod, model);
+plotGain()
+xlabel('Time (ms)');
+
+%%
     function [plotHandle] = plotMeanRate()
-        plotHandle = plot(time, meanSpiking);
+        plotHandle = plot(time, meanSpiking, 'LineWidth', 2);
         xlim(quantile(time, [0 1]));
         box off;
         set(gca, 'TickLength', [0, 0]);
@@ -55,7 +64,7 @@ set([s1, s2], 'YLim', [0, max([s1.YLim, s2.YLim])])
 
     function plotRaster(plotHandle)
         for level_ind = 1:length(cInfo.levels),
-            plot(spikesSample{level_ind}(:, 1), ((level_ind - 1) * numSamples) + spikesSample{level_ind}(:, 2), '.', 'Color', plotHandle(level_ind).Color, 'LineWidth', 2);
+            plot(spikesSample{level_ind}(:, 1), ((level_ind - 1) * numSamples) + spikesSample{level_ind}(:, 2), '.', 'Color', plotHandle(level_ind).Color);
             xlim(quantile(time, [0 1]));
             set(gca, 'TickLength', [0, 0]);
             set(gca, 'YTickLabel', [])
@@ -64,6 +73,19 @@ set([s1, s2], 'YLim', [0, max([s1.YLim, s2.YLim])])
             hold all;
             ylabel('Trials');
         end
+    end
+
+    function plotGain()
+        for term_ind = 1:numTerms,
+            subplot(numTerms + 4,1,4 + term_ind);
+            plot(time, timeEst{term_ind}, 'LineWidth', 2)
+            xlim(quantile(time, [0 1]));
+            box off;
+            set(gca, 'TickLength', [0, 0]);
+            vline(0, 'Color', 'black', 'LineType', '-');
+            hline(0, 'Color', 'black', 'LineType', '-');
+            title(modelTerms.terms(term_ind));
+        end;
     end
 
 end
