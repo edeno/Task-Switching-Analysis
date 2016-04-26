@@ -19,6 +19,7 @@ numTerms = modelFormulaParse(model);
 numTerms = length(numTerms.terms);
 
 f = figure;
+set(gcf, 'Position', [1888,230,571,886])
 f.Name = sprintf('%s - %s - %s', neuronName, timePeriod, covOfInterest);
 s1 = subplot(numTerms + 4,1,1);
 [plotHandle1] = plotMeanRate();
