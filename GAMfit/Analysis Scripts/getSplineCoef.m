@@ -43,7 +43,9 @@ for session_ind = 1:length(sessionNames),
     fprintf('\nLoading... %s\n', sessionNames{session_ind});
     file = load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(modelName), sessionNames{session_ind}), 'gam');
     file.gam = rmfield(file.gam, {'penalty', 'sqrtPen', 'trialID','trialTime'});
-    file.gam.bsplines = cellfun(@(x) rmfield(x, {'time', 'basis', 'sqrtPen', 'penalty', 'con_basis', 'con_sqrtPen', 'knotsDiff', 'rank'}), file.gam.bsplines);
+    if ~isempty([file.gam.bsplines{:}])
+        file.gam.bsplines = cellfun(@(x) rmfield(x, {'time', 'basis', 'sqrtPen', 'penalty', 'con_basis', 'con_sqrtPen', 'knotsDiff', 'rank'}), file.gam.bsplines);
+    end
     gam{session_ind} =  file.gam;
 end
 

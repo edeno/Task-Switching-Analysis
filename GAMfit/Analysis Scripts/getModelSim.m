@@ -50,8 +50,6 @@ time = unique(gam.trialTime);
 timeLimits = quantile(time, [0 1]);
 
 t = cell(length(trials), 1);
-spikesByTrial = cell(length(trials), 1);
-levelsByTrial = nan(length(trials), 1);
 l = 300;
 x = linspace(-l / 2, l / 2, l);
 gaussFilter = exp(-x .^ 2 / (2 * params.sigma ^ 2));
@@ -59,25 +57,37 @@ gaussFilter = gaussFilter / sum (gaussFilter); % normalize
 
 levelsByCov = spikeCov(covOfInterest);
 levels = unique(levelsByCov);
-
-for trial = 1:length(trials),
-    i = (gam.trialID == trials(trial));
-    numPad = timeLimits - quantile(gam.trialTime(i), [0 1]);
-    t{trial} = [nan(numPad(1), 1); conv(curSpikes(i), gaussFilter, 'same') * 1E3; nan(numPad(2), 1)];
-    levelsByTrial(trial) = unique(levelsByCov(i));
-    spikesByTrial{trial} = time(find(curSpikes(i)));
+numHist = size(levelsByCov, 2);
+numLevels = length(levels);
+spikesByTrial = cell(length(trials));
+levelsByTrial = nan(length(trials), numHist);
+for hist_ind = 1:numHist,
+    for trial = 1:length(trials),
+        i = (gam.trialID == trials(trial));
+        numPad = timeLimits - quantile(gam.trialTime(i), [0 1]);
+        t{trial} = [nan(numPad(1), 1); conv(curSpikes(i), gaussFilter, 'same') * 1E3; nan(numPad(2), 1)];
+        
+        levelsByTrial(trial, hist_ind) = unique(levelsByCov(i, hist_ind));
+        if hist_ind == 1,
+            spikesByTrial{trial} = time(find(curSpikes(i)));
+        end
+    end
 end
 
-meanSpiking = nan(length(levels), length(time));
-spikesSample = cell(length(levels), 1);
-
-for level_ind = 1:length(levels),
-    curTrials_ind = find(levelsByTrial == levels(level_ind));
-    meanSpiking(level_ind, :) = nanmean([t{curTrials_ind}], 2);
-    s = spikesByTrial(sort(curTrials_ind(randperm(length(curTrials_ind), params.numSamples))));
-    s_ind = cellfun(@(x,y) repmat(x, size(y)), num2cell(1:params.numSamples)', s, 'UniformOutput', false);
-    spikesSample{level_ind} = [cat(1, s{:}), cat(1, s_ind{:})];
+meanSpiking = nan(numLevels, numHist, length(time));
+spikesSample = cell(numLevels, numHist);
+for hist_ind = 1:numHist,
+    for level_ind = 1:numLevels,
+        curTrials_ind = find(levelsByTrial(:, hist_ind) == levels(level_ind));
+        meanSpiking(level_ind, hist_ind, :) = nanmean([t{curTrials_ind}], 2);
+        s = spikesByTrial(sort(curTrials_ind(randperm(length(curTrials_ind), min(length(curTrials_ind), params.numSamples)))));
+        s_ind = cellfun(@(x,y) repmat(x, size(y)), num2cell(1:min(length(curTrials_ind), params.numSamples))', s, 'UniformOutput', false);
+        spikesSample{level_ind, hist_ind} = [cat(1, s{:}), cat(1, s_ind{:})];
+    end
 end
+
+meanSpiking = reshape(meanSpiking, (numHist * numLevels), length(time));
+spikesSample = reshape(spikesSample, (numHist * numLevels), 1);
 
 cInfo = covInfo(covOfInterest);
 end
