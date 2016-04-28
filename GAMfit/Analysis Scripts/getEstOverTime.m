@@ -15,6 +15,7 @@ curUnit = str2double(splitName{3});
 
 g = load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(model), sessionName), 'gam');
 gam = g.gam;
+findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam.levelNames, sprintf('^%s.Trial Time.*', cov)));
 findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam.levelNames, sprintf('%s$', cov)));
 d = dir(sprintf('%s/%s/*_neuron_%s_%d_%d_GAMfit.mat', modelsDir, modelList(model), sessionName, curWire, curUnit));
 file = load(sprintf('%s/%s/%s',  modelsDir, modelList(model), d.name));
