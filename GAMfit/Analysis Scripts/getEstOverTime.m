@@ -1,11 +1,10 @@
-function [timeEst, time, modelTerms] = getEstOverTime(neuronName, timePeriod, model)
+function [timeEst, time, modelTerms, gam] = getEstOverTime(neuronName, timePeriod, model)
 modelTerms = modelFormulaParse(model);
 
 workingDir = getWorkingDir();
 modelsDir = sprintf('%s/Processed Data/%s/Models/', workingDir, timePeriod);
 mL = load(sprintf('%s/modelList.mat', modelsDir));
 modelList = mL.modelList;
-timePeriodDir = sprintf('%s/Processed Data/%s/', workingDir, timePeriod);
 cI = load(sprintf('%s/paramSet.mat', workingDir), 'covInfo');
 covInfo = cI.covInfo;
 
@@ -14,7 +13,9 @@ sessionName = splitName{1};
 curWire = str2double(splitName{2});
 curUnit = str2double(splitName{3});
 
-load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(model), sessionName), 'gam');
+g = load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(model), sessionName), 'gam');
+gam = g.gam;
+findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam.levelNames, sprintf('%s$', cov)));
 d = dir(sprintf('%s/%s/*_neuron_%s_%d_%d_GAMfit.mat', modelsDir, modelList(model), sessionName, curWire, curUnit));
 file = load(sprintf('%s/%s/%s',  modelsDir, modelList(model), d.name));
 
@@ -50,12 +51,10 @@ getTimeEst();
 
 %%
     function [timeEst] = getLevelTimeEst(unique_basis, constraint, levelOfInterest)
-        findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam.levelNames, sprintf('%s.Trial Time.*', cov)));
-        findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam.levelNames, sprintf('%s$', cov)));
         
         timeEst = unique_basis * constraint * file.neuron.parEst(findTimeLevel(levelOfInterest), :);
         if ~isempty(timeEst)
-            timeEst = bsxfun(@plus, file.neuron.parEst(findConstantLevel(levelOfInterest), :), timeEst);
+            timeEst = timeEst + file.neuron.parEst(findConstantLevel(levelOfInterest), :);
         else
             timeEst = file.neuron.parEst(findConstantLevel(levelOfInterest), :) .* ones(size(time));
         end

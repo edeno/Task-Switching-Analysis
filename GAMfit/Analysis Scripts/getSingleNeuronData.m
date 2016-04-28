@@ -1,4 +1,4 @@
-function [meanSpiking, time, spikesSample, cInfo] = getSingleNeuronData(neuronName, timePeriod, covOfInterest, varargin)
+function [meanSpiking, time, spikesSample, cInfo, trialTime] = getSingleNeuronData(neuronName, timePeriod, covOfInterest, varargin)
 inParser = inputParser;
 inParser.addRequired('neuronName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
@@ -74,7 +74,6 @@ end
 %%
 curSpikes = spikes(:, curNeuron_ind);
 trials = unique(trialID);
-time_ind = grp2idx(trialTime);
 time = unique(trialTime);
 timeLimits = quantile(time, [0 1]);
 
@@ -86,6 +85,7 @@ gaussFilter = gaussFilter / sum (gaussFilter); % normalize
 
 levelsByCov = spikeCov(covOfInterest);
 levels = unique(levelsByCov);
+levels = levels(~isnan(levels));
 numHist = size(levelsByCov, 2);
 numLevels = length(levels);
 spikesByTrial = cell(length(trials));
@@ -96,7 +96,11 @@ for hist_ind = 1:numHist,
         numPad = timeLimits - quantile(trialTime(i), [0 1]);
         t{trial} = [nan(numPad(1), 1); conv(curSpikes(i), gaussFilter, 'same') * 1E3; nan(numPad(2), 1)];
         
-        levelsByTrial(trial, hist_ind) = unique(levelsByCov(i, hist_ind));
+        u = unique(levelsByCov(i, hist_ind));
+        if any(isnan(u)),
+            u = NaN;
+        end
+        levelsByTrial(trial, hist_ind) = u;
         if hist_ind == 1,
             spikesByTrial{trial} = time(find(curSpikes(i)));
         end
@@ -119,5 +123,4 @@ meanSpiking = reshape(meanSpiking, (numHist * numLevels), length(time));
 spikesSample = reshape(spikesSample, (numHist * numLevels), 1);
 
 cInfo = covInfo(covOfInterest);
-
 end
