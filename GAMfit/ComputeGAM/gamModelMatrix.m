@@ -44,62 +44,27 @@ if ~strcmpi(regressionModel_str, 'constant'),
         isCategorical = cellfun(@(x) covariateInfo(x).isCategorical, termNames, 'UniformOutput', false);
         isCategorical = [isCategorical{:}];
         
-        % Convert to indicator variables if categorical
-        [data, levels] = indicatorVar(data, isCategorical, levels, gam.level_reference, baselineLevel);
-        numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
+        [data_constant, levels_constant] = createLevels(data, isCategorical, levels, gam.level_reference, baselineLevel);
         
-        % Figure out all the relevant interactions
-        if length(numLevels) < 2,
-            % If no interactions, then just let the factor be added to the
-            % design matrix
-            data_temp = data{:};
-            levels_temp = levels{:};
-        else
-            % Find all combinations of levels of each factor
-            [rep] = allpairs2(numLevels);
-            
-            % Sort so that the interactions start with the first level of the
-            % first factor, then the second, and so on.
-            [~, rep_sort_ind] = sort(rep{1});
-            for rep_ind = 1:length(rep),
-                rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
-            end
-            
-            % Replicate each factor level the number of times needed for all
-            % possible combintations
-            data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
-            levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
-            
-            % Multiply the factors together for the interactions
-            data_temp = data{1};
-            levels_temp = levels{1};
-            
-            for var_ind = 2:length(data),
-                data_temp = data_temp.*data{var_ind};
-                levels_temp = strcat(levels_temp, ':', levels{var_ind});
-            end
-            
-        end
+        designMatrix_constant = [designMatrix_constant data_constant];
         
-        designMatrix_constant = [designMatrix_constant data_temp];
-        
-        numLevels = size(data_temp, 2);
+        numLevels = size(data_constant, 2);
         
         covNames_constant = [covNames_constant repmat(model.terms(curTerm), 1, numLevels)];
         sqrtPen_constant = [sqrtPen_constant repmat({1}, 1, numLevels)];
         constraints_constant = [constraints_constant repmat({1}, 1, numLevels)];
-        constraintLevel_constant = [constraintLevel_constant levels_temp];
+        constraintLevel_constant = [constraintLevel_constant levels_constant];
         penalty_constant = [penalty_constant repmat({1}, 1, numLevels)];
         
         % Deal with Smoothing
         if model.isSmooth(curTerm),
-            
+            [data_spline, temp_levels_spline] = createLevels(data, isCategorical, levels, 'Full', baselineLevel);
             smoothParams = [];
             
             % Factor to be smoothed
             factor.name = model.terms(curTerm);
-            factor.data = data_temp;
-            factor.levels = levels_temp;
+            factor.data = data_spline;
+            factor.levels = temp_levels_spline;
             smoothParams{1} = factor;
             
             % Find smoothing factor
@@ -173,6 +138,47 @@ gam.penalty = penalty;
 gam.sqrtPen = sqrtPen;
 gam.bsplines = bsplines;
 gam.constant_ind = logical(constant_ind);
+
+end
+
+%-----------------------------------------------------------------------------
+function [data_temp, levels_temp] = createLevels(data, isCategorical, levels, referenceLevel, baselineLevel)
+% Convert to indicator variables if categorical
+[data, levels] = indicatorVar(data, isCategorical, levels, referenceLevel, baselineLevel);
+numLevels = cellfun(@(x) 1:length(x), levels, 'UniformOutput', false);
+
+% Figure out all the relevant interactions
+if length(numLevels) < 2,
+    % If no interactions, then just let the factor be added to the
+    % design matrix
+    data_temp = data{:};
+    levels_temp = levels{:};
+else
+    % Find all combinations of levels of each factor
+    [rep] = allpairs2(numLevels);
+    
+    % Sort so that the interactions start with the first level of the
+    % first factor, then the second, and so on.
+    [~, rep_sort_ind] = sort(rep{1});
+    for rep_ind = 1:length(rep),
+        rep{rep_ind} = rep{rep_ind}(rep_sort_ind);
+    end
+    
+    % Replicate each factor level the number of times needed for all
+    % possible combintations
+    data = cellfun(@(data, rep) data(:, rep), data, rep, 'UniformOutput', false);
+    levels = cellfun(@(levels, rep) levels(:, rep), levels, rep, 'UniformOutput', false);
+    
+    % Multiply the factors together for the interactions
+    data_temp = data{1};
+    levels_temp = levels{1};
+    
+    for var_ind = 2:length(data),
+        data_temp = data_temp .* data{var_ind};
+        levels_temp = strcat(levels_temp, ':', levels{var_ind});
+    end
+    
+end
 end
 
 %-----------------------------------------------------------------------------
@@ -206,13 +212,13 @@ function [X, bsplines, covName, covLevelNames, sqrtPen, constraints, penalty, co
 inParser = inputParser;
 inParser.addRequired('factor', @isstruct);
 inParser.addRequired('smoothingFactor', @isstruct);
-inParser.addParamValue('bsplines', [], @isstruct);
-inParser.addParamValue('basisDim', 10, @isnumeric);
-inParser.addParamValue('basisDegree', 3, @isnumeric);
-inParser.addParamValue('penaltyDegree', 2, @isnumeric);
-inParser.addParamValue('ridgeLambda', 1, @(x) isnumeric(x) && x >= 0);
-inParser.addParamValue('knots', [], @isvector);
-inParser.addParamValue('knotDiff', [], @isvector);
+inParser.addParameter('bsplines', [], @isstruct);
+inParser.addParameter('basisDim', 10, @isnumeric);
+inParser.addParameter('basisDegree', 3, @isnumeric);
+inParser.addParameter('penaltyDegree', 2, @isnumeric);
+inParser.addParameter('ridgeLambda', 1E-1, @(x) isnumeric(x) && x >= 0);
+inParser.addParameter('knots', [], @isvector);
+inParser.addParameter('knotDiff', [], @isvector);
 
 inParser.parse(factor, varargin{:});
 
@@ -230,8 +236,8 @@ if strcmp(factor.name, by.smoothingFactor.name)
     data = ones(size(by.smoothingFactor.data));
     levels = {{''}};
 else
-    data = [ones(size(by.smoothingFactor.data)) by.factor.data];
-    levels = [{by.smoothingFactor.name} by.factor.levels];
+    data = [by.factor.data];
+    levels = [by.factor.levels];
 end
 
 numLevels = size(data, 2);
