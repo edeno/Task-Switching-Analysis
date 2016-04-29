@@ -12,9 +12,12 @@ splitName = strsplit(neuronName, '-');
 sessionName = splitName{1};
 
 workingDir = getWorkingDir();
-pS = load(sprintf('%s/paramSet.mat', workingDir), 'colorInfo', 'covInfo');
+pS = load(sprintf('%s/paramSet.mat', workingDir), 'colorInfo', 'sessionNames');
 colorInfo = pS.colorInfo;
-covInfo = pS.covInfo;
+sessionNames = pS.sessionNames;
+b = load(sprintf('%s/Behavior/behavior.mat', workingDir), 'behavior');
+behavior = b.behavior{ismember(sessionNames, sessionName)};
+colorInfo = pS.colorInfo;
 modelsDir = sprintf('%s/Processed Data/%s/Models/', workingDir, timePeriod);
 mL = load(sprintf('%s/modelList.mat', modelsDir));
 modelList = mL.modelList;
@@ -31,9 +34,16 @@ numTerms = length(numTerms.terms);
 colors = values(colorInfo, cInfo.levels);
 colors = cat(1, colors{:});
 
-% Exclude trials with less than 50 samples total
-n = tabulate(trialTime);
-bad_ind = n(:, 2) < 400;
+switch (timePeriod)
+    case 'Rule Stimulus'
+        bad_ind = unique(trialTime) >= nanmean(behavior('Preparation Time'));
+    case 'Stimulus Response'
+        bad_ind = unique(trialTime) >= nanmean(behavior('Reaction Time'));
+    otherwise
+        % Exclude trials with less than 50 samples total
+        n = tabulate(trialTime);
+        bad_ind = n(:, 2) < 400;
+end
 
 meanSpiking = meanSpiking(:, ~bad_ind);
 time = time(~bad_ind);
@@ -41,7 +51,6 @@ spikesSample = cellfun(@(x) x(x(:,1) <= max(time), :), spikesSample, 'UniformOut
 
 f = figure;
 set(gcf, 'Position', [1888,230,571,886])
-f.Name = sprintf('%s - %s - %s', neuronName, timePeriod, covOfInterest);
 
 s1 = subplot(numTerms + 4,1,1);
 plotMeanRate();
@@ -55,10 +64,12 @@ subplot(numTerms + 4,1,2);
 plotRaster();
 title('Data');
 %%
-[meanSpiking, time, spikesSample, cInfo] = getModelSim(neuronName, timePeriod, model, covOfInterest, ...
+[meanSpiking, time, spikesSample, cInfo, brainArea] = getModelSim(neuronName, timePeriod, model, covOfInterest, ...
     'includeFixationBreaks', logical(gamParams.includeFixationBreaks), ...
     'includeIncorrect', logical(gamParams.includeIncorrect), ...
     'includeTimeBeforeZero', logical(gamParams.includeTimeBeforeZero));
+
+f.Name = sprintf('%s %s - %s - %s', brainArea, neuronName, timePeriod, covOfInterest);
 
 meanSpiking = meanSpiking(:, ~bad_ind);
 time = time(~bad_ind);
@@ -69,11 +80,17 @@ colors = cat(1, colors{:});
 
 s2 = subplot(numTerms + 4,1,3);
 plotMeanRate();
+if (min(time) ~= 0)
+    vline(0, 'Color', 'black', 'LineType', '-');
+end
 set(gca, 'XTickLabel', [])
 title('Model Estimated PSTH');
 
 subplot(numTerms + 4,1,4);
 plotRaster();
+if (min(time) ~= 0)
+    vline(0, 'Color', 'black', 'LineType', '-');
+end
 title('Model Estimated Spikes');
 
 modelMax = max(meanSpiking);
@@ -81,8 +98,6 @@ m = max([dataMax, modelMax]);
 m = ceil(m);
 
 set([s1, s2], 'YLim', [0, m])
-
-tMax = max(time);
 %%
 [timeEst, time, modelTerms, gam] = getEstOverTime(neuronName, timePeriod, model);
 timeEst = cellfun(@(x) x(:, ~bad_ind), timeEst, 'UniformOutput', false);
@@ -104,7 +119,6 @@ xlabel('Time (ms)');
         xlim(quantile(time, [0 1]));
         box off;
         set(gca, 'TickLength', [0, 0]);
-        vline(0, 'Color', 'black', 'LineType', '-');
         ylabel('Spikes / s');
     end
 
@@ -112,14 +126,13 @@ xlabel('Time (ms)');
         numSamples = cellfun(@(x) max(x(:, 2)), spikesSample, 'UniformOutput', false);
         numSamples = [numSamples{:}];
         numSamples = cumsum(numSamples);
-        for level_ind = 1:length(cInfo.levels),
+        for level_ind = 1:length(numSamples),
             plot(spikesSample{level_ind}(:, 1), (numSamples(level_ind) - numSamples(1)) + spikesSample{level_ind}(:, 2), '.', 'Color', colors(level_ind, :));
             xlim(quantile(time, [0 1]));
             ylim([0, numSamples(end)])
             set(gca, 'TickLength', [0, 0]);
             set(gca, 'YTickLabel', [])
             box off;
-            vline(0, 'Color', 'black', 'LineType', '-');
             hold all;
             ylabel('Trials');
         end
@@ -137,7 +150,9 @@ xlabel('Time (ms)');
             ylim(estLims);
             box off;
             set(gca, 'TickLength', [0, 0]);
-            vline(0, 'Color', 'black', 'LineType', '-');
+            if (min(time) ~= 0)
+                vline(0, 'Color', 'black', 'LineType', '-');
+            end
             hline(0, 'Color', 'black', 'LineType', '-');
             title(modelTerms.terms(term_ind));
         end
