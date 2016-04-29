@@ -1,4 +1,4 @@
-function [meanSpiking, time, spikesSample, cInfo] = getModelSim(neuronName, timePeriod, model, covOfInterest, varargin)
+function [meanSpiking, time, spikesSample, cInfo, brainArea] = getModelSim(neuronName, timePeriod, model, covOfInterest, varargin)
 inParser = inputParser;
 inParser.addRequired('neuronName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
@@ -28,6 +28,8 @@ curUnit = str2double(splitName{3});
 load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(model), sessionName), 'gam', 'designMatrix');
 d = dir(sprintf('%s/%s/*_neuron_%s_%d_%d_GAMfit.mat', modelsDir, modelList(model), sessionName, curWire, curUnit));
 load(sprintf('%s/%s/%s',  modelsDir, modelList(model), d.name))
+
+brainArea = neuron.brainArea;
 %%
 if ~params.includeTimeBeforeZero,
     good_ind = gam.trialTime >= 0;
@@ -73,7 +75,7 @@ for hist_ind = 1:numHist,
         end
         levelsByTrial(trial, hist_ind) = u;
         if hist_ind == 1,
-            spikesByTrial{trial} = time(find(curSpikes(i)));
+            spikesByTrial{trial} = time(curSpikes(i) == 1);
         end
     end
 end

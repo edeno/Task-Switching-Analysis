@@ -102,7 +102,7 @@ for hist_ind = 1:numHist,
         end
         levelsByTrial(trial, hist_ind) = u;
         if hist_ind == 1,
-            spikesByTrial{trial} = time(find(curSpikes(i)));
+            spikesByTrial{trial} = time(curSpikes(i) == 1);
         end
     end
 end
