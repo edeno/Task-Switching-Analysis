@@ -1,4 +1,4 @@
-function [timeEst, time] = getSplineCoef(modelName, timePeriod, varargin)
+function [timeEst, time, modelTerms] = getSplineCoef(modelName, timePeriod, varargin)
 inParser = inputParser;
 inParser.addRequired('modelName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
@@ -11,7 +11,7 @@ inParser.addParameter('numSim', 1000, @(x) isnumeric(x) & all(x > 0));
 inParser.parse(modelName, timePeriod, varargin{:});
 params = inParser.Results;
 
-model = modelFormulaParse(modelName);
+modelTerms = modelFormulaParse(modelName);
 
 workingDir = getWorkingDir();
 modelsDir = sprintf('%s/Processed Data/%s/Models/', workingDir, timePeriod);
@@ -43,7 +43,9 @@ for session_ind = 1:length(sessionNames),
     fprintf('\nLoading... %s\n', sessionNames{session_ind});
     file = load(sprintf('%s/%s/%s_GAMfit.mat', modelsDir, modelList(modelName), sessionNames{session_ind}), 'gam');
     file.gam = rmfield(file.gam, {'penalty', 'sqrtPen', 'trialID','trialTime'});
-    file.gam.bsplines = cellfun(@(x) rmfield(x, {'time', 'basis', 'sqrtPen', 'penalty', 'con_basis', 'con_sqrtPen', 'knotsDiff', 'rank'}), file.gam.bsplines);
+    if ~isempty([file.gam.bsplines{:}])
+        file.gam.bsplines = cellfun(@(x) rmfield(x, {'time', 'basis', 'sqrtPen', 'penalty', 'con_basis', 'con_sqrtPen', 'knotsDiff', 'rank'}), file.gam.bsplines);
+    end
     gam{session_ind} =  file.gam;
 end
 
@@ -70,10 +72,10 @@ timeEst = [timeEst{:}];
         if params.isSim,
             file.neuron.parEst = mvnrnd(file.neuron.parEst, file.stat.covb, params.numSim)';
         end
-        for cov_ind = 1:length(model.terms),
-            curLevels = covInfo(model.terms{cov_ind}).levels;
-            curLevels = curLevels(~ismember(curLevels, covInfo(model.terms{cov_ind}).baselineLevel));
-            validCovName = strrep(model.terms{cov_ind}, ' ', '_');
+        for cov_ind = 1:length(modelTerms.terms),
+            curLevels = covInfo(modelTerms.terms{cov_ind}).levels;
+            curLevels = curLevels(~ismember(curLevels, covInfo(modelTerms.terms{cov_ind}).baselineLevel));
+            validCovName = strrep(modelTerms.terms{cov_ind}, ' ', '_');
             if params.isSim,
                 timeEst.(validCovName) = nan(length(curLevels), numTime, params.numSim);
             else
@@ -82,8 +84,7 @@ timeEst = [timeEst{:}];
             for level_ind = 1:length(curLevels),
                 time_ind = 1:length(gam(sessionID).bsplines(cov_ind).x);
                 timeEst.(validCovName)(level_ind, time_ind, :) = ...
-                    getLevelTimeEst(file.neuron.parEst, ...
-                    gam(sessionID).levelNames, ...
+                    getLevelTimeEst( ...
                     gam(sessionID).bsplines(cov_ind).unique_basis, ...
                     gam(sessionID).bsplines(cov_ind).constraint, ...
                     curLevels{level_ind});
@@ -92,12 +93,11 @@ timeEst = [timeEst{:}];
     end
 
 %%
-    function [timeEst] = getLevelTimeEst(parEst, levelNames, unique_basis, constraint, levelOfInterest)
+    function [timeEst] = getLevelTimeEst(unique_basis, constraint, levelOfInterest)
+        findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam(sessionID).levelNames, sprintf('%s.Trial Time.*', cov)));
+        findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam(sessionID).levelNames, sprintf('%s$', cov)));
         
-        findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s.Trial Time.*', cov)));
-        findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s$', cov)));
-        timeEst = unique_basis * constraint * parEst(findTimeLevel(levelOfInterest), :);
-        timeEst = bsxfun(@plus, parEst(findConstantLevel(levelOfInterest), :), timeEst);
-        
+        timeEst = unique_basis * constraint * file.neuron.parEst(findTimeLevel(levelOfInterest), :);
+        timeEst = bsxfun(@plus, file.neuron.parEst(findConstantLevel(levelOfInterest), :), timeEst);
     end
 end
