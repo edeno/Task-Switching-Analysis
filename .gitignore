@@ -51,3 +51,6 @@ Icon
 GAMfit.o*
 GAMfit.po*
 *.json
+*.pdf
+*.ai
+*.eps
