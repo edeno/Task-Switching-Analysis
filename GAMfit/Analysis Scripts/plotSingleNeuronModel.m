@@ -17,7 +17,6 @@ colorInfo = pS.colorInfo;
 sessionNames = pS.sessionNames;
 b = load(sprintf('%s/Behavior/behavior.mat', workingDir), 'behavior');
 behavior = b.behavior{ismember(sessionNames, sessionName)};
-colorInfo = pS.colorInfo;
 modelsDir = sprintf('%s/Processed Data/%s/Models/', workingDir, timePeriod);
 mL = load(sprintf('%s/modelList.mat', modelsDir));
 modelList = mL.modelList;
