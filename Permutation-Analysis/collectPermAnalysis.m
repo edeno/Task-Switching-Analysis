@@ -1,6 +1,6 @@
 clear variables;
 workingDir = getWorkingDir();
-load(sprintf('%s/paramSet.mat', workingDir), 'numTotalNeurons', 'sessionNames');
+load(sprintf('%s/paramSet.mat', workingDir), 'numTotalNeurons', 'sessionNames', 'covInfo');
 timePeriods = {'Intertrial Interval', 'Fixation', 'Rule Stimulus', 'Stimulus Response', 'Saccade','Reward'};
 permAnalysis = containers.Map;
 
@@ -10,6 +10,8 @@ for time_ind = 1:length(timePeriods),
     factors = dir(permutationAnalysisDir );
     factors = {factors.name};
     factors = factors(~ismember(factors, {'.', '..'}));
+    covNames = cellfun(@(x) strrep(x, '-', ' '), cellfun(@(x) strrep(x, 'RuleBy-', ''), factors, 'UniformOutput', false), 'UniformOutput', false);
+    isRuleBy = ~cellfun(@isempty, cellfun(@(x) regexp('RuleBy-*', x), factors, 'UniformOutput', false));
     
     for factor_ind = 1:length(factors),
         fileNames = dir(sprintf('%s/%s/*_permutationAnalysis.mat', permutationAnalysisDir, factors{factor_ind}));
@@ -24,10 +26,12 @@ for time_ind = 1:length(timePeriods),
                 if ~permAnalysis.isKey(curNeuron),
                     s = [];
                     s.obs = file.obs(:, neuron_ind);
+                    s.obsNames = covInfo(covNames{factor_ind}).levels';
+                    s.isObsRuleBy = repmat(isRuleBy(factor_ind), length(file.obs(:, neuron_ind)), 1);
                     s.obsDiff = file.obsDiff(:, neuron_ind);
                     s.normObsDiff = file.obsDiff(:, neuron_ind) / file.avgFiringRate(neuron_ind);
                     s.avgFiringRate = file.avgFiringRate(neuron_ind);
-                    s.p = file.p(neuron_ind);
+                    s.p = file.p(:, neuron_ind);
                     s.comparisonNames = file.comparisonNames;
                     s.timePeriod = repmat(timePeriods(time_ind), [length(file.obsDiff(:, neuron_ind)), 1]);
                     s.brainArea = file.neuronBrainArea{neuron_ind};
@@ -37,6 +41,8 @@ for time_ind = 1:length(timePeriods),
                 else
                     s = permAnalysis(curNeuron);
                     s.obs = [s.obs; file.obs(:, neuron_ind)];
+                    s.obsNames = cat(1, s.obsNames, covInfo(covNames{factor_ind}).levels');
+                    s.isObsRuleBy = [s.isObsRuleBy; repmat(isRuleBy(factor_ind), length(file.obs(:, neuron_ind)), 1)];
                     s.obsDiff = [s.obsDiff; file.obsDiff(:, neuron_ind)];
                     s.normObsDiff = [s.normObsDiff; file.obsDiff(:, neuron_ind) / file.avgFiringRate(neuron_ind)];
                     s.p = [s.p; file.p(:, neuron_ind)];
@@ -82,4 +88,5 @@ values = [values{:}];
 comparisonNames = values(1).comparisonNames;
 
 saveName = sprintf('%s/Permutation-Analysis/Analysis/colllectedPermAnalysis.mat', workingDir);
+clear workingDir covInfo covNames curNeuron factor_ind file fileNames neuron_ind;
 save(saveName);
