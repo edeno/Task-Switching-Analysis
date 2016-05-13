@@ -12,7 +12,26 @@ covOfInterest = {'Previous Error History', 'Rule Repetition', 'Congruency'};
 timeToSig = cell(length(neuronNames), length(covOfInterest));
 
 for cov_ind = 1:length(covOfInterest),
-    parfor neuron_ind = 1:length(neuronNames),
+    for neuron_ind = 1:length(neuronNames),
         [timeToSig{neuron_ind, cov_ind}] = getSigTime(neuronNames{neuron_ind}, covOfInterest{cov_ind}, timePeriod, model);
     end
 end
+%%
+errorHist = cat(2, timeToSig{:, 1});
+ruleRep = cat(2, timeToSig{:, 2});
+con = cat(2, timeToSig{:, 3});
+
+n = neuronInfo.values;
+n = [n{:}];
+brainAreas = {n.brainArea};
+
+%%
+nanmean(errorHist(:, ismember(brainAreas, 'ACC')), 2)
+nanmean(errorHist(:, ismember(brainAreas, 'dlPFC')), 2)
+%%
+nanmean(ruleRep(:, ismember(brainAreas, 'ACC')), 2)
+nanmean(ruleRep(:, ismember(brainAreas, 'dlPFC')), 2)
+
+%%
+nanmean(con(:, ismember(brainAreas, 'ACC')), 2)
+nanmean(con(:, ismember(brainAreas, 'dlPFC')), 2)
