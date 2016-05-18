@@ -10,10 +10,14 @@ model = 's(Rule, Trial Time, knotDiff=50) + s(Previous Error History, Trial Time
 
 covOfInterest = {'Previous Error History', 'Rule Repetition', 'Congruency'};
 timeToSig = cell(length(neuronNames), length(covOfInterest));
+timeToHalfMax = cell(length(neuronNames), length(covOfInterest));
+changeTimes = cell(length(neuronNames), length(covOfInterest));
 
 for cov_ind = 1:length(covOfInterest),
-    for neuron_ind = 1:length(neuronNames),
-        [timeToSig{neuron_ind, cov_ind}] = getSigTime(neuronNames{neuron_ind}, covOfInterest{cov_ind}, timePeriod, model);
+    parfor neuron_ind = 1:length(neuronNames),
+        [timeToSig{neuron_ind, cov_ind}] = getFirstSigTime(neuronNames{neuron_ind}, covOfInterest{cov_ind}, timePeriod, model);
+        [timeToHalfMax{neuron_ind, cov_ind}] = getFirstHalfWidthMax(neuronNames{neuron_ind}, covOfInterest{cov_ind}, timePeriod, model);
+        [changeTimes{neuron_ind, cov_ind}] = getChangeTimes(neuronNames{neuron_ind}, covOfInterest{cov_ind}, timePeriod, model);
     end
 end
 %%
