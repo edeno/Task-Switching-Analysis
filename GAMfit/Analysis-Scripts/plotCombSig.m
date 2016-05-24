@@ -4,17 +4,25 @@ inParser.addRequired('modelName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
 inParser.addParameter('subject', '*', @ischar);
 inParser.addParameter('brainArea', '*', @ischar);
+inParser.addParameter('maxComparisons', [], @isnumeric);
 
 inParser.parse(modelName, timePeriod, varargin{:});
 params = inParser.Results;
+
+workingDir = getWorkingDir();
+load(sprintf('%s/paramSet.mat', workingDir), 'colorInfo');
 
 [~, gam, ~, ~, ~, h] = getCoef(modelName, timePeriod, 'brainArea', params.brainArea, 'subject', params.subject);
 curComparisons = gam.levelNames(2:end);
 h = h(:, 2:end);
 
 counter_idx = 1;
+numComparisons = length(curComparisons);
+if ~isempty(params.maxComparisons) && params.maxComparisons < numComparisons,
+    numComparisons = params.maxComparisons;
+end
 
-for k = 1:length(curComparisons)
+for k = 1:numComparisons
     comb_ind = nchoosek(1:length(curComparisons), k);
     for curComb = 1:size(comb_ind, 1),
         curSig = h(:, comb_ind(curComb, :));
@@ -31,28 +39,14 @@ end
 combID = cellfun(@(x) length(x), combNames, 'UniformOutput', false);
 combID = [combID{:}];
 
-for comb_ind = 1:length(curComparisons),
-    plotStuff(percentSig(combID == comb_ind), combNames(combID == comb_ind), curComparisons, params, comb_ind)
+for comb_ind = 1:numComparisons,
+    plotStuff(percentSig(combID == comb_ind), combNames(combID == comb_ind), curComparisons, params, comb_ind, timePeriod, colorInfo)
 end
 
 end
 
-function plotStuff(percentSig, combNames, curComparisons, params, comb_ind)
-colors = [
-    228,26,28; ...
-    199,233,180; ...
-    127,205,187; ...
-    65,182,196; ...
-    44,127,184; ...
-    37,52,148; ...
-    199,233,180; ...
-    127,205,187; ...
-    65,182,196; ...
-    44,127,184; ...
-    37,52,148; ...
-    55,126,184; ...
-    77,175,74; ...
-    ] ./ 255;
+function plotStuff(percentSig, combNames, curComparisons, params, comb_ind, timePeriod, colorInfo)
+colors = values(colorInfo, cat(1, combNames{:}));
 barWidth = 0.5;
 
 f = figure;
@@ -84,7 +78,7 @@ for comparison_ind = 1:length(percentSig),
     plot(comparison_ind * ones(size(comparisonID)), comparisonID, 'k.-', 'MarkerSize', markerWidth, 'LineWidth', .1);
     hold all;
     p = plot(comparison_ind, comparisonID, '.', 'MarkerSize', markerWidth);
-    set(p, {'Color'}, num2cell(colors(comparisonID, :), 2));
+    set(p, {'Color'}, colors(comparison_ind, :)');
 end
 set(gca, 'XTick', 1:length(percentSig))
 set(gca, 'XTickLabel', []);
@@ -95,6 +89,6 @@ xlim([1 - barWidth, length(percentSig) + barWidth]);
 box off;
 grid on;
 
-f.Name = sprintf('%s - Number of Perm: %d', params.brainArea, comb_ind);
+f.Name = sprintf('%s - %s - Number of Perm: %d', params.brainArea, timePeriod, comb_ind);
 end
 

@@ -1,4 +1,4 @@
-onlySigNeurons = false;
+onlySigNeurons = true;
 
 model = 'Rule + Previous Error History + Rule Repetition';
 timePeriod = 'Rule Stimulus';

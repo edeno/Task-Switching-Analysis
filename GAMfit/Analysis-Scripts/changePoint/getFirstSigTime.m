@@ -1,4 +1,4 @@
-function [sigChangeTimes, levelsOfInterest] = getChangeTimes(neuronName, covOfInterest, timePeriod, model, varargin)
+function [timeToSig, levelsOfInterest] = getFirstSigTime(neuronName, covOfInterest, timePeriod, model, varargin)
 numSim = 1e7;
 pThresh = 1e-6;
 workingDir = getWorkingDir();
@@ -20,18 +20,27 @@ levelsOfInterest = levelsOfInterest(~ismember(levelsOfInterest, covInfo(covOfInt
 numLevels = length(levelsOfInterest);
 
 getTimeLevels = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s.Trial Time.*', level)));
-fprintf('\nNeuron: %s\n', neuronName)
+getMeanLevel = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s$', level)));
+timeToSig = nan(numLevels, 1);
 time = gam.bsplines{1}.x;
-% time = time(51:end); % exclude first 50 ms because of potential edge effects
-sigChangeTimes = cell(numLevels, 1);
+time = time(51:end); % exclude first 50 ms because of potential edge effects
+fprintf('\nNeuron: %s\n', neuronName)
 for level_ind = 1:numLevels,
     fprintf('\t...%s\n', levelsOfInterest{level_ind})
     time_ind = getTimeLevels(levelsOfInterest{level_ind});
     simTimeEst = mvnrnd(neuron.parEst(time_ind), stat.covb(time_ind, time_ind), numSim)';
+    mean_ind = getMeanLevel(levelsOfInterest{level_ind});
+    simMeanEst = mvnrnd(neuron.parEst(mean_ind), stat.covb(mean_ind, mean_ind), numSim)';
     timeEst = gam.bsplines{1}.unique_basis * gam.bsplines{1}.constraint * simTimeEst;
-%     timeEst = timeEst(51:end, :); % exclude first 50 ms because of potential edge effects
-    changeTimes = diff(timeEst, [], 1);
-    changeTimesCI = quantile(changeTimes, pThresh * [1 -1] + [0 1], 2);
-    sigChangeTimes{level_ind} = time(changeTimesCI(:, 1) > 0 || changeTimesCI(:, 2) < 0); % Only increases in firing rate
+    timeEst = bsxfun(@plus, simMeanEst, timeEst);
+    timeEst = timeEst(51:end, :); % exclude first 50 ms because of potential edge effects
+    timeEstCI = quantile(timeEst, pThresh * [1 -1] + [0 1], 2);
+    
+    lowerCIFirst = time(find(timeEstCI(:, 1) > 0, 1, 'first'));
+    upperCIFirst = time(find(timeEstCI(:, 2) < 0, 1, 'first'));
+    minTime = min([lowerCIFirst, upperCIFirst]);
+    if ~isempty(minTime),
+       timeToSig(level_ind) = minTime; 
+    end
 end
 end

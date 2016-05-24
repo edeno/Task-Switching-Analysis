@@ -4,7 +4,7 @@ clear variables; close all; clc; profile off;
 isOverwrite = true;
 numFolds = 5;
 ridgeLambda = 0;
-smoothLambda = 10.^(-3:3);
+smoothLambda = 10.^(-1);
 
 % Simulate Session
 numTrials = 2000;
@@ -19,15 +19,15 @@ level_ind = @(cov_name, level_name) ismember(spikeCov(cov_name), cov_id(cov_name
 trueRate = nan(size(trial_time));
 
 colorRate = 1;
-orientRate = 5;
+orientRate = 10;
 ruleRatio = orientRate / colorRate;
 
 trueRate(level_ind('Rule', 'Color')) = colorRate;
-trueRate(level_ind('Rule', 'Orientation') & trial_time <= 100) = orientRate;
+trueRate(level_ind('Rule', 'Orientation') & trial_time <= 100) = colorRate;
 trueRate(level_ind('Rule', 'Orientation') & trial_time > 100) = orientRate * 2;
 
 %%
-model = 's(Rule, Trial Time)';
+model = 's(Rule, Trial Time, knotDiff=25)';
 [saveDir, spikes] = testComputeGAMfit_wrapper(model, trueRate, ...
     'numFolds', numFolds, 'overwrite', isOverwrite, 'ridgeLambda', ridgeLambda, 'smoothLambda', smoothLambda, ...
     'isPrediction', false, 'numCores', 0);
@@ -111,3 +111,15 @@ box off;
 ylabel('Correlation Coefficient');
 xlabel('Lags');
 title('Autocorrelation of Uniform ISIs');
+%%
+timePeriod = 'Testing';
+model = 's(Rule, Trial Time, knotDiff=25)';
+
+covOfInterest = 'Rule';
+neuronName = 'test_1_1';
+
+timeToSig = getFirstSigTime(neuronName, covOfInterest, timePeriod, model);
+
+sigChangeTimes = getChangeTimes(neuronName, covOfInterest, timePeriod, model);
+
+timeToHalfMax = getFirstHalfWidthMax(neuronName, covOfInterest, timePeriod, model);
