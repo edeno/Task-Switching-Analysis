@@ -29,7 +29,7 @@ inParser.addRequired('model', @ischar);
 inParser.addRequired('timePeriod',  @(x) any(ismember(x, timePeriodNames)));
 inParser.addParameter('overwrite', true, @isnumeric)
 
-inParser.parse(covOfInterest, model, timePeriod, varargin);
+inParser.parse(covOfInterest, model, timePeriod, varargin{:});
 
 % Add parameters to input structure after validation
 params = inParser.Results;
