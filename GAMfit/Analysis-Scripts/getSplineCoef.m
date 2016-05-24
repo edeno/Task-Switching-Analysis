@@ -94,7 +94,7 @@ timeEst = [timeEst{:}];
 
 %%
     function [timeEst] = getLevelTimeEst(unique_basis, constraint, levelOfInterest)
-        findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam(sessionID).levelNames, sprintf('%s.Trial Time.*', cov)));
+        findTimeLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam(sessionID).levelNames, sprintf('^%s.Trial Time.*', cov)));
         findConstantLevel = @(cov) cellfun(@(x) ~isempty(x), regexp(gam(sessionID).levelNames, sprintf('%s$', cov)));
         
         timeEst = unique_basis * constraint * file.neuron.parEst(findTimeLevel(levelOfInterest), :);
