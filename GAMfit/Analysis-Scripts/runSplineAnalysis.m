@@ -1,6 +1,6 @@
 clear variables;
 timePeriods = {'Rule Stimulus'};
-models = {'s(Rule, Trial Time, knotDiff=50) + s(Previous Error, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)'};
+models = {'s(Rule, Trial Time, knotDiff=50) + s(Previous Error History, Trial Time, knotDiff=50) + s(Rule Repetition, Trial Time, knotDiff=50)'};
 subjects = {'cc', 'isa'};
 brainAreas = {'ACC', 'dlPFC'};
 

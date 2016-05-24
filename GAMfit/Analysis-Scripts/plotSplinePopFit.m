@@ -13,27 +13,27 @@ bootEst = @(s) quantile(s, [0.025, 0.5, 0.975], 3);
 
 [timeEst, time] = getSplineCoef(model, timePeriod, 'brainArea', params.brainArea, 'isSim', true, 'subject', params.subject, 'numSim', 1E4);
 
-prevError = cat(4, timeEst.Previous_Error);
+prevError = cat(4, timeEst.Previous_Error_History);
 ruleRep = cat(4, timeEst.Rule_Repetition);
 rule = cat(4, timeEst.Rule);
 
-ruleRep(abs(ruleRep) > 10) = NaN;
-rule(abs(rule) > 10) = NaN;
-prevError(abs(prevError) > 10) = NaN;
+% ruleRep(abs(ruleRep) > 10) = NaN;
+% rule(abs(rule) > 10) = NaN;
+% prevError(abs(prevError) > 10) = NaN;
 
-if strcmp(unique({timeEst.subject}), 'isa') && strcmp(timePeriod, 'Rule Stimulus'),
-    bad_ind = time > 345 | time < -50;
-    prevError = prevError(:, ~bad_ind, :, :);
-    ruleRep = ruleRep(:, ~bad_ind, :, :);
-    rule = rule(:, ~bad_ind, :, :);
-    time = time(~bad_ind);
-else
-     bad_ind = time < -50;
-    prevError = prevError(:, ~bad_ind, :, :);
-    ruleRep = ruleRep(:, ~bad_ind, :, :);
-    rule = rule(:, ~bad_ind, :, :);
-    time = time(~bad_ind);
-end
+% if strcmp(unique({timeEst.subject}), 'isa') && strcmp(timePeriod, 'Rule Stimulus'),
+%     bad_ind = time > 345 | time < -50;
+%     prevError = prevError(:, ~bad_ind, :, :);
+%     ruleRep = ruleRep(:, ~bad_ind, :, :);
+%     rule = rule(:, ~bad_ind, :, :);
+%     time = time(~bad_ind);
+% else
+%      bad_ind = time < -50;
+%     prevError = prevError(:, ~bad_ind, :, :);
+%     ruleRep = ruleRep(:, ~bad_ind, :, :);
+%     rule = rule(:, ~bad_ind, :, :);
+%     time = time(~bad_ind);
+% end
 
 colorOrder = [ ...
     37,52,148; ...
