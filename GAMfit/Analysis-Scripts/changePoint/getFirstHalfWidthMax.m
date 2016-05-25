@@ -22,7 +22,6 @@ getTimeLevels = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%
 getMeanLevel = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s$', level)));
 timeToHalfMax = nan(numLevels, numSim);
 time = gam.bsplines{1}.x;
-time = time(51:end); % exclude first 50 ms because of potential edge effects
 fprintf('\nNeuron: %s\n', neuronName)
 for level_ind = 1:numLevels,
     fprintf('\t...%s\n', levelsOfInterest{level_ind})
@@ -32,13 +31,13 @@ for level_ind = 1:numLevels,
     simMeanEst = mvnrnd(neuron.parEst(mean_ind), stat.covb(mean_ind, mean_ind), numSim)';
     timeEst = gam.bsplines{1}.unique_basis * gam.bsplines{1}.constraint * simTimeEst;
     timeEst = bsxfun(@plus, simMeanEst, timeEst);
-    timeEst = timeEst(51:end, :); % exclude first 50 ms because of potential edge effects
-    maxEst = max(timeEst, [], 1);
-    halfMaxEst = maxEst / 2;
-    thresh = double(bsxfun(@gt, timeEst, halfMaxEst));
+    rangeEst = quantile(timeEst, [0, 1], 1);
+    halfMaxEst = rangeEst(1, :) + diff(rangeEst, [], 1) / 2;
+    thresh = bsxfun(@gt, timeEst, halfMaxEst);
+    thresh = thresh(2:end,:) & diff(timeEst, [], 1) > 0; % consider only increasing crossings
+    thresh = double(thresh);
     thresh(thresh == 0) = NaN;
-    thresh = bsxfun(@times, thresh, time);
+    thresh = bsxfun(@times, thresh, time(2:end));
     timeToHalfMax(level_ind, :) = min(thresh, [], 1);
-    
 end
 end
