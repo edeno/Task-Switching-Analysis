@@ -1,6 +1,7 @@
 function [timeToSig, levelsOfInterest] = getFirstSigTime(neuronName, covOfInterest, timePeriod, model, varargin)
 numSim = 1e4;
 pThresh = 1e-3;
+runThresh = 25; % require minimum consecutively significant timepoints
 workingDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', workingDir), 'covInfo');
 
@@ -23,7 +24,6 @@ getTimeLevels = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%
 getMeanLevel = @(level) cellfun(@(x) ~isempty(x), regexp(levelNames, sprintf('%s$', level)));
 timeToSig = nan(numLevels, 1);
 time = gam.bsplines{1}.x;
-time = time(51:end); % exclude first 50 ms because of potential edge effects
 fprintf('\nNeuron: %s\n', neuronName)
 for level_ind = 1:numLevels,
     fprintf('\t...%s\n', levelsOfInterest{level_ind})
@@ -33,12 +33,9 @@ for level_ind = 1:numLevels,
     simMeanEst = mvnrnd(neuron.parEst(mean_ind), stat.covb(mean_ind, mean_ind), numSim)';
     timeEst = gam.bsplines{1}.unique_basis * gam.bsplines{1}.constraint * simTimeEst;
     timeEst = bsxfun(@plus, simMeanEst, timeEst);
-    timeEst = timeEst(51:end, :); % exclude first 50 ms because of potential edge effects
-    timeEstCI = quantile(timeEst, pThresh * [1 -1] + [0 1], 2);
-    
-    lowerCIFirst = time(find(timeEstCI(:, 1) > 0, 1, 'first'));
-    upperCIFirst = time(find(timeEstCI(:, 2) < 0, 1, 'first'));
-    minTime = min([lowerCIFirst, upperCIFirst]);
+    timeEstCI = quantile(timeEst, pThresh, 2); % Only consider significant increases
+    [runSize, start_ind] = consecRuns(timeEstCI > 0);
+    minTime = time(min(start_ind(runSize > runThresh))); 
     if ~isempty(minTime),
        timeToSig(level_ind) = minTime; 
     end
