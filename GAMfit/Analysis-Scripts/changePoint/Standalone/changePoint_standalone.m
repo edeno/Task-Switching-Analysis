@@ -60,6 +60,7 @@ timeToSig = getFirstSigTime(neuronName, covOfInterest, timePeriod, model);
 timeToHalfMax = getFirstHalfWidthMax(neuronName, covOfInterest, timePeriod, model);
 changeTimes = getChangeTimes(neuronName, covOfInterest, timePeriod, model);
 
+fprintf('\nSaving...\n');
 save(saveFileName, 'timeToSig', 'timeToHalfMax', 'changeTimes', 'params', 'neuronName', '-v7.3');
 
 end
