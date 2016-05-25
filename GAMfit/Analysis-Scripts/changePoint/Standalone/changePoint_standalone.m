@@ -1,4 +1,4 @@
-function [timeToSig, timeToHalfMax, changeTimes] = changePoint_standalone(neuron_ind, covOfInterest, model, timePeriod, varargin)
+function [timeToSig, timeToHalfMax, changeTimes, maxChangeTimes] = changePoint_standalone(neuron_ind, covOfInterest, model, timePeriod, varargin)
 %#function getFirstHalfWidthmax
 %#function getChangeTimes
 %#function getFirstSigTime
@@ -21,7 +21,7 @@ workingDir = getWorkingDir();
 
 % Load Common Parameters
 load(sprintf('%s/paramSet.mat', workingDir), ...
-    'covInfo', 'timePeriodNames', 'neuronInfo', 'validPredType');
+    'covInfo', 'timePeriodNames', 'neuronInfo');
 
 inParser = inputParser;
 inParser.addRequired('covOfInterest',  @(x) isKey(covInfo, x));
@@ -58,9 +58,9 @@ end
 
 timeToSig = getFirstSigTime(neuronName, covOfInterest, timePeriod, model);
 timeToHalfMax = getFirstHalfWidthMax(neuronName, covOfInterest, timePeriod, model);
-changeTimes = getChangeTimes(neuronName, covOfInterest, timePeriod, model);
+[changeTimes, maxChangeTimes] = getChangeTimes(neuronName, covOfInterest, timePeriod, model);
 
 fprintf('\nSaving...\n');
-save(saveFileName, 'timeToSig', 'timeToHalfMax', 'changeTimes', 'params', 'neuronName', '-v7.3');
+save(saveFileName, 'timeToSig', 'timeToHalfMax', 'changeTimes', 'maxChangeTimes', 'params', 'neuronName', '-v7.3');
 
 end
