@@ -1,6 +1,6 @@
 function [sigChangeTimes, levelsOfInterest] = getChangeTimes(neuronName, covOfInterest, timePeriod, model, varargin)
-numSim = 1e7;
-pThresh = 1e-6;
+numSim = 1e4;
+pThresh = 1e-3;
 workingDir = getWorkingDir();
 load(sprintf('%s/paramSet.mat', workingDir), 'covInfo');
 
