@@ -24,6 +24,6 @@ do
        -v COVOFINTEREST="$curCov" \
        -v MODEL="$curModel" \
        -v TIMEPERIOD="$timeperiod" \
-       -v OVERWRITE="0" \
+       -v OVERWRITE="1" \
        ./runChangePoint2015a.sh;
 done
