@@ -32,6 +32,6 @@ for level_ind = 1:numLevels,
     timeEst = timeEst(51:end, :); % exclude first 50 ms because of potential edge effects
     changeTimes = diff(timeEst, [], 1);
     changeTimesCI = quantile(changeTimes, pThresh * [1 -1] + [0 1], 2);
-    sigChangeTimes{level_ind} = time(changeTimesCI(:, 1) > 0 || changeTimesCI(:, 2) < 0); % Only increases in firing rate
+    sigChangeTimes{level_ind} = time(changeTimesCI(:, 1) > 0 | changeTimesCI(:, 2) < 0); % Only increases in firing rate
 end
 end
