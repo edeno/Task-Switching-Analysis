@@ -26,6 +26,8 @@ changePoints = [changePoints{:}];
 timeToSig = cat(2, changePoints.timeToSig);
 changeTimes = cat(2, changePoints.changeTimes);
 timeToHalfMax = cat(3, changePoints.timeToHalfMax);
+maxChangeTimes = arrayfun(@(x) cat(2, x.maxChangeTimes{:}), changePoints, 'UniformOutput', false);
+maxChangeTimes = cat(3, maxChangeTimes{:});
 
 neuronName = {changePoints.neuronName};
 neuronName = strrep(neuronName, '_', '-');
@@ -40,13 +42,13 @@ uniqueSubjects = unique(subject);
 uniqueBrainAreas = unique(brainArea);
 
 filter_ind = @(sub, area) ismember(subject, sub) & ismember(brainArea, area);
-
 for sub_ind = 1:length(uniqueSubjects),
     for area_ind = 1:length(uniqueBrainAreas),
         subArea{sub_ind, area_ind} = sprintf('%s - %s', uniqueSubjects{sub_ind}, uniqueBrainAreas{area_ind});
         ind = filter_ind(uniqueSubjects{sub_ind}, uniqueBrainAreas{area_ind});
-        meanTimeToSig{sub_ind, area_ind} = nanmean(timeToSig(:, ind), 2);
-        meanHalfMax{sub_ind, area_ind} = quantile(nanmean(timeToHalfMax(:, :, ind), 3), [0.025 .5, 0.975], 2);
+        meanTimeToSig{sub_ind, area_ind} = nanmedian(timeToSig(:, ind), 2);
+        meanHalfMax{sub_ind, area_ind} = quantile(nanmedian(timeToHalfMax(:, :, ind), 3), [0.025 .5, 0.975], 2);
+        meanMaxChangeTimes{sub_ind, area_ind} = quantile(nanmedian(maxChangeTimes(:, :, ind), 3), [0.025 .5, 0.975], 1);
         curChangeTimes = changeTimes(:, ind);
         deriv = cell(size(curChangeTimes, 1), 1);
         for k = 1:size(curChangeTimes, 1),
