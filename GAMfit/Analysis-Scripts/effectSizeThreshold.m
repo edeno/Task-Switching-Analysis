@@ -1,5 +1,5 @@
 clear variables;
-brainArea = 'ACC';
+brainArea = 'dlPFC';
 params.subject = '*';
 params.numSim = 1E4;
 modelName = 'Rule + Previous Error History + Rule Repetition';
@@ -29,42 +29,24 @@ end
 covNames = gam.covNames(2:end);
 load('paramSet.mat', 'colorInfo');
 levelNames = gam.levelNames(2:end);
+numLevels = length(levelNames);
 %%
-curCov = 'Rule Repetition';
-ind = find(ismember(covNames, curCov));
-
+sub = numSubplots(numLevels);
 figure;
-for level_ind = ind(end:-1:1),
-    data = squeeze(percentGreaterThanThresh(:, level_ind, :));
-    plot(thresholds, data(:, 2),  '.', 'Color', colorInfo(levelNames{level_ind}), 'MarkerSize', 30);
+for ind = 1:numLevels,
+    subplot(sub(1), sub(2), ind)
+    data = squeeze(percentGreaterThanThresh(:, ind, :));
+    plot(thresholds, data(:, 2),  '.', 'Color', colorInfo(levelNames{ind}), 'MarkerSize', 10);
     hold all;
-    plot(thresholds, data(:, 2),  '-', 'Color', colorInfo(levelNames{level_ind}), 'LineWidth', 3);
+    plot(thresholds, data(:, 2),  '-', 'Color', colorInfo(levelNames{ind}), 'LineWidth', 2);
     l = line(repmat(thresholds, [2, 1]), data(:, [1 3])');
-    set(l, 'Color', colorInfo(levelNames{level_ind}));
-    set(l, 'LineWidth', 3);
+    set(l, 'Color', colorInfo(levelNames{ind}));
+    set(l, 'LineWidth', 2);
+    title(levelNames{ind});
+    ylim([0 100]);
+    box off;
+    xlabel('Percent Change in Firing Rate Threshold');
+    ylabel('Percentage of Neurons > Threshold');
 end
-box off;
-ylim([0 100]);
-title(curCov);
-xlabel('Percent Change in Firing Rate Threshold');
-ylabel('Percentage of Neurons > Threshold');
 
-%%
-curCov = 'Previous Error History';
-ind = find(ismember(covNames, curCov));
 
-figure;
-for level_ind = ind(end:-1:1),
-    data = squeeze(percentGreaterThanThresh(:, level_ind, :));
-    plot(thresholds, data(:, 2),  '.', 'Color', colorInfo(levelNames{level_ind}), 'MarkerSize', 30);
-    hold all;
-    plot(thresholds, data(:, 2),  '-', 'Color', colorInfo(levelNames{level_ind}), 'LineWidth', 3);
-    l = line(repmat(thresholds, [2, 1]), data(:, [1 3])');
-    set(l, 'Color', colorInfo(levelNames{level_ind}));
-    set(l, 'LineWidth', 3);
-end
-box off;
-ylim([0 100]);
-title(curCov);
-xlabel('Percent Change in Firing Rate Threshold');
-ylabel('Percentage of Neurons > Threshold');
