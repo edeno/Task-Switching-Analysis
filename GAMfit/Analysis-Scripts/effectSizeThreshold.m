@@ -14,11 +14,16 @@ parEst(bad_ind) = NaN;
 
 parEst = 100 * (exp(parEst(:, 2:end, :)) - 1);
 
-thresholds = 0:1:100;
+thresholds = -100:1:100;
+thresholds(thresholds == 0) = [];
 percentGreaterThanThresh = nan(length(thresholds), size(parEst, 2), 3);
 
 for thresh_ind = 1:length(thresholds),
-    percentGreaterThanThresh(thresh_ind, :, :) = quantile(mean(parEst >= thresholds(thresh_ind), 1), [0.025, 0.5, 0.975], 3) * 100;
+    if thresholds(thresh_ind) > 0,
+        percentGreaterThanThresh(thresh_ind, :, :) = quantile(mean(double(parEst > thresholds(thresh_ind)), 1), [0.025, 0.5, 0.975], 3) * 100;
+    else
+        percentGreaterThanThresh(thresh_ind, :, :) = quantile(mean(double(parEst < thresholds(thresh_ind)), 1), [0.025, 0.5, 0.975], 3) * 100;
+    end
 end
 
 covNames = gam.covNames(2:end);
