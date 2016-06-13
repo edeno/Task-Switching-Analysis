@@ -68,15 +68,25 @@ for pred_ind = 1:length(predTypes),
         subplot(2,1,1);
         h = histogram(max_ind);
         h.Orientation = 'horizontal';
-        h.Normalization = 'pdf';
+        h.Normalization = 'probability';
         set(gca, 'YTick', 1:(numModels + 1));
         set(gca, 'YTickLabel', [models, {'Constant'}]);
+        set(gca, 'TickLength', [0, 0]);
+        ylim([0.5, numModels + 1.5]);
+        box off;
         
         
         subplot(2,1,2);
         plot(mean(pred, 2), 1:(numModels + 1), '.-', 'MarkerSize', 30)
+        ci = 1.96 * std(pred, [], 2) / sqrt(size(pred, 2));
+        ci = (mean(pred, 2) * [1, 1]) + (ci * [-1, 1]);
+        hold all;
+        l = line(ci', repmat([1:(numModels + 1)], [2, 1]));
         set(gca, 'YTick', 1:(numModels + 1));
         set(gca, 'YTickLabel', [models, {'Constant'}]);
+        set(gca, 'TickLength', [0, 0]);
+        ylim([0.5, numModels + 1.5]);
+        box off;
         grid on;
         f.Name = sprintf('%s - %s - %s - Best Model', timePeriod, brainAreas{area_ind}, predTypes{pred_ind});
         saveName = sprintf('%s/%s_%s_%s_Best Model', saveDir, timePeriod, brainAreas{area_ind}, predTypes{pred_ind});
