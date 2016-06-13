@@ -2,6 +2,7 @@ function [timeToSig, timeToHalfMax, changeTimes, maxChangeTimes] = changePoint_s
 %#function getFirstHalfWidthmax
 %#function getChangeTimes
 %#function getFirstSigTime
+%#function consecRuns
 
 fprintf('\nMatlab\n')
 fprintf('---------\n')
