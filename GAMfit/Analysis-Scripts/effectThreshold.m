@@ -4,7 +4,6 @@ inParser.addRequired('modelName', @ischar);
 inParser.addRequired('timePeriod', @ischar);
 inParser.addParameter('subject', '*', @ischar);
 inParser.addParameter('numSim', 1E4, @isnumeric);
-inParser.addParameter('thresholds', 5:100, @(x) isnumeric(x) & all(x > 0));
 
 inParser.parse(modelName, timePeriod, varargin{:});
 params = inParser.Results;
